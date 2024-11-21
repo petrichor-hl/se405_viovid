@@ -50,16 +50,20 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          return;
+        }
         if (_pageController.page == 1.0) {
           _pageController.previousPage(
             duration: const Duration(milliseconds: 300),
             curve: Curves.linear,
           );
-          return false;
+        } else {
+          context.pop();
         }
-        return true;
       },
       child: Scaffold(
         appBar: AppBar(
