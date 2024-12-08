@@ -2,6 +2,8 @@ part of 'auth_bloc.dart';
 
 class AuthEvent {}
 
+class AuthCheckLocalStorage extends AuthEvent {}
+
 class AuthStarted extends AuthEvent {}
 
 class AuthLoginStarted extends AuthEvent {

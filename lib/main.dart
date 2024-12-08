@@ -55,28 +55,27 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (ctx) => AuthRepository(
-        authApiService: AuthApiService(dio),
-        authLocalStorageService: AuthLocalStorageService(sharedPreferences),
-      ),
-      child: BlocProvider(
-        create: (ctx) => AuthBloc(ctx.read<AuthRepository>()),
-        child: MaterialApp.router(
-          routerConfig: appRouter,
-          title: 'Movie App',
-          theme: ThemeData(
-            colorScheme: appColorScheme,
-            filledButtonTheme: appFilledButtonTheme,
-            textTheme: GoogleFonts.montserratTextTheme(),
-            useMaterial3: true,
-            scaffoldBackgroundColor: Colors.black,
-            sliderTheme: const SliderThemeData(
-              showValueIndicator: ShowValueIndicator.always,
-            ),
-          ),
-          debugShowCheckedModeBanner: false,
+    return BlocProvider(
+      create: (ctx) => AuthBloc(
+        AuthRepository(
+          authApiService: AuthApiService(dio),
+          authLocalStorageService: AuthLocalStorageService(sharedPreferences),
         ),
+      ),
+      child: MaterialApp.router(
+        routerConfig: appRouter,
+        title: 'Movie App',
+        theme: ThemeData(
+          colorScheme: appColorScheme,
+          filledButtonTheme: appFilledButtonTheme,
+          textTheme: GoogleFonts.montserratTextTheme(),
+          useMaterial3: true,
+          scaffoldBackgroundColor: Colors.black,
+          sliderTheme: const SliderThemeData(
+            showValueIndicator: ShowValueIndicator.always,
+          ),
+        ),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }

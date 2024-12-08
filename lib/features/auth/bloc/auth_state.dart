@@ -2,6 +2,8 @@ part of 'auth_bloc.dart';
 
 sealed class AuthState {}
 
+class AuthUnauthenticated extends AuthState {}
+
 class AuthInitial extends AuthState {}
 
 class AuthLoginInProgress extends AuthState {}

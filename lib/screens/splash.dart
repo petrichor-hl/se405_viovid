@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:viovid_app/base/assets.dart';
+import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/config/styles.config.dart';
-import 'package:viovid_app/features/auth/data/auth_repository.dart';
+import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,26 +15,12 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  Future<void> _redirect() async {
-    if (mounted) {
-      final authRepository = context.read<AuthRepository>();
-      if (await authRepository.isAccessTokenExpired()) {
-        final isRefreshed = await authRepository.refreshToken();
-        if (isRefreshed) {
-          if (mounted) {
-            context.go('/bottom-nav');
-          }
-        } else {
-          if (mounted) {
-            context.go('/auth');
-          }
-        }
-      } else {
-        if (mounted) {
-          context.go('/bottom-nav');
-        }
+  void _redirect() {
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        context.read<AuthBloc>().add(AuthCheckLocalStorage());
       }
-    }
+    });
   }
 
   @override
@@ -45,15 +32,28 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      alignment: Alignment.center,
-      child: Shimmer.fromColors(
-        baseColor: primaryColor,
-        highlightColor: Colors.amber,
-        child: Image.asset(
-          Assets.viovidLogo,
-          width: 240,
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (ctx, state) {
+        switch (state) {
+          case AuthLoginSuccess():
+            context.go(RouteName.bottomNav);
+            break;
+          case AuthUnauthenticated():
+            context.go(RouteName.onboarding);
+            break;
+          default:
+        }
+      },
+      child: Container(
+        color: Colors.black,
+        alignment: Alignment.center,
+        child: Shimmer.fromColors(
+          baseColor: primaryColor,
+          highlightColor: Colors.amber,
+          child: Image.asset(
+            Assets.viovidLogo,
+            width: 240,
+          ),
         ),
       ),
     );

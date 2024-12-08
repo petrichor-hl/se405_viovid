@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/config/styles.config.dart';
 import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
 
@@ -46,7 +47,7 @@ class _SignInState extends State<SignInScreen> {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthLoginSuccess) {
-          context.go('/bottom_nav');
+          context.go(RouteName.bottomNav);
         }
       },
       builder: (ctx, state) {
@@ -61,8 +62,21 @@ class _SignInState extends State<SignInScreen> {
   }
 
   Widget _buildInProgressLoginWidget() {
-    return const Center(
-      child: CircularProgressIndicator(),
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(),
+        Gap(14),
+        Text(
+          'Đang đăng nhập',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Gap(50),
+      ],
     );
   }
 

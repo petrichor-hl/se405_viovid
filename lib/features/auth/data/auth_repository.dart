@@ -42,7 +42,7 @@ class AuthRepository {
       final expiry = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
       return DateTime.now().isAfter(expiry);
     } else {
-      return false;
+      return true;
     }
   }
 
@@ -60,7 +60,6 @@ class AuthRepository {
             .saveRefreshToken(loginSuccessDto.refreshToken);
         return true;
       } catch (e) {
-        log('$e');
         return false;
       }
     } else {

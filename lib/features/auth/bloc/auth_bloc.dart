@@ -7,12 +7,29 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this.authRepository) : super(AuthInitial()) {
+    on<AuthCheckLocalStorage>(_onAuthCheckLocalStorage);
     on<AuthStarted>(_onAuthStarted);
     on<AuthLoginStarted>(_onLoginStarted);
     on<AuthRegisterStarted>(_onRegisterStarted);
   }
 
   final AuthRepository authRepository;
+
+  void _onAuthCheckLocalStorage(
+    AuthCheckLocalStorage event,
+    Emitter<AuthState> emit,
+  ) async {
+    if (await authRepository.isAccessTokenExpired()) {
+      final isRefreshed = await authRepository.refreshToken();
+      if (isRefreshed) {
+        emit(AuthLoginSuccess());
+      } else {
+        emit(AuthUnauthenticated());
+      }
+    } else {
+      emit(AuthLoginSuccess());
+    }
+  }
 
   void _onAuthStarted(AuthStarted event, Emitter<AuthState> emit) async {
     emit(AuthInitial());

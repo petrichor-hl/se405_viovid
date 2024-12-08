@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/main.dart';
 import 'package:viovid_app/screens/main/profile/components/profile_header.dart';
 import 'package:viovid_app/screens/main/profile/components/profile_setting_item.dart';
@@ -33,7 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (session == null) {
         _clearGlobalDataOfUser();
         if (mounted) {
-          context.go('/onboarding');
+          context.go(RouteName.onboarding);
         }
       }
     });
