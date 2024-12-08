@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:viovid_app/cubits/app_bar_cubit.dart';
-import 'package:viovid_app/data/topics_data.dart';
+import 'package:viovid_app/features/topic/cubit/topic_list_cubit.dart';
+import 'package:viovid_app/features/topic/dtos/topic.dart';
 import 'package:viovid_app/screens/main/browse/components/content_header.dart';
 import 'package:viovid_app/screens/main/browse/components/content_list.dart';
 import 'package:viovid_app/screens/main/browse/components/custom_app_bar.dart';
@@ -25,6 +27,12 @@ class _BrowseScreenState extends State<BrowseScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   late final List<dynamic> genres;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<TopicListCubit>().getTopicList();
+  }
 
   @override
   void dispose() {
@@ -53,31 +61,74 @@ class _BrowseScreenState extends State<BrowseScreen> {
       // endDrawer: buildEndDrawer(),
       // Tùy chọn: Khoảng cách bên phải để mở drawer khi vuốt từ lề
       drawerEdgeDragWidth: 20,
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          const SliverToBoxAdapter(
-            child: ContentHeader(
-              id: 'placeholder',
-              posterPath: 'placeholder',
+      body: BlocBuilder<TopicListCubit, TopicListState>(
+        builder: (ctx, state) {
+          var browseScreen = (switch (state) {
+            TopicListInProgress() => _buildInProgressBrowseScreen(),
+            TopicListSuccess() => _buildBrowseScreen(state.topicList),
+            TopicListFailure() => _buildFailureBrowseScreen(state.message),
+          });
+          return browseScreen;
+        },
+      ),
+    );
+  }
+
+  Widget _buildInProgressBrowseScreen() {
+    return const Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(),
+          Gap(14),
+          Text(
+            'Đang tải dữ liệu',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          ...topicsData.map(
-            (topic) => SliverToBoxAdapter(
-              child: ContentList(
-                key: PageStorageKey(topic),
-                title: topic.name,
-                films: topic.posters,
-                isOriginals: topic.name == 'Chỉ có trên Netflix',
-              ),
-            ),
-          ),
-          const SliverPadding(padding: EdgeInsets.only(bottom: 20))
         ],
       ),
     );
   }
 
+  Widget _buildBrowseScreen(List<Topic> topicList) {
+    return CustomScrollView(
+      controller: _scrollController,
+      slivers: [
+        const SliverToBoxAdapter(
+          child: ContentHeader(
+            id: 'placeholder',
+            posterPath: 'placeholder',
+          ),
+        ),
+        ...topicList.map(
+          (topic) => SliverToBoxAdapter(
+            child: ContentList(
+              key: PageStorageKey(topic),
+              topic: topic,
+            ),
+          ),
+        ),
+        const SliverPadding(padding: EdgeInsets.only(bottom: 20))
+      ],
+    );
+  }
+
+  Widget _buildFailureBrowseScreen(String errorMessage) {
+    return Center(
+      child: Text(
+        errorMessage,
+        style: const TextStyle(
+          fontSize: 16,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
   // Widget buildEndDrawer() => Stack(
   //       children: [
   //         const SizedBox.expand(),

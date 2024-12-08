@@ -19,30 +19,30 @@ class _ProfileHeaderState extends State<ProfileHeader> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const Gap(20),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: SizedBox(
-            width: 150,
-            height: 150,
-            child: CachedNetworkImage(
-              // imageUrl:
-              //     '$baseAvatarUrl${profileData['avatar_url']}?t=${DateTime.now()}',
-              imageUrl: '$baseAvatarUrl${profileData['avatar_url']}',
-              fit: BoxFit.cover,
-              // fadeInDuration: là thời gian xuất hiện của Image khi đã load xong
-              fadeInDuration: const Duration(milliseconds: 400),
-              // fadeOutDuration: là thời gian biến mất của placeholder khi Image khi đã load xong
-              fadeOutDuration: const Duration(milliseconds: 800),
-              placeholder: (context, url) => const Padding(
-                padding: EdgeInsets.all(26),
-                child: CircularProgressIndicator(
-                  strokeCap: StrokeCap.round,
-                  strokeWidth: 3,
-                ),
-              ),
-            ),
-          ),
-        ),
+        // ClipRRect(
+        //   borderRadius: BorderRadius.circular(10),
+        //   child: SizedBox(
+        //     width: 150,
+        //     height: 150,
+        //     child: CachedNetworkImage(
+        //       // imageUrl:
+        //       //     '$baseAvatarUrl${profileData['avatar_url']}?t=${DateTime.now()}',
+        //       imageUrl: '$baseAvatarUrl${profileData['avatar_url']}',
+        //       fit: BoxFit.cover,
+        //       // fadeInDuration: là thời gian xuất hiện của Image khi đã load xong
+        //       fadeInDuration: const Duration(milliseconds: 400),
+        //       // fadeOutDuration: là thời gian biến mất của placeholder khi Image khi đã load xong
+        //       fadeOutDuration: const Duration(milliseconds: 800),
+        //       placeholder: (context, url) => const Padding(
+        //         padding: EdgeInsets.all(26),
+        //         child: CircularProgressIndicator(
+        //           strokeCap: StrokeCap.round,
+        //           strokeWidth: 3,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         const Gap(12),
         const Text(
           'Thành viên',

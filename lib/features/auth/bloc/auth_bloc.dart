@@ -5,6 +5,7 @@ import 'package:viovid_app/features/result_type.dart';
 part 'auth_event.dart';
 part 'auth_state.dart';
 
+// Bloc + Repository
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this.authRepository) : super(AuthInitial()) {
     on<AuthCheckLocalStorage>(_onAuthCheckLocalStorage);

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:viovid_app/config/api.config.dart';
 import 'package:viovid_app/config/styles.config.dart';
 import 'package:viovid_app/cubits/app_bar_cubit.dart';
+import 'package:viovid_app/features/topic/cubit/topic_list_cubit.dart';
+import 'package:viovid_app/features/topic/data/topic_list_api_service.dart';
+import 'package:viovid_app/features/topic/data/topic_list_repository.dart';
 import 'package:viovid_app/screens/main/browse/browse.dart';
 import 'package:viovid_app/screens/main/forum/forum.screen.dart';
 import 'package:viovid_app/screens/main/noti_center/noti_center.screen.dart';
@@ -38,9 +42,23 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocProvider(
-        create: (ctx) => AppBarCubit(),
-        child: _screens[_currentIndex],
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (ctx) => AppBarCubit(),
+          ),
+          BlocProvider(
+            create: (ctx) => TopicListCubit(
+              TopicListRepository(
+                topicApiService: TopicListApiService(dio),
+              ),
+            ),
+          ),
+        ],
+        child: IndexedStack(
+          index: _currentIndex,
+          children: _screens,
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,

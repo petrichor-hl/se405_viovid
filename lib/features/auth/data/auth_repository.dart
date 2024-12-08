@@ -1,6 +1,6 @@
-import 'dart:developer';
-
+import 'package:dio/dio.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:viovid_app/config/api.config.dart';
 import 'package:viovid_app/features/auth/data/auth_api_service.dart';
 import 'package:viovid_app/features/auth/data/auth_local_data_source_service.dart';
 import 'package:viovid_app/features/auth/dtos/login_dto.dart';
@@ -40,7 +40,17 @@ class AuthRepository {
     if (accessToken != null) {
       final payload = JwtDecoder.decode(accessToken);
       final expiry = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
-      return DateTime.now().isAfter(expiry);
+      final isExpired = DateTime.now().isAfter(expiry);
+      if (isExpired) {
+        return true;
+      } else {
+        print('AccessToken = $accessToken');
+        dio.options.headers = {
+          'Authorization':
+              'Bearer $accessToken', // Thêm Bearer token vào header
+        };
+        return false;
+      }
     } else {
       return true;
     }
@@ -51,13 +61,18 @@ class AuthRepository {
     final refreshToken = await authLocalStorageService.getRefreshToken();
     if (accessToken != null && refreshToken != null) {
       try {
-        final loginSuccessDto = await authApiService.refreshToken(
+        print('Refreshing Token ... 🔄🔄🔄');
+        final refreshTokenSuccessDto = await authApiService.refreshToken(
           RefreshTokenDto(accessToken: accessToken, refreshToken: refreshToken),
         );
         await authLocalStorageService
-            .saveAccessToken(loginSuccessDto.accessToken);
+            .saveAccessToken(refreshTokenSuccessDto.accessToken);
         await authLocalStorageService
-            .saveRefreshToken(loginSuccessDto.refreshToken);
+            .saveRefreshToken(refreshTokenSuccessDto.refreshToken);
+        dio.options.headers = {
+          'Authorization':
+              'Bearer ${refreshTokenSuccessDto.accessToken}', // Thêm Bearer token vào header
+        };
         return true;
       } catch (e) {
         return false;

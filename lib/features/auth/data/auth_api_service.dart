@@ -46,11 +46,13 @@ class AuthApiService {
     RefreshTokenDto refreshTokenDto,
   ) async {
     try {
-      final response = await dio.post(
-        '/Account/refresh',
-        data: refreshTokenDto.toJson(),
+      return await ApiClient(dio)
+          .request<RefreshTokenDto, RefreshTokenSuccessDto>(
+        url: '/Account/refresh-token',
+        method: ApiMethod.post,
+        payload: refreshTokenDto,
+        fromJson: (resultJson) => RefreshTokenSuccessDto.fromJson(resultJson),
       );
-      return RefreshTokenSuccessDto.fromJson(response.data);
     } on DioException catch (e) {
       if (e.response != null) {
         throw Exception(e.response!.data['message']);

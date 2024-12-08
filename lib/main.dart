@@ -18,22 +18,6 @@ void main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  // await Supabase.initialize(
-  //   url: 'https://kpaxjjmelbqpllxenpxz.supabase.co',
-  //   anonKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
-  //   authOptions: const FlutterAuthClientOptions(
-  //     // authFlowType: AuthFlowType.pkce,
-  //     authFlowType: AuthFlowType.implicit,
-  //   ),
-  //   /*
-  //   If you use PKCE (default), this link only works on the device or browser where the original reset request was made. Display a message to the user to make sure they don't change devices or browsers.
-  //   If you used PKCE (default), the redirect contains the code query param.
-  //   If you use the implicit grant flow, the link can be opened on any device.
-  //   If you used the implicit flow, the redirect contains a URL fragment encoding the user's session.
-
-  //   More: https://supabase.com/docs/guides/auth/passwords
-  //   */
-  // );
   // flutter run --dart-define-from-file=lib/config/.env
   runApp(MyApp(
     sharedPreferences: sf,
@@ -55,27 +39,30 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (ctx) => AuthBloc(
-        AuthRepository(
-          authApiService: AuthApiService(dio),
-          authLocalStorageService: AuthLocalStorageService(sharedPreferences),
-        ),
+    return RepositoryProvider(
+      create: (ctx) => AuthRepository(
+        authApiService: AuthApiService(dio),
+        authLocalStorageService: AuthLocalStorageService(sharedPreferences),
       ),
-      child: MaterialApp.router(
-        routerConfig: appRouter,
-        title: 'Movie App',
-        theme: ThemeData(
-          colorScheme: appColorScheme,
-          filledButtonTheme: appFilledButtonTheme,
-          textTheme: GoogleFonts.montserratTextTheme(),
-          useMaterial3: true,
-          scaffoldBackgroundColor: Colors.black,
-          sliderTheme: const SliderThemeData(
-            showValueIndicator: ShowValueIndicator.always,
-          ),
+      child: BlocProvider(
+        create: (ctx) => AuthBloc(
+          ctx.read<AuthRepository>(),
         ),
-        debugShowCheckedModeBanner: false,
+        child: MaterialApp.router(
+          routerConfig: appRouter,
+          title: 'Movie App',
+          theme: ThemeData(
+            colorScheme: appColorScheme,
+            filledButtonTheme: appFilledButtonTheme,
+            textTheme: GoogleFonts.montserratTextTheme(),
+            useMaterial3: true,
+            scaffoldBackgroundColor: Colors.black,
+            sliderTheme: const SliderThemeData(
+              showValueIndicator: ShowValueIndicator.always,
+            ),
+          ),
+          debugShowCheckedModeBanner: false,
+        ),
       ),
     );
   }

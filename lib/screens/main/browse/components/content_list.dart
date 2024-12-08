@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:viovid_app/models/poster.dart';
+import 'package:viovid_app/features/topic/dtos/topic.dart';
 
 class ContentList extends StatelessWidget {
-  const ContentList({
-    super.key,
-    required this.title,
-    required this.films,
-    this.isOriginals = false,
-  });
+  const ContentList({super.key, required this.topic});
 
-  final String title;
-  final List<Poster> films;
-  final bool isOriginals;
+  final Topic topic;
 
   @override
   Widget build(BuildContext context) {
+    final isBigger = topic.order == 1;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20, top: 16, bottom: 6),
           child: Text(
-            title,
+            topic.name,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -30,12 +25,12 @@ class ContentList extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: isOriginals ? 360 : 180,
+          height: isBigger ? 360 : 180,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             scrollDirection: Axis.horizontal,
             itemBuilder: (ctx, index) {
-              final film = films[index];
+              final film = topic.films[index];
               return GestureDetector(
                 onTap: () async {
                   // await Navigator.of(context).push(
@@ -50,14 +45,14 @@ class ContentList extends StatelessWidget {
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: isOriginals ? 240 : 120,
+                  width: isBigger ? 240 : 120,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Image(
                     image: NetworkImage(
-                      isOriginals
+                      topic.order == 1
                           ? 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/${film.posterPath}'
                           : 'https://image.tmdb.org/t/p/w440_and_h660_face/${film.posterPath}',
                     ),
@@ -92,8 +87,8 @@ class ContentList extends StatelessWidget {
                       }
                       return Center(
                         child: SizedBox(
-                          width: isOriginals ? 48 : 36,
-                          height: isOriginals ? 48 : 36,
+                          width: isBigger ? 48 : 36,
+                          height: isBigger ? 48 : 36,
                           child: const CircularProgressIndicator(
                             // value: loadingProgress.expectedTotalBytes != null
                             //     ? loadingProgress.cumulativeBytesLoaded /
@@ -109,7 +104,7 @@ class ContentList extends StatelessWidget {
                 ),
               );
             },
-            itemCount: films.length,
+            itemCount: topic.films.length,
           ),
         )
       ],
