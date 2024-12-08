@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:viovid_app/config/styles.config.dart';
-import 'package:viovid_app/main.dart';
+import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key, required this.pageController});
@@ -15,77 +17,21 @@ class SignInScreen extends StatefulWidget {
 class _SignInState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController =
+      TextEditingController(text: 'dexapev126@rowplant.com');
+  final _passwordController = TextEditingController(text: 'dexapev126');
 
-  bool _isProcessing = false;
-
-  void _submit() async {
-    final isValid = _formKey.currentState!.validate();
-
-    if (!isValid) {
+  void _submit(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    setState(() {
-      _isProcessing = true;
-    });
-
-    final enteredEmail = _emailController.text;
-    final enteredPassword = _passwordController.text;
-
-    try {
-      await supabase.auth.signInWithPassword(
-        email: enteredEmail,
-        password: enteredPassword,
-      );
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đăng nhập thành công.'),
-            behavior: SnackBarBehavior.floating,
-            duration: Duration(seconds: 3),
+    context.read<AuthBloc>().add(
+          AuthLoginStarted(
+            email: _emailController.text,
+            password: _passwordController.text,
           ),
         );
-      }
-    } on AuthException catch (error) {
-      if (mounted) {
-        if (error.message == "Invalid login credentials") {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Tên đăng nhập hoặc mật khẩu sai'),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error.message),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
-        setState(() {
-          _isProcessing = false;
-        });
-      }
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Có lỗi xảy ra, vui lòng thử lại.'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-        setState(() {
-          _isProcessing = false;
-        });
-      }
-    }
-
-    // Không setState _isProcessing = false; khi loggin thành công vì:
-    // Sau khi loggin, thì phải fetch data cho tài khoản
   }
 
   @override
@@ -97,6 +43,30 @@ class _SignInState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthLoginSuccess) {
+          context.go('/bottom_nav');
+        }
+      },
+      builder: (ctx, state) {
+        var loginWidget = (switch (state) {
+          AuthLoginInProgress() => _buildInProgressLoginWidget(),
+          _ => _buildLoginForm(state),
+        });
+
+        return loginWidget;
+      },
+    );
+  }
+
+  Widget _buildInProgressLoginWidget() {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _buildLoginForm(AuthState authState) {
     return Align(
       alignment: const Alignment(0, -0.15),
       child: Padding(
@@ -134,36 +104,28 @@ class _SignInState extends State<SignInScreen> {
                   return null;
                 },
               ),
-              const SizedBox(
-                height: 12,
-              ),
+              const Gap(12),
               _PasswordTextField(passwordController: _passwordController),
-              const SizedBox(
-                height: 20,
+              const Gap(20),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => _submit(context),
+                  child: const Text(
+                    'ĐĂNG NHẬP',
+                  ),
+                ),
               ),
-              _isProcessing
-                  ? const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      child: SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                        ),
-                      ),
-                    )
-                  : SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: _submit,
-                        child: const Text(
-                          'ĐĂNG NHẬP',
-                        ),
-                      ),
-                    ),
-              const SizedBox(
-                height: 16,
-              ),
+              const Gap(16),
+              if (authState is AuthLoginFailure)
+                Text(
+                  authState.message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.red,
+                  ),
+                ),
+              const Gap(30),
               InkWell(
                 onTap: () {
                   // Navigator.of(context).push(
@@ -185,9 +147,7 @@ class _SignInState extends State<SignInScreen> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 24,
-              ),
+              const Gap(12),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

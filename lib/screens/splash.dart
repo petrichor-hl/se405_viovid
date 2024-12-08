@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:viovid_app/base/assets.dart';
 import 'package:viovid_app/config/styles.config.dart';
-import 'package:viovid_app/data/profile_data.dart';
-import 'package:viovid_app/data/topics_data.dart';
-import 'package:viovid_app/main.dart';
+import 'package:viovid_app/features/auth/data/auth_repository.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,15 +15,24 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Future<void> _redirect() async {
-    final session = supabase.auth.currentSession;
-    if (session != null) {
-      await fetchTopicsData();
-      await fetchProfileData();
-      if (mounted) {
-        context.go('/bottom_nav');
+    if (mounted) {
+      final authRepository = context.read<AuthRepository>();
+      if (await authRepository.isAccessTokenExpired()) {
+        final isRefreshed = await authRepository.refreshToken();
+        if (isRefreshed) {
+          if (mounted) {
+            context.go('/bottom-nav');
+          }
+        } else {
+          if (mounted) {
+            context.go('/auth');
+          }
+        }
+      } else {
+        if (mounted) {
+          context.go('/bottom-nav');
+        }
       }
-    } else {
-      context.go('/onboarding');
     }
   }
 

@@ -22,8 +22,8 @@ GoRouter appRouter = GoRouter(
       builder: (ctx, state) => const AuthScreen(),
     ),
     GoRoute(
-      path: '/bottom_nav',
-      name: 'bottom_nav',
+      path: '/bottom-nav',
+      name: 'bottom-nav',
       builder: (ctx, state) => const BottomNavScreen(),
     ),
     // GoRoute(

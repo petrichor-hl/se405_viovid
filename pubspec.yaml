@@ -54,6 +54,8 @@ dependencies:
   path_provider: ^2.1.4
   go_router: ^14.6.0
   wakelock_plus: ^1.2.8
+  shared_preferences: ^2.3.3
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_test:
