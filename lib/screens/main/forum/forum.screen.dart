@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 final List<Map<String, dynamic>> mockPosts = [
   {
@@ -54,7 +57,6 @@ class ForumScreen extends StatefulWidget {
 }
 
 class _ForumScreenState extends State<ForumScreen> {
-  // Use the mock data
   final List<Map<String, dynamic>> posts = mockPosts;
 
   @override
@@ -79,7 +81,13 @@ class _ForumScreenState extends State<ForumScreen> {
                   'Tạo kênh mới',
                   style: TextStyle(color: Colors.white),
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CreateChannelScreen()),
+                  );
+                },
               ),
               const Divider(color: Colors.white),
               ListTile(
@@ -124,7 +132,10 @@ class _ForumScreenState extends State<ForumScreen> {
               description:
                   'Kênh mặc định của Viovid, hiển các thông báo mới nhất của phát hành',
               onCreatePost: () {
-                print('Tạo bài đăng pressed');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CreatePostScreen()),
+                );
               },
             ),
             SizedBox(
@@ -340,17 +351,26 @@ class CommentPage extends StatefulWidget {
 
 class _CommentPageState extends State<CommentPage> {
   final TextEditingController _commentController = TextEditingController();
+  late List<Map<String, dynamic>> comments = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize comments safely
+    comments =
+        List<Map<String, dynamic>>.from(widget.postData['comments'] ?? []);
+  }
 
   void _addComment() {
     final newComment = {
-      'id': 'c${widget.postData['comments'].length + 1}',
+      'id': 'c${comments.length + 1}',
       'userId': 'currentUser',
       'content': _commentController.text,
       'createAt': DateTime.now(),
     };
 
     setState(() {
-      widget.postData['comments'].add(newComment);
+      comments.add(newComment);
     });
 
     _commentController.clear();
@@ -358,8 +378,6 @@ class _CommentPageState extends State<CommentPage> {
 
   @override
   Widget build(BuildContext context) {
-    final comments = widget.postData['comments'] as List<Map<String, dynamic>>;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Comments'),
@@ -368,25 +386,18 @@ class _CommentPageState extends State<CommentPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
-              widget.postData['content'],
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            child: ForumItem(
+              postData: widget.postData,
+              onCommentPressed: () {}, // No action required here
             ),
           ),
+          const Divider(),
           Expanded(
             child: ListView.builder(
               itemCount: comments.length,
               itemBuilder: (context, index) {
                 final comment = comments[index];
-                return ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.person)),
-                  title: Text(comment['userId']),
-                  subtitle: Text(comment['content']),
-                  trailing: Text(
-                    '${comment['createAt'].difference(DateTime.now()).inHours.abs()}h',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                );
+                return CommentItem(comment: comment);
               },
             ),
           ),
@@ -416,6 +427,316 @@ class _CommentPageState extends State<CommentPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class CommentItem extends StatelessWidget {
+  final Map<String, dynamic> comment;
+
+  const CommentItem({required this.comment});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const CircleAvatar(child: Icon(Icons.person)),
+                const SizedBox(width: 8),
+                Text(
+                  comment['userId'],
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const Spacer(),
+                Text(
+                  '${comment['createAt'].difference(DateTime.now()).inHours.abs()}h',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              comment['content'],
+              style: const TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CreateChannelScreen extends StatefulWidget {
+  @override
+  _CreateChannelScreenState createState() => _CreateChannelScreenState();
+}
+
+class _CreateChannelScreenState extends State<CreateChannelScreen> {
+  final TextEditingController _channelNameController = TextEditingController();
+  final TextEditingController _channelContentController =
+      TextEditingController();
+
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Xác nhận'),
+          content: const Text('Bạn có chắc chắn muốn tạo kênh này?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: const Text('Huỷ'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                // Handle channel creation logic here
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Kênh đã được tạo thành công!')),
+                );
+              },
+              child: const Text('Đồng ý'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tạo Kênh Mới'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Tên kênh',
+                style: TextStyle(fontSize: 16, color: Colors.white)),
+            const SizedBox(height: 8),
+            TextField(
+              style: const TextStyle(color: Colors.white),
+              controller: _channelNameController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Nhập tên kênh',
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text('Nội dung kênh',
+                style: TextStyle(fontSize: 16, color: Colors.white)),
+            const SizedBox(height: 8),
+            TextField(
+              style: const TextStyle(color: Colors.white),
+              controller: _channelContentController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Nhập nội dung kênh',
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the screen
+                  },
+                  child: const Text('Huỷ'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_channelNameController.text.isNotEmpty &&
+                        _channelContentController.text.isNotEmpty) {
+                      _showConfirmationDialog();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Vui lòng nhập đầy đủ thông tin.')),
+                      );
+                    }
+                  },
+                  child: const Text('Đồng ý'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CreatePostScreen extends StatefulWidget {
+  @override
+  _CreatePostScreenState createState() => _CreatePostScreenState();
+}
+
+class _CreatePostScreenState extends State<CreatePostScreen> {
+  final TextEditingController _postTitleController = TextEditingController();
+  final TextEditingController _postContentController = TextEditingController();
+  final List<File> _pickedImages = [];
+
+  final ImagePicker _picker = ImagePicker();
+
+  void _pickImages() async {
+    final List<XFile>? images = await _picker.pickMultiImage();
+    if (images != null) {
+      setState(() {
+        _pickedImages.addAll(images.map((image) => File(image.path)));
+      });
+    }
+  }
+
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Xác nhận'),
+          content: const Text('Bạn có chắc chắn muốn tạo bài đăng này?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: const Text('Huỷ'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                // Handle post creation logic here
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Bài đăng đã được tạo thành công!')),
+                );
+                Navigator.of(context).pop();
+              },
+              child: const Text('Đồng ý'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tạo Bài Đăng Mới'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Tiêu đề bài đăng',
+                  style: TextStyle(fontSize: 16, color: Colors.white)),
+              const SizedBox(height: 8),
+              TextField(
+                style: const TextStyle(color: Colors.white),
+                controller: _postTitleController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Nhập tiêu đề bài đăng',
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text('Nội dung bài đăng',
+                  style: TextStyle(fontSize: 16, color: Colors.white)),
+              const SizedBox(height: 8),
+              TextField(
+                style: const TextStyle(color: Colors.white),
+                controller: _postContentController,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Nhập nội dung bài đăng',
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _pickImages,
+                child: const Text('Thêm hình ảnh'),
+              ),
+              const SizedBox(height: 16),
+              // Display selected images
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _pickedImages
+                    .map((image) => Stack(
+                          children: [
+                            Image.file(
+                              image,
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned(
+                              top: 2,
+                              right: 2,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _pickedImages.remove(image);
+                                  });
+                                },
+                                child:
+                                    const Icon(Icons.close, color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ))
+                    .toList(),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Huỷ'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_postTitleController.text.isNotEmpty &&
+                          _postContentController.text.isNotEmpty) {
+                        _showConfirmationDialog();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Vui lòng nhập đầy đủ thông tin.')),
+                        );
+                      }
+                    },
+                    child: const Text('Đồng ý'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
