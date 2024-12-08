@@ -110,7 +110,11 @@ class _SignInState extends State<SignUpScreen> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-    _dobController.text = vnDateFormat.format(chosenDate!);
+    if (chosenDate != null) {
+      _dobController.text = vnDateFormat.format(chosenDate);
+    } else {
+      _dobController.text = '';
+    }
   }
 
   @override
