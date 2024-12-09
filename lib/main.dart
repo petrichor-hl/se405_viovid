@@ -26,7 +26,6 @@ void main() async {
   runApp(MyApp(
     sharedPreferences: sf,
   ));
-  //
 }
 
 // const openAIApiKey = String.fromEnvironment('OPEN_AI_API_KEY');

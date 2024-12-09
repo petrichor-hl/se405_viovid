@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:viovid_app/config/api.config.dart';
 import 'package:viovid_app/features/auth/data/auth_api_service.dart';
@@ -33,7 +35,7 @@ class AuthRepository {
       };
       return Success(true);
     } catch (error) {
-      print(error);
+      log('$error');
       return Failure('$error');
     }
   }
@@ -47,7 +49,7 @@ class AuthRepository {
       if (isExpired) {
         return true;
       } else {
-        print('AccessToken = $accessToken');
+        log('AccessToken = $accessToken');
         dio.options.headers = {
           'Authorization':
               'Bearer $accessToken', // Thêm Bearer token vào header
@@ -64,7 +66,7 @@ class AuthRepository {
     final refreshToken = await authLocalStorageService.getRefreshToken();
     if (accessToken != null && refreshToken != null) {
       try {
-        print('Refreshing Token ... 🔄🔄🔄');
+        log('Refreshing Token ... 🔄🔄🔄');
         final refreshTokenSuccessDto = await authApiService.refreshToken(
           RefreshTokenDto(accessToken: accessToken, refreshToken: refreshToken),
         );
@@ -91,7 +93,7 @@ class AuthRepository {
       await authLocalStorageService.clearTokens();
       return Success(true);
     } catch (error) {
-      print(error);
+      log('$error');
       return Failure('$error');
     }
   }

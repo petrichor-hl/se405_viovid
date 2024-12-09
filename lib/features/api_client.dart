@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 
 enum ApiMethod {
@@ -19,7 +21,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters, // GET
     ResponseType Function(dynamic)? fromJson,
   }) async {
-    print('$method - $url - ⏰');
+    log('$method - $url - ⏰');
     final response = await dio.request(
       url,
       data: payload,
@@ -29,7 +31,7 @@ class ApiClient {
         contentType: 'application/json',
       ),
     );
-    print('$method - $url - ✅');
+    log('$method - $url - ✅');
 
     return fromJson != null
         ? fromJson(response.data['result'])
