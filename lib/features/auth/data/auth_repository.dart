@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:viovid_app/config/api.config.dart';
 import 'package:viovid_app/features/auth/data/auth_api_service.dart';
@@ -16,7 +15,7 @@ class AuthRepository {
     required this.authLocalStorageService,
   });
 
-  Future<Result<bool>> login({
+  Future<Result> login({
     required String email,
     required String password,
   }) async {
@@ -28,6 +27,10 @@ class AuthRepository {
           .saveAccessToken(loginSuccessDto.accessToken);
       await authLocalStorageService
           .saveRefreshToken(loginSuccessDto.refreshToken);
+      dio.options.headers = {
+        'Authorization':
+            'Bearer ${loginSuccessDto.accessToken}', // Thêm Bearer token vào header
+      };
       return Success(true);
     } catch (error) {
       print(error);
@@ -79,6 +82,17 @@ class AuthRepository {
       }
     } else {
       return false;
+    }
+  }
+
+  Future<Result> logout() async {
+    try {
+      await authApiService.logout();
+      await authLocalStorageService.clearTokens();
+      return Success(true);
+    } catch (error) {
+      print(error);
+      return Failure('$error');
     }
   }
 }

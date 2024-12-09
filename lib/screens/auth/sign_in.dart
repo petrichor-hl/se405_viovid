@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/config/styles.config.dart';
 import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
+import 'package:viovid_app/features/user-profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/features/user-profile/dtos/user_profile.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key, required this.pageController});
@@ -44,20 +46,38 @@ class _SignInState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AuthLoginSuccess) {
-          context.go(RouteName.bottomNav);
-        }
-      },
-      builder: (ctx, state) {
-        var loginWidget = (switch (state) {
-          AuthLoginInProgress() => _buildInProgressLoginWidget(),
-          _ => _buildLoginForm(state),
-        });
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AuthBloc, AuthState>(
+          listener: (ctx, state) {
+            if (state is AuthLoginSuccess) {
+              ctx.read<UserProfileCubit>().getUserProfile();
+            }
+          },
+        ),
+        BlocListener<UserProfileCubit, UserProfile?>(
+          listener: (ctx, state) {
+            if (state != null) {
+              ctx.go(RouteName.bottomNav);
+            }
+          },
+        )
+      ],
+      child: BlocBuilder<AuthBloc, AuthState>(
+        buildWhen: (previous, current) =>
+            current is AuthLoginInProgress || current is AuthLoginFailure,
+        builder: (ctx, state) {
+          var loginWiget = (switch (state) {
+            AuthUnauthenticated() => _buildLoginWidget(),
+            AuthLoginInProgress() => _buildInProgressLoginWidget(),
+            AuthLoginFailure() =>
+              _buildLoginWidget(errorMessage: state.message),
+            _ => const SizedBox(),
+          });
 
-        return loginWidget;
-      },
+          return loginWiget;
+        },
+      ),
     );
   }
 
@@ -80,7 +100,7 @@ class _SignInState extends State<SignInScreen> {
     );
   }
 
-  Widget _buildLoginForm(AuthState authState) {
+  Widget _buildLoginWidget({String? errorMessage}) {
     return Align(
       alignment: const Alignment(0, -0.15),
       child: Padding(
@@ -131,9 +151,9 @@ class _SignInState extends State<SignInScreen> {
                 ),
               ),
               const Gap(16),
-              if (authState is AuthLoginFailure)
+              if (errorMessage != null)
                 Text(
-                  authState.message,
+                  errorMessage,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.red,
@@ -142,12 +162,7 @@ class _SignInState extends State<SignInScreen> {
               const Gap(30),
               InkWell(
                 onTap: () {
-                  // Navigator.of(context).push(
-                  //   PageTransition(
-                  //     child: const RequestRecovery(),
-                  //     type: PageTransitionType.fade,
-                  //   ),
-                  // );
+                  context.read<AuthBloc>().add(AuthLogout());
                 },
                 borderRadius: BorderRadius.circular(8),
                 child: const Padding(

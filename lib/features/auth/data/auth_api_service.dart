@@ -61,4 +61,19 @@ class AuthApiService {
       }
     }
   }
+
+  Future<bool> logout() async {
+    try {
+      return await ApiClient(dio).request<void, bool>(
+        url: '/Account/logout',
+        method: ApiMethod.post,
+      );
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw Exception(e.response!.data['message']);
+      } else {
+        throw Exception(e.message);
+      }
+    }
+  }
 }

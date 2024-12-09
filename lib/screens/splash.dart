@@ -6,6 +6,8 @@ import 'package:viovid_app/base/assets.dart';
 import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/config/styles.config.dart';
 import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
+import 'package:viovid_app/features/user-profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/features/user-profile/dtos/user_profile.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -32,18 +34,29 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (ctx, state) {
-        switch (state) {
-          case AuthLoginSuccess():
-            context.go(RouteName.bottomNav);
-            break;
-          case AuthUnauthenticated():
-            context.go(RouteName.onboarding);
-            break;
-          default:
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AuthBloc, AuthState>(
+          listener: (ctx, state) {
+            switch (state) {
+              case AuthLoginSuccess():
+                ctx.read<UserProfileCubit>().getUserProfile();
+                break;
+              case AuthUnauthenticated():
+                context.go(RouteName.onboarding);
+                break;
+              default:
+            }
+          },
+        ),
+        BlocListener<UserProfileCubit, UserProfile?>(
+          listener: (ctx, state) {
+            if (state != null) {
+              ctx.go(RouteName.bottomNav);
+            }
+          },
+        )
+      ],
       child: Container(
         color: Colors.black,
         alignment: Alignment.center,

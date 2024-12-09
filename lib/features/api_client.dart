@@ -17,7 +17,7 @@ class ApiClient {
     required ApiMethod method,
     RequestType? payload, // POST, PUT
     Map<String, dynamic>? queryParameters, // GET
-    required ResponseType Function(dynamic) fromJson,
+    ResponseType Function(dynamic)? fromJson,
   }) async {
     print('$method - $url - ⏰');
     final response = await dio.request(
@@ -31,6 +31,8 @@ class ApiClient {
     );
     print('$method - $url - ✅');
 
-    return fromJson(response.data['result']);
+    return fromJson != null
+        ? fromJson(response.data['result'])
+        : response.data['result'];
   }
 }

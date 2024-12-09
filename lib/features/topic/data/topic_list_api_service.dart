@@ -19,7 +19,6 @@ class TopicListApiService {
         },
       );
     } on DioException catch (e) {
-      print(e);
       if (e.response != null) {
         throw Exception(e.response!.data['Errors'][0]['Message']);
       } else {

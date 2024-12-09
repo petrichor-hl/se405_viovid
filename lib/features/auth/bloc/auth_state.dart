@@ -15,3 +15,11 @@ class AuthLoginFailure extends AuthState {
 
   final String message;
 }
+
+class AuthLogoutInProgress extends AuthState {}
+
+class AuthLogoutFailure extends AuthState {
+  AuthLogoutFailure(this.message);
+
+  final String message;
+}

@@ -11,6 +11,9 @@ import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
 import 'package:viovid_app/features/auth/data/auth_api_service.dart';
 import 'package:viovid_app/features/auth/data/auth_local_data_source_service.dart';
 import 'package:viovid_app/features/auth/data/auth_repository.dart';
+import 'package:viovid_app/features/user-profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/features/user-profile/data/user_profile_api_service.dart';
+import 'package:viovid_app/features/user-profile/data/user_profile_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,30 +42,39 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (ctx) => AuthRepository(
-        authApiService: AuthApiService(dio),
-        authLocalStorageService: AuthLocalStorageService(sharedPreferences),
-      ),
-      child: BlocProvider(
-        create: (ctx) => AuthBloc(
-          ctx.read<AuthRepository>(),
-        ),
-        child: MaterialApp.router(
-          routerConfig: appRouter,
-          title: 'Movie App',
-          theme: ThemeData(
-            colorScheme: appColorScheme,
-            filledButtonTheme: appFilledButtonTheme,
-            textTheme: GoogleFonts.montserratTextTheme(),
-            useMaterial3: true,
-            scaffoldBackgroundColor: Colors.black,
-            sliderTheme: const SliderThemeData(
-              showValueIndicator: ShowValueIndicator.always,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (ctx) => AuthBloc(
+            AuthRepository(
+              authApiService: AuthApiService(dio),
+              authLocalStorageService:
+                  AuthLocalStorageService(sharedPreferences),
             ),
           ),
-          debugShowCheckedModeBanner: false,
         ),
+        BlocProvider(
+          create: (ctx) => UserProfileCubit(
+            UserProfileRepository(
+              userProfileApiService: UserProfileApiService(dio),
+            ),
+          ),
+        ),
+      ],
+      child: MaterialApp.router(
+        routerConfig: appRouter,
+        title: 'Movie App',
+        theme: ThemeData(
+          colorScheme: appColorScheme,
+          filledButtonTheme: appFilledButtonTheme,
+          textTheme: GoogleFonts.montserratTextTheme(),
+          useMaterial3: true,
+          scaffoldBackgroundColor: Colors.black,
+          sliderTheme: const SliderThemeData(
+            showValueIndicator: ShowValueIndicator.always,
+          ),
+        ),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }
