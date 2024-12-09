@@ -63,18 +63,19 @@ class _BrowseScreenState extends State<BrowseScreen> {
       drawerEdgeDragWidth: 20,
       body: BlocBuilder<TopicListCubit, TopicListState>(
         builder: (ctx, state) {
-          var browseScreen = (switch (state) {
-            TopicListInProgress() => _buildInProgressBrowseScreen(),
-            TopicListSuccess() => _buildBrowseScreen(state.topicList),
-            TopicListFailure() => _buildFailureBrowseScreen(state.message),
+          var browseWidget = (switch (state) {
+            TopicListInProgress() => _buildInProgressBrowseWidget(),
+            TopicListSuccess() => _buildBrowseWidget(state.topicList),
+            TopicListFailure() => _buildFailureBrowseWidget(state.message),
           });
-          return browseScreen;
+
+          return browseWidget;
         },
       ),
     );
   }
 
-  Widget _buildInProgressBrowseScreen() {
+  Widget _buildInProgressBrowseWidget() {
     return const Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -94,7 +95,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
     );
   }
 
-  Widget _buildBrowseScreen(List<Topic> topicList) {
+  Widget _buildBrowseWidget(List<Topic> topicList) {
     return CustomScrollView(
       controller: _scrollController,
       slivers: [
@@ -117,7 +118,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
     );
   }
 
-  Widget _buildFailureBrowseScreen(String errorMessage) {
+  Widget _buildFailureBrowseWidget(String errorMessage) {
     return Center(
       child: Text(
         errorMessage,

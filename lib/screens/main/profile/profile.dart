@@ -94,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  backgroundColor: Colors.white,
+                  surfaceTintColor: Theme.of(context).primaryColor,
                   actions: [
                     TextButton(
                       onPressed: () {

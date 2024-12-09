@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:viovid_app/features/api_client.dart';
-import 'package:viovid_app/features/user-profile/dtos/user_profile.dart';
+import 'package:viovid_app/features/user_profile/dtos/user_profile.dart';
 
 class UserProfileApiService {
   UserProfileApiService(this.dio);

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/features/topic/dtos/topic.dart';
 
 class ContentList extends StatelessWidget {
@@ -33,15 +35,9 @@ class ContentList extends StatelessWidget {
               final film = topic.films[index];
               return GestureDetector(
                 onTap: () async {
-                  // await Navigator.of(context).push(
-                  //   PageTransition(
-                  //     child: FilmDetail(filmId: film.filmId),
-                  //     type: PageTransitionType.rightToLeft,
-                  //     duration: 300.ms,
-                  //     reverseDuration: 300.ms,
-                  //     settings: RouteSettings(name: '/film_detail@${film.filmId}'),
-                  //   ),
-                  // );
+                  context.push(
+                    RouteName.filmDetail.replaceFirst(':id', film.filmId),
+                  );
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -50,12 +46,10 @@ class ContentList extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   clipBehavior: Clip.antiAlias,
-                  child: Image(
-                    image: NetworkImage(
-                      topic.order == 1
-                          ? 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/${film.posterPath}'
-                          : 'https://image.tmdb.org/t/p/w440_and_h660_face/${film.posterPath}',
-                    ),
+                  child: Image.network(
+                    topic.order == 1
+                        ? 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/${film.posterPath}'
+                        : 'https://image.tmdb.org/t/p/w440_and_h660_face/${film.posterPath}',
                     fit: BoxFit.cover,
                     // https://api.flutter.dev/flutter/widgets/Image/frameBuilder.html
                     frameBuilder: (

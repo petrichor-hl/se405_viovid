@@ -6,8 +6,8 @@ import 'package:viovid_app/base/assets.dart';
 import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/config/styles.config.dart';
 import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
-import 'package:viovid_app/features/user-profile/cubit/user_profile_cutbit.dart';
-import 'package:viovid_app/features/user-profile/dtos/user_profile.dart';
+import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/features/user_profile/dtos/user_profile.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

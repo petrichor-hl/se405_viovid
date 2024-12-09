@@ -11,9 +11,9 @@ import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
 import 'package:viovid_app/features/auth/data/auth_api_service.dart';
 import 'package:viovid_app/features/auth/data/auth_local_data_source_service.dart';
 import 'package:viovid_app/features/auth/data/auth_repository.dart';
-import 'package:viovid_app/features/user-profile/cubit/user_profile_cutbit.dart';
-import 'package:viovid_app/features/user-profile/data/user_profile_api_service.dart';
-import 'package:viovid_app/features/user-profile/data/user_profile_repository.dart';
+import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/features/user_profile/data/user_profile_api_service.dart';
+import 'package:viovid_app/features/user_profile/data/user_profile_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +21,7 @@ void main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+  // Ctrl + F5
   // flutter run --dart-define-from-file=lib/config/.env
   runApp(MyApp(
     sharedPreferences: sf,
@@ -28,11 +29,8 @@ void main() async {
   //
 }
 
-const openAIApiKey = String.fromEnvironment('OPEN_AI_API_KEY');
+// const openAIApiKey = String.fromEnvironment('OPEN_AI_API_KEY');
 final supabase = Supabase.instance.client;
-const tmdbApiKey = String.fromEnvironment('TMDB_API_KEY');
-const baseAvatarUrl =
-    'https://kpaxjjmelbqpllxenpxz.supabase.co/storage/v1/object/public/avatar/';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key, required this.sharedPreferences});

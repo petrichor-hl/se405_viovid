@@ -1,4 +1,4 @@
-import 'package:viovid_app/features/film/dtos/simple_film.dart';
+import 'package:viovid_app/features/topic/dtos/simple_film.dart';
 
 class Topic {
   String topicId;

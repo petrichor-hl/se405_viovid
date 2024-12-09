@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:viovid_app/features/user-profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 
 class ProfileHeader extends StatefulWidget {
   const ProfileHeader({super.key});
