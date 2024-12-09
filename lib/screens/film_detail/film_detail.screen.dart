@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:viovid_app/base/assets.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail_cubit.dart';
 import 'package:viovid_app/features/film_detail/dtos/film.dart';
+import 'package:viovid_app/screens/film_detail/components/bottom_tabs.dart';
 import 'package:viovid_app/screens/film_detail/components/favorite_button.dart';
 
 class FilmDetailScreen extends StatefulWidget {
@@ -130,7 +132,7 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,13 +322,21 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          // SegmentCompose(
-          //   film.seasons,
-          //   isMovie,
-          //   widget.filmId,
-          //   _downloadedEpisodeIds,
-          // ),
+          const BottomTabs(),
         ],
+      ),
+    );
+  }
+
+  Widget buildSegment(String text) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

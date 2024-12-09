@@ -1,5 +1,5 @@
 import 'package:viovid_app/features/film_detail/dtos/genre.dart';
-import 'package:viovid_app/features/film_detail/dtos/season.dart';
+import 'package:viovid_app/features/film_detail/dtos/simple_season.dart';
 import 'package:viovid_app/features/topic/dtos/simple_film.dart';
 
 class Film extends SimpleFilm {
@@ -7,7 +7,7 @@ class Film extends SimpleFilm {
   String backdropPath;
   String contentRating;
   String releaseDate;
-  List<Season> seasons;
+  List<SimpleSeason> seasons;
   List<Genre> genres;
 
   Film({
@@ -32,7 +32,7 @@ class Film extends SimpleFilm {
       contentRating: json['contentRating'],
       releaseDate: json['releaseDate'],
       seasons: (json['seasons'] as List)
-          .map((season) => Season.fromJson(season))
+          .map((season) => SimpleSeason.fromJson(season))
           .toList(),
       genres: (json['genres'] as List)
           .map((genre) => Genre.fromJson(genre))

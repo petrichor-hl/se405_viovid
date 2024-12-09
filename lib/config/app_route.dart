@@ -40,14 +40,17 @@ GoRouter appRouter = GoRouter(
       path: RouteName.filmDetail,
       builder: (ctx, state) {
         final filmId = state.pathParameters['id']!;
-        return BlocProvider(
-          create: (ctx) => FilmDetailCubit(
-            FilmDetailRepository(
-              filmDetailApiService: FilmDetailApiService(dio),
-            ),
+        return RepositoryProvider(
+          create: (ctx) => FilmDetailRepository(
+            filmDetailApiService: FilmDetailApiService(dio),
           ),
-          child: FilmDetailScreen(
-            filmId: filmId,
+          child: BlocProvider(
+            create: (ctx) => FilmDetailCubit(
+              ctx.read<FilmDetailRepository>(),
+            ),
+            child: FilmDetailScreen(
+              filmId: filmId,
+            ),
           ),
         );
       },
