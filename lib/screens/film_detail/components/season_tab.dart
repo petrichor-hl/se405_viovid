@@ -3,11 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:viovid_app/base/components/skeleton_loading.dart';
-import 'package:viovid_app/features/film_detail/cubit/film_detail_cubit.dart';
+import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
 import 'package:viovid_app/features/film_detail/data/season_cache.dart';
 import 'package:viovid_app/features/film_detail/dtos/episode.dart';
-import 'package:viovid_app/features/film_detail/dtos/season.dart';
 import 'package:viovid_app/features/result_type.dart';
 import 'package:viovid_app/screens/film_detail/components/horizontal_episode.dart';
 
@@ -64,9 +63,17 @@ class _SeasonTabState extends State<SeasonTab> {
         break;
     }
 
-    setState(() {
-      _isLoading = false;
-    });
+    if (mounted) {
+      /* 
+      Phòng trường hợp:
+      Đang load dữ liệu mà người dùng chuyển sang tab khác
+      => Lúc này widget không còn tồn tại
+      => Nếu setState được gọi sẽ báo lỗi
+      */
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override

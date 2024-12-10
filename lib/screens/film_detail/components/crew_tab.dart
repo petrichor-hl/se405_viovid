@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:viovid_app/base/components/skeleton_loading.dart';
-import 'package:viovid_app/features/film_detail/cubit/casts/casts_cubit.dart';
-import 'package:viovid_app/features/film_detail/cubit/casts/casts_state.dart';
+import 'package:viovid_app/features/film_detail/cubit/crews/crews_cubit.dart';
+import 'package:viovid_app/features/film_detail/cubit/crews/crews_state.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
-import 'package:viovid_app/features/film_detail/dtos/cast.dart';
+import 'package:viovid_app/features/film_detail/dtos/crew.dart';
 
-class CastTab extends StatefulWidget {
-  const CastTab({super.key});
+class CrewTab extends StatefulWidget {
+  const CrewTab({super.key});
 
   @override
-  State<CastTab> createState() => _CastTabState();
+  State<CrewTab> createState() => _CrewTabState();
 }
 
-class _CastTabState extends State<CastTab> {
+class _CrewTabState extends State<CrewTab> {
   late final _filmDetailState = context.read<FilmDetailCubit>().state;
   late final _film = (switch (_filmDetailState) {
     FilmDetailSuccess() => _filmDetailState.film,
@@ -23,19 +23,19 @@ class _CastTabState extends State<CastTab> {
   @override
   void initState() {
     super.initState();
-    final castsCubit = context.read<CastsCubit>();
-    if (castsCubit.state is CastsInitial) {
-      castsCubit.getCasts(_film.filmId);
+    final crewsCubit = context.read<CrewsCubit>();
+    if (crewsCubit.state is CrewsInitial) {
+      crewsCubit.getCrews(_film.filmId);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CastsCubit, CastsState>(
+    return BlocBuilder<CrewsCubit, CrewsState>(
       buildWhen: (previous, current) =>
-          current is CastsSuccess || current is CastsFailure,
+          current is CrewsSuccess || current is CrewsFailure,
       builder: (ctx, state) {
-        if (state is CastsFailure) {
+        if (state is CrewsFailure) {
           return Center(
             child: Text(
               state.message,
@@ -55,10 +55,10 @@ class _CastTabState extends State<CastTab> {
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
           ),
-          children: state is CastsSuccess
+          children: state is CrewsSuccess
               ? List.generate(
-                  state.casts.length,
-                  (index) => _buildCastItem(state.casts[index]),
+                  state.crews.length,
+                  (index) => _buildCastItem(state.crews[index]),
                 )
               : List.generate(
                   12,
@@ -69,7 +69,7 @@ class _CastTabState extends State<CastTab> {
     );
   }
 
-  Widget _buildCastItem(Cast cast) {
+  Widget _buildCastItem(Crew crew) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -80,7 +80,7 @@ class _CastTabState extends State<CastTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          cast.personProfilePath == null
+          crew.personProfilePath == null
               ? const SizedBox(
                   height: 155,
                   child: Center(
@@ -94,7 +94,7 @@ class _CastTabState extends State<CastTab> {
               : ClipRRect(
                   borderRadius: BorderRadius.circular(7),
                   child: Image.network(
-                    cast.personProfilePath!,
+                    crew.personProfilePath!,
                     width: double.infinity, // minus border's width = 1
                     height: 155,
                     fit: BoxFit.cover,
@@ -107,7 +107,7 @@ class _CastTabState extends State<CastTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  cast.personName,
+                  crew.personName,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -116,7 +116,7 @@ class _CastTabState extends State<CastTab> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  cast.character,
+                  crew.role,
                   style: const TextStyle(
                     color: Colors.white,
                   ),

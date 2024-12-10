@@ -2,8 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:viovid_app/features/film_detail/cubit/film_detail_cubit.dart';
+import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/screens/film_detail/components/cast_tab.dart';
+import 'package:viovid_app/screens/film_detail/components/crew_tab.dart';
 import 'package:viovid_app/screens/film_detail/components/season_tab.dart';
 
 class BottomTabs extends StatefulWidget {
@@ -52,7 +53,7 @@ class _BottomInfoState extends State<BottomTabs> {
         const Gap(14),
         if (_segmentIndex == 0) const SeasonTab(),
         if (_segmentIndex == 1) const CastTab(),
-        if (_segmentIndex == 2) const SizedBox(),
+        if (_segmentIndex == 2) const CrewTab(),
       ],
     );
   }

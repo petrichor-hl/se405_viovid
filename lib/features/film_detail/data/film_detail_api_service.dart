@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:viovid_app/features/api_client.dart';
 import 'package:viovid_app/features/film_detail/dtos/cast.dart';
+import 'package:viovid_app/features/film_detail/dtos/crew.dart';
 import 'package:viovid_app/features/film_detail/dtos/film.dart';
 import 'package:viovid_app/features/film_detail/dtos/season.dart';
 
@@ -48,6 +49,23 @@ class FilmDetailApiService {
         method: ApiMethod.get,
         fromJson: (resultJson) =>
             (resultJson as List).map((cast) => Cast.fromJson(cast)).toList(),
+      );
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw Exception(e.response!.data['Errors'][0]['Message']);
+      } else {
+        throw Exception(e.message);
+      }
+    }
+  }
+
+  Future<List<Crew>> getCrews(String filmId) async {
+    try {
+      return await ApiClient(dio).request<void, List<Crew>>(
+        url: '/Film/$filmId/crews',
+        method: ApiMethod.get,
+        fromJson: (resultJson) =>
+            (resultJson as List).map((crew) => Crew.fromJson(crew)).toList(),
       );
     } on DioException catch (e) {
       if (e.response != null) {
