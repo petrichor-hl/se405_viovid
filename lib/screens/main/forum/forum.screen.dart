@@ -71,13 +71,6 @@ class _ForumScreenState extends State<ForumScreen> {
             children: [
               const SizedBox(height: 20),
               ListTile(
-                title: const Text(
-                  'Kênh bạn theo dõi',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-                onTap: () {},
-              ),
-              ListTile(
                 leading: const Icon(Icons.add, color: Colors.white),
                 title: const Text(
                   'Tạo kênh mới',
@@ -94,7 +87,7 @@ class _ForumScreenState extends State<ForumScreen> {
               const Divider(color: Colors.white),
               ListTile(
                 title: const Text(
-                  'Tất cả các kênh',
+                  'Kênh bạn theo dõi',
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
                 onTap: () {},
