@@ -1,4 +1,5 @@
 import 'package:viovid_app/features/film_detail/data/film_detail_api_service.dart';
+import 'package:viovid_app/features/film_detail/dtos/cast.dart';
 import 'package:viovid_app/features/film_detail/dtos/film.dart';
 import 'package:viovid_app/features/film_detail/dtos/season.dart';
 import 'package:viovid_app/features/result_type.dart';
@@ -22,6 +23,14 @@ class FilmDetailRepository {
     try {
       return Success(
           await filmDetailApiService.getSeasonById(filmId, seasonId));
+    } catch (error) {
+      return Failure('$error');
+    }
+  }
+
+  Future<Result<List<Cast>>> getCasts(String filmId) async {
+    try {
+      return Success(await filmDetailApiService.getCasts(filmId));
     } catch (error) {
       return Failure('$error');
     }

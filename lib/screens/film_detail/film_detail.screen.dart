@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:viovid_app/base/assets.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail_cubit.dart';
+import 'package:viovid_app/features/film_detail/data/cast_cache.dart';
+import 'package:viovid_app/features/film_detail/data/season_cache.dart';
 import 'package:viovid_app/features/film_detail/dtos/film.dart';
 import 'package:viovid_app/screens/film_detail/components/bottom_tabs.dart';
 import 'package:viovid_app/screens/film_detail/components/favorite_button.dart';
@@ -322,7 +324,17 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          const BottomTabs(),
+          MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider(
+                create: (ctx) => SeasonCache(),
+              ),
+              RepositoryProvider(
+                create: (ctx) => CastCache(),
+              ),
+            ],
+            child: const BottomTabs(),
+          ),
         ],
       ),
     );

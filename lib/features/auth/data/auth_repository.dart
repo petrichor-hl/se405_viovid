@@ -80,6 +80,7 @@ class AuthRepository {
         };
         return true;
       } catch (e) {
+        log('Refreshing FAILED ... ❌❌❌');
         return false;
       }
     } else {

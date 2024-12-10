@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail_cubit.dart';
-import 'package:viovid_app/screens/film_detail/components/episode_tab.dart';
+import 'package:viovid_app/screens/film_detail/components/cast_tab.dart';
+import 'package:viovid_app/screens/film_detail/components/season_tab.dart';
 
 class BottomTabs extends StatefulWidget {
   const BottomTabs({super.key});
@@ -20,8 +21,6 @@ class _BottomInfoState extends State<BottomTabs> {
   })!;
   late final _isMovie = _film.seasons[0].name == '';
   late int _segmentIndex = _isMovie ? 1 : 0;
-
-  final episodeTab = const EpisodeTab();
 
   @override
   Widget build(BuildContext context) {
@@ -51,14 +50,9 @@ class _BottomInfoState extends State<BottomTabs> {
           ),
         ),
         const Gap(14),
-        IndexedStack(
-          index: _segmentIndex,
-          children: [
-            episodeTab,
-            const SizedBox(),
-            const SizedBox(),
-          ],
-        ),
+        if (_segmentIndex == 0) const SeasonTab(),
+        if (_segmentIndex == 1) const CastTab(),
+        if (_segmentIndex == 2) const SizedBox(),
       ],
     );
   }
