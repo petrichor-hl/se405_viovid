@@ -11,7 +11,7 @@ class TopicListCubit extends Cubit<TopicListState> {
 
   TopicListCubit(this._topicRepository) : super(TopicListInProgress());
 
-  void getTopicList() async {
+  Future<void> getTopicList() async {
     final result = await _topicRepository.getTopicList();
     return (switch (result) {
       Success() => emit(TopicListSuccess(result.data)),

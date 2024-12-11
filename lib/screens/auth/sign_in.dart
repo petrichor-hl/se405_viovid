@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/config/styles.config.dart';
 import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
+import 'package:viovid_app/features/my_list/cubit/my_list_cubit.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
-import 'package:viovid_app/features/user_profile/dtos/user_profile.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key, required this.pageController});
@@ -46,23 +46,14 @@ class _SignInState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<AuthBloc, AuthState>(
-          listener: (ctx, state) {
-            if (state is AuthLoginSuccess) {
-              ctx.read<UserProfileCubit>().getUserProfile();
-            }
-          },
-        ),
-        BlocListener<UserProfileCubit, UserProfile?>(
-          listener: (ctx, state) {
-            if (state != null) {
-              ctx.go(RouteName.bottomNav);
-            }
-          },
-        )
-      ],
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (ctx, state) async {
+        if (state is AuthLoginSuccess) {
+          ctx.read<UserProfileCubit>().getUserProfile();
+          await ctx.read<MyListCubit>().getMyList();
+          ctx.go(RouteName.bottomNav);
+        }
+      },
       child: BlocBuilder<AuthBloc, AuthState>(
         buildWhen: (previous, current) =>
             current is AuthLoginInProgress || current is AuthLoginFailure,

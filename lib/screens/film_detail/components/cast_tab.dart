@@ -52,8 +52,8 @@ class _CastTabState extends State<CastTab> {
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
             mainAxisExtent: 254,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
           ),
           children: state is CastsSuccess
               ? List.generate(

@@ -11,6 +11,9 @@ import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
 import 'package:viovid_app/features/auth/data/auth_api_service.dart';
 import 'package:viovid_app/features/auth/data/auth_local_data_source_service.dart';
 import 'package:viovid_app/features/auth/data/auth_repository.dart';
+import 'package:viovid_app/features/my_list/cubit/my_list_cubit.dart';
+import 'package:viovid_app/features/my_list/data/my_list_api_service.dart';
+import 'package:viovid_app/features/my_list/data/my_list_repository.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_api_service.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_repository.dart';
@@ -54,6 +57,13 @@ class MyApp extends StatelessWidget {
           create: (ctx) => UserProfileCubit(
             UserProfileRepository(
               userProfileApiService: UserProfileApiService(dio),
+            ),
+          ),
+        ),
+        BlocProvider(
+          create: (ctx) => MyListCubit(
+            MyListRepository(
+              myListApiService: MyListApiService(dio),
             ),
           ),
         ),

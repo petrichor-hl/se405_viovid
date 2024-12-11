@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:viovid_app/base/assets.dart';
 import 'package:viovid_app/base/extension.dart';
+import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/features/film_detail/cubit/casts/casts_cubit.dart';
 import 'package:viovid_app/features/film_detail/cubit/crews/crews_cubit.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
 import 'package:viovid_app/features/film_detail/data/season_cache.dart';
 import 'package:viovid_app/features/film_detail/dtos/film.dart';
+import 'package:viovid_app/features/my_list/cubit/my_list_cubit.dart';
 import 'package:viovid_app/screens/film_detail/components/bottom_tabs.dart';
 import 'package:viovid_app/screens/film_detail/components/favorite_button.dart';
 
@@ -54,9 +57,61 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
         foregroundColor: Colors.white,
         backgroundColor: Colors.black,
         actions: [
-          FavoriteButton(
-            filmId: widget.filmId,
-            isAlreadyInMyList: false,
+          BlocListener<MyListCubit, MyListState>(
+            listenWhen: (previous, current) =>
+                current is MyListSuccess || current is MyListFailure,
+            listener: (ctx, state) {
+              if (state is MyListSuccess) {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                final isInMyList =
+                    state.films.any((film) => film.filmId == widget.filmId);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: isInMyList
+                        ? const Text('Đã thêm vào Danh sách của tôi')
+                        : const Text('Đã xoá vào Danh sách của tôi'),
+                    duration: const Duration(seconds: 3),
+                    action: isInMyList
+                        ? SnackBarAction(
+                            label: 'Xem',
+                            textColor: Colors.amber,
+                            onPressed: () => context.push(RouteName.myList),
+                          )
+                        : null,
+                  ),
+                );
+              }
+              // TODO: Show popup dialog when current state is MyListFailure,
+            },
+            child: BlocBuilder<MyListCubit, MyListState>(
+              builder: (ctx, state) {
+                if (state is MyListInProgress) {
+                  return const SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: CircularProgressIndicator(
+                        color: Colors.white54,
+                        strokeWidth: 3,
+                      ),
+                    ),
+                  );
+                }
+
+                if (state is MyListSuccess) {
+                  return FavoriteButton(
+                    filmId: widget.filmId,
+                    isAlreadyInMyList: state.films.any(
+                      (film) => film.filmId == widget.filmId,
+                    ),
+                  );
+                }
+
+                return const SizedBox(width: 48);
+              },
+            ),
           ),
         ],
       ),

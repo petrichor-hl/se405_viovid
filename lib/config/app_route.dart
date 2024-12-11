@@ -7,6 +7,7 @@ import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart
 import 'package:viovid_app/screens/auth/auth.dart';
 import 'package:viovid_app/screens/film_detail/film_detail.screen.dart';
 import 'package:viovid_app/screens/main/bottom_nav.dart';
+import 'package:viovid_app/screens/my_list/my_list.screen.dart';
 import 'package:viovid_app/screens/onboarding/onboarding.dart';
 import 'package:viovid_app/screens/splash.dart';
 
@@ -16,6 +17,7 @@ class RouteName {
   static const String auth = '/auth';
   static const String bottomNav = '/bottom-nav';
   static const String filmDetail = '/film-detail/:id';
+  static const String myList = '/my-list';
 }
 
 GoRouter appRouter = GoRouter(
@@ -54,6 +56,10 @@ GoRouter appRouter = GoRouter(
           ),
         );
       },
+    ),
+    GoRoute(
+      path: RouteName.myList,
+      builder: (ctx, state) => const MyListScreen(),
     ),
   ],
 );

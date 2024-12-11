@@ -71,7 +71,7 @@ class ProfileScreen extends StatelessWidget {
           ProfileSettingItem(
             title: 'Danh sách của tôi',
             iconData: Icons.list_rounded,
-            onTap: () {},
+            onTap: () => context.push(RouteName.myList),
           ),
           ProfileSettingItem(
             title: 'Đổi mật khẩu',

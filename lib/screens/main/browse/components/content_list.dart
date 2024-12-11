@@ -16,7 +16,7 @@ class ContentList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 20, top: 16, bottom: 6),
+          padding: const EdgeInsets.only(left: 12, top: 16, bottom: 6),
           child: Text(
             topic.name,
             style: const TextStyle(
@@ -29,7 +29,7 @@ class ContentList extends StatelessWidget {
         SizedBox(
           height: isBigger ? 360 : 180,
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             scrollDirection: Axis.horizontal,
             itemBuilder: (ctx, index) {
               final film = topic.films[index];

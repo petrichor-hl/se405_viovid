@@ -6,10 +6,10 @@ import 'package:viovid_app/cubits/app_bar_cubit.dart';
 import 'package:viovid_app/features/topic/cubit/topic_list_cubit.dart';
 import 'package:viovid_app/features/topic/data/topic_list_api_service.dart';
 import 'package:viovid_app/features/topic/data/topic_list_repository.dart';
-import 'package:viovid_app/screens/main/browse/browse.dart';
+import 'package:viovid_app/screens/main/browse/browse.screen.dart';
 import 'package:viovid_app/screens/main/forum/forum.screen.dart';
 import 'package:viovid_app/screens/main/noti_center/noti_center.screen.dart';
-import 'package:viovid_app/screens/main/profile/profile.dart';
+import 'package:viovid_app/screens/main/profile/profile.screen.dart';
 
 const Map<String, IconData> _icons = {
   'Trang chủ': Icons.home_rounded,
