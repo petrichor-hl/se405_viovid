@@ -32,7 +32,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 700), () {
       if (mounted) {
         context.read<TopicListCubit>().getTopicList();
       }
@@ -187,12 +187,16 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
   Widget _buildFailureBrowseWidget(String errorMessage) {
     return Center(
-      child: Text(
-        errorMessage,
-        style: const TextStyle(
-          fontSize: 16,
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Text(
+          errorMessage,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

@@ -18,7 +18,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   void _redirect() {
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(milliseconds: 700), () {
       if (mounted) {
         context.read<AuthBloc>().add(AuthCheckLocalStorage());
       }

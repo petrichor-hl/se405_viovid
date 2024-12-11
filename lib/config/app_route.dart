@@ -4,11 +4,15 @@ import 'package:viovid_app/config/api.config.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_api_service.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
+import 'package:viovid_app/features/person_detail/cubit/person_detail_cubit.dart';
+import 'package:viovid_app/features/person_detail/data/person_detail_api_service.dart';
+import 'package:viovid_app/features/person_detail/data/person_detail_repository.dart';
 import 'package:viovid_app/screens/auth/auth.screen.dart';
 import 'package:viovid_app/screens/film_detail/film_detail.screen.dart';
 import 'package:viovid_app/screens/main/bottom_nav.dart';
 import 'package:viovid_app/screens/my_list/my_list.screen.dart';
 import 'package:viovid_app/screens/onboarding/onboarding.screen.dart';
+import 'package:viovid_app/screens/person_detail/person_detail.screen.dart';
 import 'package:viovid_app/screens/splash.screen.dart';
 
 class RouteName {
@@ -18,6 +22,7 @@ class RouteName {
   static const String bottomNav = '/bottom-nav';
   static const String filmDetail = '/film-detail/:id';
   static const String myList = '/my-list';
+  static const String person = '/person/:id';
 }
 
 GoRouter appRouter = GoRouter(
@@ -60,6 +65,20 @@ GoRouter appRouter = GoRouter(
     GoRoute(
       path: RouteName.myList,
       builder: (ctx, state) => const MyListScreen(),
+    ),
+    GoRoute(
+      path: RouteName.person,
+      builder: (ctx, state) {
+        final personId = state.pathParameters['id']!;
+        return BlocProvider(
+          create: (ctx) => PersonDetailCubit(
+            PersonDetailRepository(
+              personDetailApiService: PersonDetailApiService(dio),
+            ),
+          ),
+          child: PersonDetailScreen(personId: personId),
+        );
+      },
     ),
   ],
 );

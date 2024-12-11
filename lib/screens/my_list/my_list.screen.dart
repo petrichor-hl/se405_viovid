@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/features/my_list/cubit/my_list_cubit.dart';
 
 class MyListScreen extends StatelessWidget {
@@ -32,7 +35,10 @@ class MyListScreen extends StatelessWidget {
                 state.films.length,
                 (index) {
                   return InkWell(
-                    onTap: () {},
+                    onTap: () => context.push(
+                      RouteName.filmDetail
+                          .replaceFirst(':id', state.films[index].filmId),
+                    ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.network(
@@ -41,6 +47,26 @@ class MyListScreen extends StatelessWidget {
                     ).animate().fade().scale(),
                   );
                 },
+              ),
+            );
+          }
+
+          if (state is MyListInProgress) {
+            return const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  Gap(14),
+                  Text(
+                    'Đang tải dữ liệu',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             );
           }
