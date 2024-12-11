@@ -4,12 +4,12 @@ import 'package:viovid_app/config/api.config.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_api_service.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
-import 'package:viovid_app/screens/auth/auth.dart';
+import 'package:viovid_app/screens/auth/auth.screen.dart';
 import 'package:viovid_app/screens/film_detail/film_detail.screen.dart';
 import 'package:viovid_app/screens/main/bottom_nav.dart';
 import 'package:viovid_app/screens/my_list/my_list.screen.dart';
-import 'package:viovid_app/screens/onboarding/onboarding.dart';
-import 'package:viovid_app/screens/splash.dart';
+import 'package:viovid_app/screens/onboarding/onboarding.screen.dart';
+import 'package:viovid_app/screens/splash.screen.dart';
 
 class RouteName {
   static const String splash = '/';
