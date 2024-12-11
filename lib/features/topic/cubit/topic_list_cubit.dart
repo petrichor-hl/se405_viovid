@@ -13,6 +13,7 @@ class TopicListCubit extends Cubit<TopicListState> {
 
   Future<void> getTopicList() async {
     final result = await _topicRepository.getTopicList();
+
     return (switch (result) {
       Success() => emit(TopicListSuccess(result.data)),
       Failure() => emit(TopicListFailure(result.message)),

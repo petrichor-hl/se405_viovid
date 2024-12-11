@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:viovid_app/base/components/skeleton_loading.dart';
 import 'package:viovid_app/cubits/app_bar_cubit.dart';
 import 'package:viovid_app/features/topic/cubit/topic_list_cubit.dart';
 import 'package:viovid_app/features/topic/dtos/topic.dart';
@@ -31,7 +32,11 @@ class _BrowseScreenState extends State<BrowseScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<TopicListCubit>().getTopicList();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        context.read<TopicListCubit>().getTopicList();
+      }
+    });
   }
 
   @override
@@ -77,20 +82,82 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
   Widget _buildInProgressBrowseWidget() {
     return const Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircularProgressIndicator(),
-          Gap(14),
-          Text(
-            'Đang tải dữ liệu',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                SkeletonLoading(height: 450),
+                Positioned(
+                  bottom: 20,
+                  left: 0,
+                  right: 0,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SkeletonLoading(
+                        width: 240,
+                        height: 54,
+                      ),
+                      Gap(4),
+                      SkeletonLoading(
+                        width: 200,
+                        height: 20,
+                      ),
+                      Gap(14),
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Gap(20),
+                          Expanded(
+                            child: SkeletonLoading(
+                              height: 48,
+                            ),
+                          ),
+                          Gap(20),
+                          Expanded(
+                            child: SkeletonLoading(
+                              height: 48,
+                            ),
+                          ),
+                          Gap(20),
+                        ],
+                      )
+                    ],
+                  ),
+                )
+              ],
             ),
-          ),
-        ],
+            Padding(
+              padding: EdgeInsets.only(left: 12, top: 16, bottom: 6),
+              child: SkeletonLoading(
+                width: 120,
+                height: 30,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 12),
+              child: SkeletonLoading(
+                height: 180,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 12, top: 16, bottom: 6),
+              child: SkeletonLoading(
+                width: 120,
+                height: 30,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 12),
+              child: SkeletonLoading(
+                height: 180,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

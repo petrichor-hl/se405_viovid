@@ -18,7 +18,7 @@ class _ContentHeaderState extends State<ContentHeader> {
       alignment: Alignment.center,
       children: [
         Container(
-          height: 500,
+          height: 450,
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage(Assets.sintel),
@@ -27,7 +27,7 @@ class _ContentHeaderState extends State<ContentHeader> {
           ),
         ),
         Container(
-          height: 500,
+          height: 450,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -62,7 +62,7 @@ class _ContentHeaderState extends State<ContentHeader> {
                 height: 14,
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
                 children: [
                   const SizedBox(width: 20),
                   Expanded(
