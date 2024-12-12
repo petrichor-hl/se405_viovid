@@ -272,7 +272,7 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
                       .replaceFirst(':id', person.films[index].filmId),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(4),
                   child: Image.network(
                     person.films[index].posterPath,
                   ),

@@ -40,7 +40,7 @@ class MyListScreen extends StatelessWidget {
                           .replaceFirst(':id', state.films[index].filmId),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(4),
                       child: Image.network(
                         state.films[index].posterPath,
                       ),

@@ -4,16 +4,20 @@ import 'package:viovid_app/config/api.config.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_api_service.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
+import 'package:viovid_app/features/films_by_genre/cubit/films_by_genre_cubit.dart';
+import 'package:viovid_app/features/films_by_genre/data/films_by_genre_api_service.dart';
+import 'package:viovid_app/features/films_by_genre/data/films_by_genre_repository.dart';
 import 'package:viovid_app/features/person_detail/cubit/person_detail_cubit.dart';
 import 'package:viovid_app/features/person_detail/data/person_detail_api_service.dart';
 import 'package:viovid_app/features/person_detail/data/person_detail_repository.dart';
 import 'package:viovid_app/screens/auth/auth.screen.dart';
 import 'package:viovid_app/screens/film_detail/film_detail.screen.dart';
+import 'package:viovid_app/screens/films_by_genre/films_by_genre.screen.dart';
 import 'package:viovid_app/screens/main/bottom_nav.dart';
 import 'package:viovid_app/screens/my_list/my_list.screen.dart';
 import 'package:viovid_app/screens/onboarding/onboarding.screen.dart';
 import 'package:viovid_app/screens/person_detail/person_detail.screen.dart';
-import 'package:viovid_app/screens/splash.screen.dart';
+import 'package:viovid_app/screens/spash/splash.screen.dart';
 
 class RouteName {
   static const String splash = '/';
@@ -23,6 +27,7 @@ class RouteName {
   static const String filmDetail = '/film-detail/:id';
   static const String myList = '/my-list';
   static const String person = '/person/:id';
+  static const String genre = '/genre/:id';
 }
 
 GoRouter appRouter = GoRouter(
@@ -77,6 +82,27 @@ GoRouter appRouter = GoRouter(
             ),
           ),
           child: PersonDetailScreen(personId: personId),
+        );
+      },
+    ),
+    GoRoute(
+      path: RouteName.genre,
+      builder: (ctx, state) {
+        final genreId = state.pathParameters['id']!;
+        final extra = state.extra
+            as Map<String, dynamic>; // Cast extra to Map<String, dynamic>
+        final genreName = extra['genre_name'] as String; // Handle null safety
+
+        return BlocProvider(
+          create: (context) => FilmsByGenreCubit(
+            FilmsByGenreRepository(
+              filmsByGenreApiService: FilmsByGenreApiService(dio),
+            ),
+          ),
+          child: FilmsByGenreScreen(
+            genreId: genreId,
+            genreName: genreName,
+          ),
         );
       },
     ),

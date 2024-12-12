@@ -78,7 +78,7 @@ class _CastTabState extends State<CastTab> {
       ),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(4),
           color: Colors.black,
           border: Border.all(color: const Color.fromARGB(40, 255, 255, 255)),
         ),

@@ -155,7 +155,7 @@ class _SignInState extends State<SignInScreen> {
                 onTap: () {
                   context.read<AuthBloc>().add(AuthLogout());
                 },
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(4),
                 child: const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                   child: Text(

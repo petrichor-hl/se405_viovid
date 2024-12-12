@@ -139,7 +139,7 @@ class _SignInState extends State<SignUpScreen> {
                 alignment: Alignment.bottomRight,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(4),
                     child: Image.network(
                       'https://kpaxjjmelbqpllxenpxz.supabase.co/storage/v1/object/public/avatar/default_avt.png',
                       height: 150,
