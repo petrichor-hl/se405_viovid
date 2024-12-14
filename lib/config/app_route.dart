@@ -10,7 +10,11 @@ import 'package:viovid_app/features/films_by_genre/data/films_by_genre_repositor
 import 'package:viovid_app/features/person_detail/cubit/person_detail_cubit.dart';
 import 'package:viovid_app/features/person_detail/data/person_detail_api_service.dart';
 import 'package:viovid_app/features/person_detail/data/person_detail_repository.dart';
+import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/features/user_profile/data/user_profile_api_service.dart';
+import 'package:viovid_app/features/user_profile/data/user_profile_repository.dart';
 import 'package:viovid_app/screens/auth/auth.screen.dart';
+import 'package:viovid_app/screens/change_password/change_password.screen.dart';
 import 'package:viovid_app/screens/film_detail/film_detail.screen.dart';
 import 'package:viovid_app/screens/films_by_genre/films_by_genre.screen.dart';
 import 'package:viovid_app/screens/main/bottom_nav.dart';
@@ -28,6 +32,7 @@ class RouteName {
   static const String myList = '/my-list';
   static const String person = '/person/:id';
   static const String genre = '/genre/:id';
+  static const String changePassword = '/change-password';
 }
 
 GoRouter appRouter = GoRouter(
@@ -103,6 +108,19 @@ GoRouter appRouter = GoRouter(
             genreId: genreId,
             genreName: genreName,
           ),
+        );
+      },
+    ),
+    GoRoute(
+      path: RouteName.changePassword,
+      builder: (ctx, state) {
+        return BlocProvider(
+          create: (context) => UserProfileCubit(
+            UserProfileRepository(
+              userProfileApiService: UserProfileApiService(dio),
+            ),
+          ),
+          child: const ChangePasswordScreen(),
         );
       },
     ),

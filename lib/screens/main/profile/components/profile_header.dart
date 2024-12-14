@@ -26,7 +26,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             height: 150,
             child: CachedNetworkImage(
               imageUrl:
-                  '${context.read<UserProfileCubit>().state?.avatar}?t=${DateTime.now()}',
+                  '${context.read<UserProfileCubit>().state.userProfile?.avatar}?t=${DateTime.now()}',
               fit: BoxFit.cover,
               // fadeInDuration: là thời gian xuất hiện của Image khi đã load xong
               fadeInDuration: const Duration(milliseconds: 400),
@@ -44,7 +44,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
         ),
         const Gap(12),
         Text(
-          '${context.read<UserProfileCubit>().state?.name}',
+          '${context.read<UserProfileCubit>().state.userProfile?.name}',
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             color: Colors.white,
@@ -53,7 +53,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
           ),
         ),
         Text(
-          '${context.read<UserProfileCubit>().state?.email}',
+          '${context.read<UserProfileCubit>().state.userProfile?.email}',
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             color: Colors.white,

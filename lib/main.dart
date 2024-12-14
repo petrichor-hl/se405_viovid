@@ -72,6 +72,7 @@ class MyApp extends StatelessWidget {
         routerConfig: appRouter,
         title: 'Movie App',
         theme: ThemeData(
+          appBarTheme: appBarTheme,
           colorScheme: appColorScheme,
           filledButtonTheme: appFilledButtonTheme,
           textTheme: GoogleFonts.montserratTextTheme(),

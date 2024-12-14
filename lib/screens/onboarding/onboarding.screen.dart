@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -115,6 +117,7 @@ class _OnboardingState extends State<OnboardingScreen> {
                       ),
                     ),
                   ),
+                  if (MediaQuery.of(context).padding.bottom == 0) const Gap(20)
                 ],
               ),
             ),

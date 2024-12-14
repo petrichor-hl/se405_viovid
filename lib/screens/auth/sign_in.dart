@@ -130,7 +130,7 @@ class _SignInState extends State<SignInScreen> {
                 },
               ),
               const Gap(12),
-              _PasswordTextField(passwordController: _passwordController),
+              PasswordTextField(passwordController: _passwordController),
               const Gap(20),
               SizedBox(
                 width: double.infinity,
@@ -200,15 +200,21 @@ class _SignInState extends State<SignInScreen> {
   }
 }
 
-class _PasswordTextField extends StatefulWidget {
-  const _PasswordTextField({required this.passwordController});
+class PasswordTextField extends StatefulWidget {
+  const PasswordTextField({
+    super.key,
+    this.hintText,
+    required this.passwordController,
+  });
+
+  final String? hintText;
   final TextEditingController passwordController;
 
   @override
-  State<_PasswordTextField> createState() => _PasswordTextFieldState();
+  State<PasswordTextField> createState() => _PasswordTextFieldState();
 }
 
-class _PasswordTextFieldState extends State<_PasswordTextField> {
+class _PasswordTextFieldState extends State<PasswordTextField> {
   bool _isShowPassword = false;
 
   @override
@@ -218,7 +224,7 @@ class _PasswordTextFieldState extends State<_PasswordTextField> {
       decoration: InputDecoration(
         filled: true,
         fillColor: const Color.fromARGB(255, 51, 51, 51),
-        hintText: 'Mật khẩu',
+        hintText: widget.hintText ?? 'Mật khẩu',
         hintStyle: const TextStyle(color: Color(0xFFACACAC)),
         errorStyle: const TextStyle(
           fontSize: 14,

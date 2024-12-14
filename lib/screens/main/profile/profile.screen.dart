@@ -76,10 +76,10 @@ class ProfileScreen extends StatelessWidget {
           ProfileSettingItem(
             title: 'Đổi mật khẩu',
             iconData: Icons.password_rounded,
-            onTap: () {},
+            onTap: () => context.push(RouteName.changePassword),
           ),
           ProfileSettingItem(
-            title: 'Đã tải xuống',
+            title: 'Lịch sử thanh toán',
             iconData: Icons.download_done_rounded,
             onTap: () {},
           ),

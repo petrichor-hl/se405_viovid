@@ -6,6 +6,12 @@ final appColorScheme = ColorScheme.fromSwatch().copyWith(
   primary: primaryColor,
 );
 
+const appBarTheme = AppBarTheme(
+  backgroundColor: Colors.black,
+  foregroundColor: Colors.white,
+  centerTitle: true,
+);
+
 final appFilledButtonTheme = FilledButtonThemeData(
   style: ButtonStyle(
     backgroundColor: const WidgetStatePropertyAll(
