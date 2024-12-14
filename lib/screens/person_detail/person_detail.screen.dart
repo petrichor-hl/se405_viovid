@@ -50,7 +50,10 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
       ),
       body: SingleChildScrollViewWithColumn(
         // padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: personDetailWidget,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: personDetailWidget,
+        ),
       ),
     );
   }
@@ -62,13 +65,11 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
         SizedBox(
           height: 240,
           child: Row(
+            spacing: 20,
             children: [
               SkeletonLoading(
                 height: 240,
                 width: 160,
-              ),
-              SizedBox(
-                width: 24,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -100,6 +101,7 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
         SizedBox(
           height: 240,
           child: Row(
+            spacing: 20,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
@@ -107,7 +109,9 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
                 child: person.profilePath != null
                     ? Image.network(
                         person.profilePath!,
+                        height: 240,
                         width: 160,
+                        fit: BoxFit.cover,
                       )
                     : const SizedBox(
                         width: 160,
@@ -117,9 +121,6 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
                           size: 48,
                         ),
                       ),
-              ),
-              const SizedBox(
-                width: 24,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
