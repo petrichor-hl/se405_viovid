@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viovid_app/base/common_variables.dart';
 import 'package:viovid_app/config/styles.config.dart';
-import 'package:viovid_app/main.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -25,82 +23,82 @@ class _SignInState extends State<SignUpScreen> {
   String _errorText = '';
 
   void _signUpAccount() async {
-    final isValid = _formKey.currentState!.validate();
+    // final isValid = _formKey.currentState!.validate();
 
-    if (!isValid) {
-      return;
-    }
+    // if (!isValid) {
+    //   return;
+    // }
 
-    _errorText = '';
+    // _errorText = '';
 
-    setState(() {
-      _isProcessing = true;
-    });
+    // setState(() {
+    //   _isProcessing = true;
+    // });
 
-    final enteredUsername = _usernameControllber.text;
-    final enteredDob = _dobController.text;
-    final enteredEmail = _emailController.text;
-    final enteredPassword = _passwordController.text;
+    // final enteredUsername = _usernameControllber.text;
+    // final enteredDob = _dobController.text;
+    // final enteredEmail = _emailController.text;
+    // final enteredPassword = _passwordController.text;
 
     // print(_dobController.text);
 
-    try {
-      final List<Map<String, dynamic>> checkDuplicate = await supabase
-          .from('profile')
-          .select('email')
-          .eq('email', enteredEmail);
+    //   try {
+    //     // final List<Map<String, dynamic>> checkDuplicate = await supabase
+    //     //     .from('profile')
+    //     //     .select('email')
+    //     //     .eq('email', enteredEmail);
 
-      if (checkDuplicate.isEmpty) {
-        // await supabase.auth.signUp(
-        //   email: enteredEmail,
-        //   password: enteredPassword,
-        //   emailRedirectTo: 'http://localhost:5416/#/cofirmed-sign-up',
-        //   data: {
-        //     'email': enteredEmail,
-        //     'password': enteredPassword,
-        //     'full_name': enteredUsername,
-        //     'dob': enteredDob,
-        //     'avatar_url': 'default_avt.png',
-        //   },
-        // );
+    //     if (checkDuplicate.isEmpty) {
+    //       // await supabase.auth.signUp(
+    //       //   email: enteredEmail,
+    //       //   password: enteredPassword,
+    //       //   emailRedirectTo: 'http://localhost:5416/#/cofirmed-sign-up',
+    //       //   data: {
+    //       //     'email': enteredEmail,
+    //       //     'password': enteredPassword,
+    //       //     'full_name': enteredUsername,
+    //       //     'dob': enteredDob,
+    //       //     'avatar_url': 'default_avt.png',
+    //       //   },
+    //       // );
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Xác thực Email trong Hộp thư đến.'),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
-      } else {
-        _errorText = 'Email $enteredEmail đã tồn tại.';
-      }
-    } on AuthException catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error.message),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Có lỗi xảy ra, vui lòng thử lại.'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    }
+    //       if (mounted) {
+    //         ScaffoldMessenger.of(context).showSnackBar(
+    //           const SnackBar(
+    //             content: Text('Xác thực Email trong Hộp thư đến.'),
+    //             behavior: SnackBarBehavior.floating,
+    //           ),
+    //         );
+    //       }
+    //     } else {
+    //       _errorText = 'Email $enteredEmail đã tồn tại.';
+    //     }
+    //   } on AuthException catch (error) {
+    //     if (mounted) {
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(
+    //           content: Text(error.message),
+    //           behavior: SnackBarBehavior.floating,
+    //         ),
+    //       );
+    //     }
+    //   } catch (error) {
+    //     if (mounted) {
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(
+    //           content: const Text('Có lỗi xảy ra, vui lòng thử lại.'),
+    //           backgroundColor: Theme.of(context).colorScheme.error,
+    //           duration: const Duration(seconds: 2),
+    //         ),
+    //       );
+    //     }
+    //   }
 
-    if (mounted) {
-      setState(() {
-        _isProcessing = false;
-      });
-    }
+    //   if (mounted) {
+    //     setState(() {
+    //       _isProcessing = false;
+    //     });
+    //   }
   }
 
   Future<void> _openDatePicker(BuildContext context) async {

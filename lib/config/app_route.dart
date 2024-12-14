@@ -13,6 +13,7 @@ import 'package:viovid_app/features/person_detail/data/person_detail_repository.
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_api_service.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_repository.dart';
+import 'package:viovid_app/features/video_player/cubit/video_player_cubit.dart';
 import 'package:viovid_app/screens/auth/auth.screen.dart';
 import 'package:viovid_app/screens/change_password/change_password.screen.dart';
 import 'package:viovid_app/screens/film_detail/film_detail.screen.dart';
@@ -22,6 +23,7 @@ import 'package:viovid_app/screens/my_list/my_list.screen.dart';
 import 'package:viovid_app/screens/onboarding/onboarding.screen.dart';
 import 'package:viovid_app/screens/person_detail/person_detail.screen.dart';
 import 'package:viovid_app/screens/spash/splash.screen.dart';
+import 'package:viovid_app/screens/video_player/video_player.screen.dart';
 
 class RouteName {
   static const String splash = '/';
@@ -29,6 +31,7 @@ class RouteName {
   static const String auth = '/auth';
   static const String bottomNav = '/bottom-nav';
   static const String filmDetail = '/film-detail/:id';
+  static const String watching = '/watching';
   static const String myList = '/my-list';
   static const String person = '/person/:id';
   static const String genre = '/genre/:id';
@@ -71,6 +74,23 @@ GoRouter appRouter = GoRouter(
           ),
         );
       },
+      routes: [
+        GoRoute(
+          path: RouteName.watching,
+          builder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>?;
+            return BlocProvider(
+              create: (ctx) => VideoPlayerCubit(),
+              child: VideoPlayerScreen(
+                // key: ValueKey(episodeId),
+                filmName: extra!['filmName'],
+                seasons: extra['seasons'],
+                firstEpisodeIdToPlay: extra['firstEpisodeIdToPlay'],
+              ),
+            );
+          },
+        ),
+      ],
     ),
     GoRoute(
       path: RouteName.myList,

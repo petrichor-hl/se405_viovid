@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:viovid_app/config/api.config.dart';
 import 'package:viovid_app/config/app_route.dart';
@@ -32,7 +31,6 @@ void main() async {
 }
 
 // const openAIApiKey = String.fromEnvironment('OPEN_AI_API_KEY');
-final supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key, required this.sharedPreferences});

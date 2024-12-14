@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:viovid_app/base/components/skeleton_loading.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
-import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
-import 'package:viovid_app/features/film_detail/data/season_cache.dart';
-import 'package:viovid_app/features/film_detail/dtos/episode.dart';
-import 'package:viovid_app/features/result_type.dart';
 import 'package:viovid_app/screens/film_detail/components/horizontal_episode.dart';
 
 class SeasonTab extends StatefulWidget {
@@ -24,147 +18,84 @@ class _SeasonTabState extends State<SeasonTab> {
     _ => null,
   })!;
 
-  int _selectedSeasonIndex = 0;
-  final episodes = <Episode>[];
-
-  bool _isLoading = false;
-
-  Future<void> _getSeasonInfo() async {
-    final seasonCache = context.read<SeasonCache>().seasons;
-
-    final seasonId = _film.seasons[_selectedSeasonIndex].id;
-    final episodeCache = seasonCache[seasonId];
-
-    if (episodeCache != null) {
-      setState(() {
-        episodes.clear();
-        episodes.addAll(episodeCache);
-      });
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    final result = await context.read<FilmDetailRepository>().getSeasonById(
-          _film.filmId,
-          seasonId,
-        );
-
-    switch (result) {
-      case Success():
-        episodes.clear();
-        episodes.addAll(result.data.episodes);
-        seasonCache[seasonId] = result.data.episodes;
-        break;
-      case Failure():
-        // TODO: Handle Exception
-        break;
-    }
-
-    if (mounted) {
-      /* 
-      Phòng trường hợp:
-      Đang load dữ liệu mà người dùng chuyển sang tab khác
-      => Lúc này widget không còn tồn tại
-      => Nếu setState được gọi sẽ báo lỗi
-      */
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
+  int _currentSeasonIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _getSeasonInfo();
+    // _getSeasonInfo();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-        ? const Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SkeletonLoading(width: 160, height: 24),
-              Gap(8),
-              SkeletonLoading(width: double.infinity, height: 198),
-              Gap(14),
-              SkeletonLoading(width: double.infinity, height: 198),
-              Gap(14),
-              SkeletonLoading(width: double.infinity, height: 198),
-              Gap(14),
-            ],
-          )
-        : Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: DropdownButton(
-                  padding: const EdgeInsets.only(left: 8),
-                  value: _selectedSeasonIndex,
-                  dropdownColor: const Color.fromARGB(255, 33, 33, 33),
-                  style: GoogleFonts.montserrat(fontSize: 16),
-                  isDense: true,
-                  items: List.generate(
-                    _film.seasons.length,
-                    (index) => DropdownMenuItem(
-                      value: index,
-                      child: Text(
-                        _film.seasons[index].name,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: PopupMenuButton(
+                position: PopupMenuPosition.under,
+                offset: const Offset(0, 4),
+                itemBuilder: (ctx) => List.generate(
+                  _film.seasons.length,
+                  (index) => PopupMenuItem(
+                    onTap: () {
+                      setState(() {
+                        _currentSeasonIndex = index;
+                      });
+                    },
+                    child: Text(
+                      _film.seasons[index].name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  onChanged: (value) {
-                    if (value != null && value != _selectedSeasonIndex) {
-                      setState(() {
-                        _selectedSeasonIndex = value;
-                      });
-                      _getSeasonInfo();
-                    }
-                  },
+                ),
+                borderRadius: BorderRadius.circular(4),
+                color: const Color(0xFF333333),
+                tooltip: '',
+                child: Ink(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF333333),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
+                  child: Row(
+                    spacing: 4,
+                    children: [
+                      const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.white,
+                      ),
+                      Text(
+                        _film.seasons[_currentSeasonIndex].name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const Gap(8),
-              ...episodes.map(
-                (episode) {
-                  // print('episode_id = ${e['id']}');
-                  return HorizontalEpisode(
-                    key: ValueKey(episode.id),
-                    episode: episode,
-                    // isEpisodeDownloaded:
-                    //     widget.downloadedEpisodeIds.contains(e.episodeId),
-                    // watchEpisode: () {
-                    //   Navigator.of(context).push(
-                    //     MaterialPageRoute(
-                    //       builder: (ctx) => MultiBlocProvider(
-                    //         providers: [
-                    //           BlocProvider(
-                    //             create: (ctx) => VideoSliderCubit(),
-                    //           ),
-                    //           BlocProvider(
-                    //             create: (ctx) => VideoPlayControlCubit(),
-                    //           ),
-                    //         ],
-                    //         child: VideoPlayerView(
-                    //           filmId: offlineData['film_id'],
-                    //           seasons: widget.seasons,
-                    //           downloadedEpisodeIds: widget.downloadedEpisodeIds,
-                    //           firstEpisodeToPlay: e,
-                    //           firstSeasonIndex: selectedSeason,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   );
-                    // },
-                  );
-                },
-              ),
-            ],
-          );
+            ),
+          ],
+        ),
+        const Gap(8),
+        ..._film.seasons[_currentSeasonIndex].episodes.map(
+          (episode) {
+            // print('episode_id = ${e['id']}');
+            return HorizontalEpisode(
+              key: ValueKey(episode.id),
+              episode: episode,
+            );
+          },
+        ),
+      ],
+    );
   }
 }

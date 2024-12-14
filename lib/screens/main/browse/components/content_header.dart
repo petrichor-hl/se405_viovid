@@ -71,6 +71,7 @@ class _ContentHeaderState extends State<ContentHeader> {
                       icon: const Icon(
                         Icons.play_arrow_rounded,
                         size: 30,
+                        color: Colors.black,
                       ),
                       label: const Text(
                         'Phát',

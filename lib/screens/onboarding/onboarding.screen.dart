@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -117,7 +117,12 @@ class _OnboardingState extends State<OnboardingScreen> {
                       ),
                     ),
                   ),
-                  if (MediaQuery.of(context).padding.bottom == 0) const Gap(20)
+                  Gap(
+                    max(
+                      MediaQuery.of(context).padding.bottom,
+                      20,
+                    ),
+                  )
                 ],
               ),
             ),

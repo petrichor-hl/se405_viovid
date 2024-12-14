@@ -9,7 +9,6 @@ import 'package:viovid_app/features/film_detail/cubit/casts/casts_cubit.dart';
 import 'package:viovid_app/features/film_detail/cubit/crews/crews_cubit.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
-import 'package:viovid_app/features/film_detail/data/season_cache.dart';
 import 'package:viovid_app/features/film_detail/dtos/film.dart';
 import 'package:viovid_app/features/my_list/cubit/my_list_cubit.dart';
 import 'package:viovid_app/screens/film_detail/components/bottom_tabs.dart';
@@ -269,48 +268,38 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                 //   );
                 // }),
                 const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: IconButton.filled(
-                    onPressed: () {
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //     builder: (ctx) => MultiBlocProvider(
-                      //       providers: [
-                      //         BlocProvider(
-                      //           create: (ctx) => VideoSliderCubit(),
-                      //         ),
-                      //         BlocProvider(
-                      //           create: (ctx) => VideoPlayControlCubit(),
-                      //         ),
-                      //       ],
-                      //       child: VideoPlayerView(
-                      //         filmId: film.id,
-                      //         seasons: film.seasons,
-                      //         downloadedEpisodeIds: _downloadedEpisodeIds,
-                      //         firstEpisodeToPlay: film.seasons[0].episodes[0],
-                      //         firstSeasonIndex: 0,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // );
-                    },
-                    icon: const Icon(
-                      Icons.play_arrow_rounded,
-                      size: 32,
-                    ),
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8,
+                // isMovie
+                if (film.seasons[0].name == '')
+                  SizedBox(
+                    width: double.infinity,
+                    child: IconButton.filled(
+                      onPressed: () {
+                        context.push(
+                          '${GoRouterState.of(context).uri}/watching',
+                          extra: {
+                            'filmName': film.name,
+                            'seasons': film.seasons,
+                            'firstEpisodeIdToPlay':
+                                film.seasons[0].episodes[0].id,
+                          },
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.play_arrow_rounded,
+                        size: 32,
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Colors.white,
                       ),
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
                     ),
                   ),
-                ),
                 // if (isMovie)
                 //   DownloadButton(
                 //     firstEpisodeId: film.seasons[0].episodes[0].episodeId,
@@ -381,24 +370,21 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          RepositoryProvider(
-            create: (ctx) => SeasonCache(),
-            child: MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                  create: (ctx) => CastsCubit(
-                    ctx.read<FilmDetailRepository>(),
-                  ),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (ctx) => CastsCubit(
+                  ctx.read<FilmDetailRepository>(),
                 ),
-                BlocProvider(
-                  create: (ctx) => CrewsCubit(
-                    ctx.read<FilmDetailRepository>(),
-                  ),
+              ),
+              BlocProvider(
+                create: (ctx) => CrewsCubit(
+                  ctx.read<FilmDetailRepository>(),
                 ),
-              ],
-              child: const BottomTabs(),
-            ),
-          ),
+              ),
+            ],
+            child: const BottomTabs(),
+          )
         ],
       ),
     );
