@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "239242608213",
+    "project_id": "viovid-fe752",
+    "storage_bucket": "viovid-fe752.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239242608213:android:0abd2343a7fb9a6d4e1edc",
+        "android_client_info": {
+          "package_name": "com.example.viovid_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJpAU_YxV2PwbVxdUYAa_nTRk7ed9OiUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
