@@ -117,12 +117,7 @@ class _OnboardingState extends State<OnboardingScreen> {
                       ),
                     ),
                   ),
-                  Gap(
-                    max(
-                      MediaQuery.of(context).padding.bottom,
-                      20,
-                    ),
-                  )
+                  const Gap(20)
                 ],
               ),
             ),

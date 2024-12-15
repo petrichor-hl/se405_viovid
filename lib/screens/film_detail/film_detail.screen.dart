@@ -11,6 +11,9 @@ import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cu
 import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
 import 'package:viovid_app/features/film_detail/dtos/film.dart';
 import 'package:viovid_app/features/my_list/cubit/my_list_cubit.dart';
+import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/features/user_profile/cubit/user_profile_state.dart';
+import 'package:viovid_app/features/user_profile/dtos/tracking_progress.dart';
 import 'package:viovid_app/screens/film_detail/components/bottom_tabs.dart';
 import 'package:viovid_app/screens/film_detail/components/favorite_button.dart';
 
@@ -167,24 +170,54 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
               Positioned(
                 bottom: 10,
                 left: 10,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: Colors.black,
-                    border: Border.all(
-                      width: 1,
-                      color: Colors.white,
+                right: 10,
+                child: Column(
+                  spacing: 8,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 6, horizontal: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: Colors.black,
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.white,
+                        ),
+                      ),
+                      child: Text(
+                        film.contentRating,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    film.contentRating,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                    if (film.seasons[0].name == '')
+                      BlocBuilder<UserProfileCubit, UserProfileState>(
+                        buildWhen: (previous, current) =>
+                            current.userTrackingProgress?[
+                                film.seasons[0].episodes[0].id] !=
+                            null,
+                        builder: (context, state) {
+                          final episode = film.seasons[0].episodes[0];
+                          final currentProgress =
+                              state.userTrackingProgress?[episode.id] ?? 0;
+                          return Positioned(
+                            bottom: 4,
+                            left: 4,
+                            right: 4,
+                            child: LinearProgressIndicator(
+                              value: currentProgress / episode.duration,
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: BorderRadius.circular(2),
+                              backgroundColor: Colors.white54,
+                            ),
+                          );
+                        },
+                      ),
+                  ],
                 ),
               )
             ],
@@ -273,16 +306,29 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: IconButton.filled(
-                      onPressed: () {
-                        context.push(
+                      onPressed: () async {
+                        final TrackingProgress? trackingProgress =
+                            await context.push(
                           '${GoRouterState.of(context).uri}/watching',
                           extra: {
                             'filmName': film.name,
                             'seasons': film.seasons,
                             'firstEpisodeIdToPlay':
                                 film.seasons[0].episodes[0].id,
+                            'initProgress': context
+                                    .read<UserProfileCubit>()
+                                    .state
+                                    .userTrackingProgress?[
+                                film.seasons[0].episodes[0].id]
                           },
                         );
+
+                        if (trackingProgress != null) {
+                          // ignore: use_build_context_synchronously
+                          context
+                              .read<UserProfileCubit>()
+                              .updateTrackingProgress(trackingProgress);
+                        }
                       },
                       icon: const Icon(
                         Icons.play_arrow_rounded,

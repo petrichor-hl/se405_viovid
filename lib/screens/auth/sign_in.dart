@@ -49,7 +49,8 @@ class _SignInState extends State<SignInScreen> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (ctx, state) async {
         if (state is AuthLoginSuccess) {
-          ctx.read<UserProfileCubit>().getUserProfile();
+          await ctx.read<UserProfileCubit>().getUserProfile();
+          await ctx.read<UserProfileCubit>().getTrackingProgress();
           await ctx.read<MyListCubit>().getMyList();
           ctx.go(RouteName.bottomNav);
         }

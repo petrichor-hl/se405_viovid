@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:viovid_app/features/api_client.dart';
 import 'package:viovid_app/features/user_profile/dtos/change_password_dto.dart';
+import 'package:viovid_app/features/user_profile/dtos/tracking_progress.dart';
 import 'package:viovid_app/features/user_profile/dtos/user_profile.dart';
 
 class UserProfileApiService {
@@ -14,6 +15,41 @@ class UserProfileApiService {
         url: '/User/profile',
         method: ApiMethod.get,
         fromJson: (resultJson) => UserProfile.fromJson(resultJson),
+      );
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw Exception(e.response!.data['Errors'][0]['Message']);
+      } else {
+        throw Exception(e.message);
+      }
+    }
+  }
+
+  Future<List<TrackingProgress>> getTrackingProgress() async {
+    try {
+      return await ApiClient(dio).request<void, List<TrackingProgress>>(
+        url: '/User/tracking-progress',
+        method: ApiMethod.get,
+        fromJson: (resultJson) => (resultJson as List)
+            .map((trackingProgress) =>
+                TrackingProgress.fromJson(trackingProgress))
+            .toList(),
+      );
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw Exception(e.response!.data['Errors'][0]['Message']);
+      } else {
+        throw Exception(e.message);
+      }
+    }
+  }
+
+  Future<bool> updateTrackingProgress(TrackingProgress trackingProgress) async {
+    try {
+      return await ApiClient(dio).request<TrackingProgress, bool>(
+        url: '/User/tracking-progress',
+        payload: trackingProgress,
+        method: ApiMethod.post,
       );
     } on DioException catch (e) {
       if (e.response != null) {

@@ -55,6 +55,7 @@ dependencies:
   wakelock_plus: ^1.2.8
   shared_preferences: ^2.3.3
   jwt_decoder: ^2.0.1
+  sqflite: ^2.4.1
 
 dev_dependencies:
   flutter_test:

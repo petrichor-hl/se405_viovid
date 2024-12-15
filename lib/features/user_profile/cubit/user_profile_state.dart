@@ -4,12 +4,14 @@ class UserProfileState {
   final bool isLoadingUserProfile;
   final bool isLoadingChangePassword;
   final UserProfile? userProfile;
+  final Map<String, int>? userTrackingProgress;
   final String? errorMessage;
 
   UserProfileState({
     this.isLoadingUserProfile = false,
     this.isLoadingChangePassword = false,
     this.userProfile,
+    this.userTrackingProgress,
     this.errorMessage,
   });
 
@@ -17,6 +19,7 @@ class UserProfileState {
     bool? isLoadingUserProfile,
     bool? isLoadingChangePassword,
     UserProfile? userProfile,
+    Map<String, int>? userTrackingProgress,
     String? errorMessage,
   }) {
     return UserProfileState(
@@ -24,6 +27,7 @@ class UserProfileState {
       isLoadingChangePassword:
           isLoadingChangePassword ?? this.isLoadingChangePassword,
       userProfile: userProfile ?? this.userProfile,
+      userTrackingProgress: userTrackingProgress ?? this.userTrackingProgress,
       errorMessage: errorMessage,
     );
   }

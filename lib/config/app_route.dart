@@ -86,6 +86,7 @@ GoRouter appRouter = GoRouter(
                 filmName: extra!['filmName'],
                 seasons: extra['seasons'],
                 firstEpisodeIdToPlay: extra['firstEpisodeIdToPlay'],
+                initProgress: extra['initProgress'],
               ),
             );
           },

@@ -63,20 +63,20 @@ class _SeasonTabState extends State<SeasonTab> {
                     color: const Color(0xFF333333),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
                   child: Row(
                     spacing: 4,
                     children: [
-                      const Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.white,
-                      ),
                       Text(
                         _film.seasons[_currentSeasonIndex].name,
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+                      const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.white,
                       ),
                     ],
                   ),
@@ -88,7 +88,6 @@ class _SeasonTabState extends State<SeasonTab> {
         const Gap(8),
         ..._film.seasons[_currentSeasonIndex].episodes.map(
           (episode) {
-            // print('episode_id = ${e['id']}');
             return HorizontalEpisode(
               key: ValueKey(episode.id),
               episode: episode,

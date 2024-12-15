@@ -1,9 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/features/film_detail/dtos/episode.dart';
+import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/features/user_profile/cubit/user_profile_state.dart';
+import 'package:viovid_app/features/user_profile/dtos/tracking_progress.dart';
 
 class HorizontalEpisode extends StatelessWidget {
   const HorizontalEpisode({super.key, required this.episode});
@@ -21,15 +25,26 @@ class HorizontalEpisode extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: InkWell(
-        onTap: () {
-          context.push(
+        onTap: () async {
+          final TrackingProgress? trackingProgress = await context.push(
             '${GoRouterState.of(context).uri}/watching',
             extra: {
               'filmName': film.name,
               'seasons': film.seasons,
-              'firstEpisodeIdToPlay': film.seasons[0].episodes[0].id,
+              'firstEpisodeIdToPlay': episode.id,
+              'initProgress': context
+                  .read<UserProfileCubit>()
+                  .state
+                  .userTrackingProgress?[episode.id]
             },
           );
+
+          if (trackingProgress != null) {
+            // ignore: use_build_context_synchronously
+            context
+                .read<UserProfileCubit>()
+                .updateTrackingProgress(trackingProgress);
+          }
         },
         splashColor: const Color.fromARGB(255, 52, 52, 52),
         // borderRadius: BorderRadius.circular(4),
@@ -40,15 +55,38 @@ class HorizontalEpisode extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    clipBehavior: Clip.antiAlias,
-                    child: Image.network(
-                      episode.stillPath,
-                      height: 80,
-                      width: 143,
-                      fit: BoxFit.cover,
-                    ),
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        clipBehavior: Clip.antiAlias,
+                        child: CachedNetworkImage(
+                          imageUrl: episode.stillPath,
+                          height: 80,
+                          width: 143,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      BlocBuilder<UserProfileCubit, UserProfileState>(
+                        buildWhen: (previous, current) =>
+                            current.userTrackingProgress?[episode.id] != null,
+                        builder: (context, state) {
+                          final currentProgress =
+                              state.userTrackingProgress?[episode.id] ?? 0;
+                          return Positioned(
+                            bottom: 8,
+                            left: 8,
+                            right: 8,
+                            child: LinearProgressIndicator(
+                              value: currentProgress / episode.duration,
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: BorderRadius.circular(2),
+                              backgroundColor: Colors.white54,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   Expanded(
                     child: Padding(

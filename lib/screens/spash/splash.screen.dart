@@ -39,6 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
         switch (state) {
           case AuthLoginSuccess():
             await ctx.read<UserProfileCubit>().getUserProfile();
+            await ctx.read<UserProfileCubit>().getTrackingProgress();
             await ctx.read<MyListCubit>().getMyList();
             ctx.go(RouteName.bottomNav);
             break;

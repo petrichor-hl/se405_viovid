@@ -11,6 +11,7 @@ import 'package:screen_brightness/screen_brightness.dart';
 import 'package:video_player/video_player.dart';
 import 'package:viovid_app/features/film_detail/dtos/episode.dart';
 import 'package:viovid_app/features/film_detail/dtos/season.dart';
+import 'package:viovid_app/features/user_profile/dtos/tracking_progress.dart';
 import 'package:viovid_app/features/video_player/cubit/video_player_cubit.dart';
 import 'package:viovid_app/features/video_player/cubit/video_player_state.dart';
 import 'package:viovid_app/screens/video_player/components/brightness_bar.dart';
@@ -25,11 +26,13 @@ class VideoPlayerScreen extends StatefulWidget {
     required this.filmName,
     required this.seasons,
     required this.firstEpisodeIdToPlay,
+    required this.initProgress,
   });
 
   final String filmName;
   final List<Season> seasons;
   final String firstEpisodeIdToPlay;
+  final int? initProgress;
 
   @override
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
@@ -87,12 +90,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
     _videoPlayerController.initialize().then((value) {
       _videoPlayerController.addListener(_onVideoPlayerPositionChanged);
-      setState(() {
-        _controlsOverlayVisible = true;
-      });
       _videoPlayerController
-          .play()
-          .then((_) => _startCountdownToDismissControls());
+          .seekTo(
+        Duration(seconds: widget.initProgress ?? 0),
+      )
+          .then((_) {
+        setState(() {
+          _controlsOverlayVisible = true;
+        });
+        _videoPlayerController
+            .play()
+            .then((_) => _startCountdownToDismissControls());
+      });
     });
   }
 
@@ -136,6 +145,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       DeviceOrientation.portraitUp,
     ]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+    // context.pop({
+    //   'episode_id':
+    //       widget.seasons[_currentSeasonIndex].episodes[_currentEpisodeIndex].id,
+    //   'progress': _videoPlayerController.value.position.inSeconds,
+    // });
 
     _videoPlayerController.dispose();
     _controlsTimer.cancel();
@@ -289,7 +304,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             : Icons.arrow_back_rounded,
                         color: Colors.white,
                       ),
-                      onPressed: () => context.pop(),
+                      onPressed: () => context.pop(
+                        TrackingProgress(
+                          progress:
+                              _videoPlayerController.value.position.inSeconds,
+                          episodeId: widget.seasons[_currentSeasonIndex]
+                              .episodes[_currentEpisodeIndex].id,
+                        ),
+                      ),
                     ),
                     Text(
                       widget.seasons[_currentSeasonIndex]

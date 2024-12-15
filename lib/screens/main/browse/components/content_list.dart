@@ -28,7 +28,7 @@ class ContentList extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: isBigger ? 360 : 180,
+          height: isBigger ? 270 : 180,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             scrollDirection: Axis.horizontal,
@@ -42,7 +42,7 @@ class ContentList extends StatelessWidget {
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: isBigger ? 240 : 120,
+                  width: isBigger ? 180 : 120,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(4),
                   ),
