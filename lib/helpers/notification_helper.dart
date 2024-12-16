@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class NotificationHelper {
@@ -10,6 +9,14 @@ class NotificationHelper {
 
     final fcmToken = await _firebaseMessaging.getToken();
     log('FCM Token = $fcmToken');
+
+    _firebaseMessaging.onTokenRefresh.listen((newFcmToken) {
+      // Lưu token mới lên server hoặc thực hiện các xử lý khác
+      log('NEW_FCM_TOKEN = $newFcmToken');
+    });
+
+    await FirebaseMessaging.instance.subscribeToTopic("NewFilm");
+    await FirebaseMessaging.instance.subscribeToTopic("NewCommentOnYourPost");
   }
 
   Future<void> requestNotificationPermission() async {

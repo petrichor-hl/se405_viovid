@@ -52,6 +52,12 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: context.canPop()
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.home_rounded),
+                onPressed: () => context.go(RouteName.bottomNav),
+              ),
         title: Image.asset(
           Assets.viovidLogo,
           width: 120,

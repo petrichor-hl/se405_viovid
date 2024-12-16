@@ -28,11 +28,12 @@ class Person {
       id: json['id'],
       name: json['name'],
       gender: json['gender'],
+      // popularity: (json['popularity'] as int).toDouble(),
       popularity: json['popularity'],
       profilePath: json['profilePath'],
       biography: json['biography'],
       knownForDepartment: json['knownForDepartment'],
-      dob: DateTime.parse(json['dob']),
+      dob: DateTime.tryParse(json['dob'] ?? ''),
       films: (json['films'] as List)
           .map((film) => SimpleFilm.fromJson(film))
           .toList(),

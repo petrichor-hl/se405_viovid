@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -17,7 +18,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  void _redirect() {
+  void _redirect() async {
     Future.delayed(const Duration(milliseconds: 700), () {
       if (mounted) {
         context.read<AuthBloc>().add(AuthCheckLocalStorage());
@@ -41,10 +42,25 @@ class _SplashScreenState extends State<SplashScreen> {
             await ctx.read<UserProfileCubit>().getUserProfile();
             await ctx.read<UserProfileCubit>().getTrackingProgress();
             await ctx.read<MyListCubit>().getMyList();
-            ctx.go(RouteName.bottomNav);
+            final initialMessage =
+                await FirebaseMessaging.instance.getInitialMessage();
+            if (initialMessage != null) {
+              if (initialMessage.data['type'] == 'NewFilm') {
+                appRouter.go(
+                  RouteName.filmDetail.replaceFirst(
+                    ':id',
+                    initialMessage.data['filmId'],
+                  ),
+                );
+              }
+
+              if (initialMessage.data['type'] == 'NewCommentOnYourPost') {}
+            } else {
+              appRouter.go(RouteName.bottomNav);
+            }
             break;
           case AuthUnauthenticated():
-            context.go(RouteName.onboarding);
+            ctx.go(RouteName.onboarding);
             break;
           default:
         }

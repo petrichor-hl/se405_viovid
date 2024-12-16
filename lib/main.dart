@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,20 +32,62 @@ void main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+
   // Ctrl + F5
   // flutter run --dart-define-from-file=lib/config/.env
-  runApp(MyApp(
-    sharedPreferences: sf,
-  ));
+
+  runApp(
+    MyApp(
+      sharedPreferences: sf,
+    ),
+  );
 }
 // const openAIApiKey = String.fromEnvironment('OPEN_AI_API_KEY');
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.sharedPreferences});
+class MyApp extends StatefulWidget {
+  // This widget is the root of your application.
+
+  const MyApp({
+    super.key,
+    required this.sharedPreferences,
+  });
 
   final SharedPreferences sharedPreferences;
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Xử lý khi app đang chạy ở trạng thái background
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+  }
+
+  void _handleNotification(RemoteMessage message) async {
+    // final data = message.data; // Dữ liệu của notification
+    log('RemoteMessage: ');
+    print(message.notification?.title);
+    print(message.notification?.body);
+    print(message.data);
+
+    if (message.data['type'] == 'NewFilm') {
+      appRouter.push(
+        RouteName.filmDetail.replaceFirst(
+          ':id',
+          message.data['filmId'],
+        ),
+      );
+    }
+
+    if (message.data['type'] == 'NewCommentOnYourPost') {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -52,7 +97,7 @@ class MyApp extends StatelessWidget {
             AuthRepository(
               authApiService: AuthApiService(dio),
               authLocalStorageService:
-                  AuthLocalStorageService(sharedPreferences),
+                  AuthLocalStorageService(widget.sharedPreferences),
             ),
           ),
         ),
