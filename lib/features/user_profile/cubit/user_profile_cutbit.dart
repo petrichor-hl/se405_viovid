@@ -58,27 +58,20 @@ class UserProfileCubit extends Cubit<UserProfileState> {
   }
 
   Future<void> updateTrackingProgress(TrackingProgress trackingProgress) async {
-    // emit(
-    //   state.copyWith(
-    //     isLoadingUserProfile: true,
-    //     errorMessage: null,
-    //   ),
-    // );
+    final newUserTrackingProgress = {
+      ...?state.userTrackingProgress,
+      trackingProgress.episodeId: trackingProgress.progress
+    };
+
+    emit(
+      state.copyWith(
+        userTrackingProgress: newUserTrackingProgress,
+      ),
+    );
     final result =
         await userProfileRepository.updateTrackingProgress(trackingProgress);
     switch (result) {
       case Success():
-        final newUserTrackingProgress = {
-          ...?state.userTrackingProgress,
-          trackingProgress.episodeId: trackingProgress.progress
-        };
-
-        emit(
-          state.copyWith(
-            // isLoadingUserProfile: false,
-            userTrackingProgress: newUserTrackingProgress,
-          ),
-        );
         break;
       case Failure():
         emit(

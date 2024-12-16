@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -161,8 +162,8 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
         children: [
           Stack(
             children: [
-              Image.network(
-                film.backdropPath,
+              CachedNetworkImage(
+                imageUrl: film.backdropPath,
                 width: double.infinity,
                 height: 9 / 16 * MediaQuery.sizeOf(context).width,
                 fit: BoxFit.cover,

@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,9 +17,14 @@ import 'package:viovid_app/features/my_list/data/my_list_repository.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_api_service.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_repository.dart';
+import 'package:viovid_app/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   final sf = await SharedPreferences.getInstance();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -29,7 +35,6 @@ void main() async {
     sharedPreferences: sf,
   ));
 }
-
 // const openAIApiKey = String.fromEnvironment('OPEN_AI_API_KEY');
 
 class MyApp extends StatelessWidget {
