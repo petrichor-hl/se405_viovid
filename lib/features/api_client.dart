@@ -14,7 +14,7 @@ class ApiClient {
 
   ApiClient(this.dio);
 
-  Future<ResponseType> request<RequestType, ResponseType>({
+  Future<TResponse> request<TRequest, TResponse>({
     required String url,
     required ApiMethod method,
     RequestType? payload, // POST, PUT

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:textfield_tags/textfield_tags.dart';
@@ -25,6 +24,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         _pickedImages.addAll(images.map((image) => File(image.path)));
       });
     }
+  }
+
+  void _createPost() {
+    final postData = {
+      'content': _postContentController.text,
+      'images': _pickedImages.map((file) => file.path).toList(),
+      'hashtags': _stringTagController.getTags,
+    };
+
+    // context.read<PostCubit>().createPost(postData);
   }
 
   @override
