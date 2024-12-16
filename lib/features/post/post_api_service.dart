@@ -1,29 +1,29 @@
 import 'package:dio/dio.dart';
 import 'package:viovid_app/features/api_client.dart';
 
-class ChannelApiService {
+class PostApiService {
   final Dio dio;
 
-  ChannelApiService(this.dio);
+  PostApiService(this.dio);
 
-  Future<void> createChannel(Map<String, dynamic> channelData) async {
+  Future<void> createPost(Map<String, dynamic> PostData) async {
     var result = await ApiClient(dio).request<Map<String, dynamic>, Object>(
-      url: '/Channel',
+      url: '/Post',
       method: ApiMethod.post,
-      payload: channelData,
+      payload: PostData,
       fromJson: (_) => {},
     );
     print(result);
   }
 
-  Future<Map<String, dynamic>> getChannels({
+  Future<Map<String, dynamic>> getPosts({
     required int pageIndex,
     required int pageSize,
     required String searchText,
   }) async {
     final response = await ApiClient(dio)
         .request<Map<String, dynamic>, Map<String, dynamic>>(
-      url: '/Channel',
+      url: '/Post',
       method: ApiMethod.get,
       queryParameters: {
         'PageIndex': pageIndex,

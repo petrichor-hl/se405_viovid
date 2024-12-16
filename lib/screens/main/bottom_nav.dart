@@ -11,6 +11,9 @@ import 'package:viovid_app/features/topic/data/topic_list_api_service.dart';
 import 'package:viovid_app/features/topic/data/topic_list_repository.dart';
 import 'package:viovid_app/helpers/notification_helper.dart';
 import 'package:viovid_app/screens/main/browse/browse.screen.dart';
+import 'package:viovid_app/features/channel/bloc/channel_cubit.dart';
+import 'package:viovid_app/features/channel/channel_api_service.dart';
+import 'package:viovid_app/features/channel/data/channel_repository.dart';
 import 'package:viovid_app/screens/main/forum/forum.screen.dart';
 import 'package:viovid_app/screens/main/noti_center/noti_center.screen.dart';
 import 'package:viovid_app/screens/main/profile/profile.screen.dart';
@@ -69,6 +72,14 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
               NotiCenterRepository(
                 notiCenterApiService: NotiCenterApiService(dio),
               ),
+            ),
+          ),
+          BlocProvider<AppBarCubit>(
+            create: (ctx) => AppBarCubit(),
+          ),
+          BlocProvider<ChannelCubit>(
+            create: (ctx) => ChannelCubit(
+              ChannelRepository(ChannelApiService(dio)),
             ),
           ),
         ],

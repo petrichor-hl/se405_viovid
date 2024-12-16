@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:textfield_tags/textfield_tags.dart';
 
 class CreatePostScreen extends StatefulWidget {
   @override
@@ -8,11 +10,13 @@ class CreatePostScreen extends StatefulWidget {
 }
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
-  final TextEditingController _postTitleController = TextEditingController();
   final TextEditingController _postContentController = TextEditingController();
   final List<File> _pickedImages = [];
-
   final ImagePicker _picker = ImagePicker();
+
+  final StringTagController _stringTagController = StringTagController();
+
+  final List<String> _initialTags = []; // Store hashtags
 
   void _pickImages() async {
     final List<XFile>? images = await _picker.pickMultiImage();
@@ -23,36 +27,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
   }
 
-  void _showConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Xác nhận'),
-          content: const Text('Bạn có chắc chắn muốn tạo bài đăng này?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-              },
-              child: const Text('Huỷ'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-                // Handle post creation logic here
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Bài đăng đã được tạo thành công!')),
-                );
-                Navigator.of(context).pop();
-              },
-              child: const Text('Đồng ý'),
-            ),
-          ],
-        );
-      },
-    );
+  @override
+  void dispose() {
+    _stringTagController.dispose();
+    _postContentController.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,20 +46,140 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Tiêu đề bài đăng',
-                  style: TextStyle(fontSize: 16, color: Colors.white)),
+              const Text(
+                'Nhập hashtag bài đăng',
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
               const SizedBox(height: 8),
-              TextField(
-                style: const TextStyle(color: Colors.white),
-                controller: _postTitleController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Nhập tiêu đề bài đăng',
-                ),
+              TextFieldTags<String>(
+                textfieldTagsController: _stringTagController,
+                initialTags: _initialTags, // Set initial tags if any
+                textSeparators: const [
+                  ' ',
+                  ','
+                ], // Space or comma separates tags
+                letterCase: LetterCase.normal, // Normalize letter case
+                validator: (String tag) {
+                  if (tag == 'php') {
+                    return 'No, please just no';
+                  } else if (_stringTagController.getTags!.contains(tag)) {
+                    return 'You\'ve already entered that';
+                  }
+                  return null;
+                },
+                inputFieldBuilder: (context, inputFieldValues) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: TextField(
+                      onTap: () {
+                        // Request focus when the user taps the text field
+                        _stringTagController.getFocusNode?.requestFocus();
+                      },
+                      controller: inputFieldValues.textEditingController,
+                      focusNode: inputFieldValues.focusNode,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        border: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromARGB(255, 74, 137, 92),
+                            width: 3.0,
+                          ),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromARGB(255, 74, 137, 92),
+                            width: 3.0,
+                          ),
+                        ),
+                        helperText: 'Enter language...',
+                        helperStyle: const TextStyle(
+                          color: Color.fromARGB(255, 74, 137, 92),
+                        ),
+                        hintText: inputFieldValues.tags.isNotEmpty
+                            ? ''
+                            : "Enter tag...", // Display hint if no tags are entered
+                        errorText: inputFieldValues.error,
+                        prefixIconConstraints: BoxConstraints(
+                          minWidth: 0,
+                          minHeight: 0,
+                        ),
+                        prefixIcon: inputFieldValues.tags.isNotEmpty
+                            ? SingleChildScrollView(
+                                controller:
+                                    inputFieldValues.tagScrollController,
+                                scrollDirection: Axis.vertical,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 8,
+                                    bottom: 8,
+                                    left: 8,
+                                  ),
+                                  child: Wrap(
+                                    runSpacing: 4.0,
+                                    spacing: 4.0,
+                                    children:
+                                        inputFieldValues.tags.map((String tag) {
+                                      return Container(
+                                        decoration: const BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0),
+                                          ),
+                                          color:
+                                              Color.fromARGB(255, 74, 137, 92),
+                                        ),
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 5.0),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10.0, vertical: 5.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            InkWell(
+                                              child: Text(
+                                                '#$tag',
+                                                style: const TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              onTap: () {
+                                                // You can handle tag tap here, e.g., navigate to another screen
+                                              },
+                                            ),
+                                            const SizedBox(width: 4.0),
+                                            InkWell(
+                                              child: const Icon(
+                                                Icons.cancel,
+                                                size: 14.0,
+                                                color: Color.fromARGB(
+                                                    255, 233, 233, 233),
+                                              ),
+                                              onTap: () {
+                                                // Remove the tag when the cancel icon is clicked
+                                                inputFieldValues
+                                                    .onTagRemoved(tag);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              )
+                            : null,
+                      ),
+                      onChanged: inputFieldValues.onTagChanged,
+                      onSubmitted: inputFieldValues.onTagSubmitted,
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 16),
-              const Text('Nội dung bài đăng',
-                  style: TextStyle(fontSize: 16, color: Colors.white)),
+              const Text(
+                'Nội dung bài đăng',
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
               const SizedBox(height: 8),
               TextField(
                 style: const TextStyle(color: Colors.white),
@@ -97,7 +196,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 child: const Text('Thêm hình ảnh'),
               ),
               const SizedBox(height: 16),
-              // Display selected images
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -140,7 +238,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: () {
-                      if (_postTitleController.text.isNotEmpty &&
+                      final List<String> tags = _stringTagController.getTags!;
+                      if (tags.isNotEmpty &&
                           _postContentController.text.isNotEmpty) {
                         _showConfirmationDialog();
                       } else {
@@ -158,6 +257,37 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Xác nhận'),
+          content: const Text('Bạn có chắc chắn muốn tạo bài đăng này?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: const Text('Huỷ'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Bài đăng đã được tạo thành công!')),
+                );
+                Navigator.of(context).pop();
+              },
+              child: const Text('Đồng ý'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

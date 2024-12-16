@@ -1,55 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:viovid_app/config/api.config.dart';
+import 'package:viovid_app/features/channel/bloc/channel_cubit.dart';
+import 'package:viovid_app/features/channel/channel_api_service.dart';
+import 'package:viovid_app/features/channel/data/channel_repository.dart';
 import 'package:viovid_app/screens/main/forum/comment_page.dart';
 import 'package:viovid_app/screens/main/forum/create_channel_screen.dart';
 import 'package:viovid_app/screens/main/forum/create_post_screen.dart';
 import 'package:viovid_app/screens/main/forum/hashtag_topic_card.dart';
 import 'package:viovid_app/screens/main/forum/search_screen.dart';
-
-final List<Map<String, dynamic>> mockPosts = [
-  {
-    'id': '1',
-    'userId': 'user1',
-    'like': 120,
-    'content': 'Một đặc vụ FBI quyết tâm truy bắt một kẻ lừa đảo...',
-    'imageUrl': 'https://via.placeholder.com/400x200',
-    'hashtags': ['#scene', '#bcdeptrai'],
-    'createAt': DateTime.now().subtract(const Duration(hours: 3)),
-    'updateAt': DateTime.now(),
-    'comments': [
-      {
-        'id': 'c1',
-        'userId': 'user2',
-        'content': 'Thật sự rất thú vị!',
-        'createAt': DateTime.now().subtract(const Duration(hours: 2)),
-      },
-    ],
-  },
-  {
-    'id': '2',
-    'userId': 'user3',
-    'like': 199,
-    'content': 'Phong cảnh đẹp đến ngỡ ngàng...',
-    'imageUrl': 'https://via.placeholder.com/400x200',
-    'hashtags': ['#travel', '#nature'],
-    'createAt': DateTime.now().subtract(const Duration(hours: 5)),
-    'updateAt': DateTime.now(),
-    'comments': [
-      {
-        'id': 'c2',
-        'userId': 'user4',
-        'content': 'Quá đẹp, tôi muốn đến đây!',
-        'createAt': DateTime.now().subtract(const Duration(hours: 4)),
-      },
-      {
-        'id': 'c3',
-        'userId': 'user5',
-        'content': 'Nhìn là thấy yên bình.',
-        'createAt':
-            DateTime.now().subtract(const Duration(hours: 3, minutes: 30)),
-      },
-    ],
-  },
-];
+import 'package:logging/logging.dart';
 
 class ForumScreen extends StatefulWidget {
   const ForumScreen({super.key});
@@ -59,102 +19,173 @@ class ForumScreen extends StatefulWidget {
 }
 
 class _ForumScreenState extends State<ForumScreen> {
-  final List<Map<String, dynamic>> posts = mockPosts;
+  late List<Map<String, dynamic>> posts = [];
+  List<Map<String, dynamic>> channels = [];
+  Map<String, dynamic>? currentChannel;
+  final Logger _logger = Logger('ForumScreen');
+
+  ChannelCubit get channelCubit => BlocProvider.of<ChannelCubit>(context);
+
+  @override
+  void initState() {
+    super.initState();
+    _getChannels();
+  }
+
+  Future<void> _getChannels() async {
+    _logger.info('Fetching channels...');
+    try {
+      final fetchedChannels = await channelCubit.getListChannel();
+      _logger.info('Fetched channels: $fetchedChannels');
+      setState(() {
+        channels = fetchedChannels;
+        currentChannel = fetchedChannels.first;
+      });
+    } catch (e) {
+      _logger.severe('Error fetching channels: $e');
+    }
+  }
+
+  // Future<void> _getPostsForChannel(String channelId) async {
+  //   _logger.info('Fetching posts for channel $channelId...');
+  //   try {
+  //     // Replace this with the actual API call to fetch posts for the channel
+  //     final fetchedPosts = await channelCubit.getPostsForChannel(channelId);
+  //     _logger.info('Fetched posts: $fetchedPosts');
+  //     setState(() {
+  //       posts = fetchedPosts;
+  //     });
+  //   } catch (e) {
+  //     _logger.severe('Error fetching posts: $e');
+  //   }
+  // }
+
+  void _onChannelTap(Map<String, dynamic> channel) {
+    setState(() {
+      currentChannel = channel;
+    });
+    // _getPostsForChannel(channel['id']);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: Drawer(
-        child: Container(
-          color: Colors.black,
-          child: ListView(
-            children: [
-              const SizedBox(height: 20),
-              ListTile(
-                leading: const Icon(Icons.add, color: Colors.white),
-                title: const Text(
-                  'Tạo kênh mới',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CreateChannelScreen()),
-                  );
-                },
-              ),
-              const Divider(color: Colors.white),
-              ListTile(
-                title: const Text(
-                  'Kênh bạn theo dõi',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-                onTap: () {},
-              ),
-              ListTile(
-                leading: const CircleAvatar(child: Text('C')),
-                title: const Text(
-                  'Viovid',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onTap: () {},
-              ),
-            ],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ChannelCubit>(
+          create: (context) => ChannelCubit(
+            ChannelRepository(ChannelApiService(dio)),
           ),
         ),
-      ),
-      appBar: AppBar(
-        title: const Text('Forum'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // Navigate to search screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SearchScreen()),
-              );
-            },
+      ],
+      child: Scaffold(
+        drawer: Drawer(
+          child: Container(
+            color: Colors.black,
+            child: ListView(
+              children: [
+                const SizedBox(height: 20),
+                ListTile(
+                  leading: const Icon(Icons.add, color: Colors.white),
+                  title: const Text(
+                    'Tạo kênh mới',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    final channelCubit = context.read<ChannelCubit>();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateChannelScreen(
+                          channelCubit: channelCubit,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const Divider(color: Colors.white),
+                ListTile(
+                  title: const Text(
+                    'Kênh bạn theo dõi',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                  onTap: () {},
+                ),
+                ...channels.map((channel) {
+                  return ListTile(
+                    leading: CircleAvatar(child: Text(channel['name'][0])),
+                    title: Text(
+                      channel['name'],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onTap: () {
+                      _onChannelTap(channel);
+                    },
+                  );
+                }).toList(),
+              ],
+            ),
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            HashtagTopicCard(
-              hashtag: '#viovid',
-              description:
-                  'Kênh mặc định của Viovid, hiển các thông báo mới nhất của phát hành',
-              onCreatePost: () {
+        ),
+        appBar: AppBar(
+          title: const Text('Forum'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                // Navigate to search screen
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CreatePostScreen()),
+                  MaterialPageRoute(builder: (context) => SearchScreen()),
                 );
               },
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.8,
-              child: ListView.builder(
-                itemCount: posts.length,
-                itemBuilder: (context, index) {
-                  return ForumItem(
-                    postData: posts[index],
-                    onCommentPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CommentPage(
-                            postData: posts[index],
-                          ),
-                        ),
-                      );
-                    },
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              if (currentChannel != null) ...[
+                Text(
+                  currentChannel!['name'],
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                Text(currentChannel!['description']),
+              ],
+              HashtagTopicCard(
+                hashtag: currentChannel?['name'] ?? 'No channel selected',
+                description: currentChannel?['description'] ??
+                    'No description available',
+                onCreatePost: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CreatePostScreen()),
                   );
                 },
               ),
-            ),
-          ],
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.8,
+                child: ListView.builder(
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    return ForumItem(
+                      postData: posts[index],
+                      onCommentPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CommentPage(
+                              postData: posts[index],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -163,7 +194,6 @@ class _ForumScreenState extends State<ForumScreen> {
 
 class ForumItem extends StatelessWidget {
   final Map<String, dynamic> postData;
-
   final VoidCallback onCommentPressed;
 
   const ForumItem({

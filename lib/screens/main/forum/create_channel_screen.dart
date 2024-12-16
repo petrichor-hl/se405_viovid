@@ -1,14 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:viovid_app/features/channel/bloc/channel_cubit.dart';
 
 class CreateChannelScreen extends StatefulWidget {
+  final ChannelCubit channelCubit;
+
+  const CreateChannelScreen({Key? key, required this.channelCubit})
+      : super(key: key);
+
   @override
   _CreateChannelScreenState createState() => _CreateChannelScreenState();
 }
 
 class _CreateChannelScreenState extends State<CreateChannelScreen> {
   final TextEditingController _channelNameController = TextEditingController();
-  final TextEditingController _channelContentController =
+  final TextEditingController _channelDescriptionController =
       TextEditingController();
+
+  void _createChannel() {
+    final channelData = {
+      'name': _channelNameController.text,
+      'description': _channelDescriptionController.text,
+    };
+
+    print(
+      "channel data: ${channelData}",
+    );
+    widget.channelCubit.createChannel(channelData);
+  }
 
   void _showConfirmationDialog() {
     showDialog(
@@ -27,6 +45,7 @@ class _CreateChannelScreenState extends State<CreateChannelScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close dialog
+                _createChannel();
                 // Handle channel creation logic here
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Kênh đã được tạo thành công!')),
@@ -68,7 +87,7 @@ class _CreateChannelScreenState extends State<CreateChannelScreen> {
             const SizedBox(height: 8),
             TextField(
               style: const TextStyle(color: Colors.white),
-              controller: _channelContentController,
+              controller: _channelDescriptionController,
               maxLines: 4,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
@@ -89,7 +108,7 @@ class _CreateChannelScreenState extends State<CreateChannelScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if (_channelNameController.text.isNotEmpty &&
-                        _channelContentController.text.isNotEmpty) {
+                        _channelDescriptionController.text.isNotEmpty) {
                       _showConfirmationDialog();
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

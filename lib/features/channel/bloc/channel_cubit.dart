@@ -14,4 +14,15 @@ class ChannelCubit extends Cubit<void> {
       emit(null); // Emit failure state if needed
     }
   }
+
+  Future<List<Map<String, dynamic>>> getListChannel() async {
+    try {
+      final response = await repository.getChannels();
+      emit(null); // Emit success state if needed
+      return List<Map<String, dynamic>>.from(response['result']['items']);
+    } catch (e) {
+      emit(null); // Emit failure state if needed
+      return [];
+    }
+  }
 }
