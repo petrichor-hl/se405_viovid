@@ -9,7 +9,6 @@ import 'package:viovid_app/screens/main/forum/create_channel_screen.dart';
 import 'package:viovid_app/screens/main/forum/create_post_screen.dart';
 import 'package:viovid_app/screens/main/forum/hashtag_topic_card.dart';
 import 'package:viovid_app/screens/main/forum/search_screen.dart';
-import 'package:logging/logging.dart';
 
 class ForumScreen extends StatefulWidget {
   const ForumScreen({super.key});
@@ -20,29 +19,29 @@ class ForumScreen extends StatefulWidget {
 
 class _ForumScreenState extends State<ForumScreen> {
   late List<Map<String, dynamic>> posts = [];
-  List<Map<String, dynamic>> channels = [];
-  Map<String, dynamic>? currentChannel;
-  final Logger _logger = Logger('ForumScreen');
+  List<Channel> channels = [];
+  Channel? currentChannel;
 
   ChannelCubit get channelCubit => BlocProvider.of<ChannelCubit>(context);
 
   @override
   void initState() {
     super.initState();
+    print('Forum screen init');
     _getChannels();
   }
 
   Future<void> _getChannels() async {
-    _logger.info('Fetching channels...');
     try {
       final fetchedChannels = await channelCubit.getListChannel();
-      _logger.info('Fetched channels: $fetchedChannels');
+      print('Fetched channels: $fetchedChannels');
       setState(() {
         channels = fetchedChannels;
-        currentChannel = fetchedChannels.first;
+        currentChannel =
+            fetchedChannels.isNotEmpty ? fetchedChannels.first : null;
       });
     } catch (e) {
-      _logger.severe('Error fetching channels: $e');
+      print('Error fetching channels: $e');
     }
   }
 
@@ -60,7 +59,7 @@ class _ForumScreenState extends State<ForumScreen> {
   //   }
   // }
 
-  void _onChannelTap(Map<String, dynamic> channel) {
+  void _onChannelTap(Channel channel) {
     setState(() {
       currentChannel = channel;
     });
@@ -69,6 +68,7 @@ class _ForumScreenState extends State<ForumScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('ForumScreen build called');
     return MultiBlocProvider(
       providers: [
         BlocProvider<ChannelCubit>(
@@ -97,6 +97,7 @@ class _ForumScreenState extends State<ForumScreen> {
                       MaterialPageRoute(
                         builder: (context) => CreateChannelScreen(
                           channelCubit: channelCubit,
+                          onChannelCreated: _getChannels,
                         ),
                       ),
                     );
@@ -112,9 +113,9 @@ class _ForumScreenState extends State<ForumScreen> {
                 ),
                 ...channels.map((channel) {
                   return ListTile(
-                    leading: CircleAvatar(child: Text(channel['name'][0])),
+                    leading: CircleAvatar(child: Text(channel.name[0])),
                     title: Text(
-                      channel['name'],
+                      channel.name,
                       style: TextStyle(color: Colors.white),
                     ),
                     onTap: () {
@@ -146,16 +147,16 @@ class _ForumScreenState extends State<ForumScreen> {
             children: [
               if (currentChannel != null) ...[
                 Text(
-                  currentChannel!['name'],
+                  currentChannel!.name,
                   style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                Text(currentChannel!['description']),
+                Text(currentChannel!.description),
               ],
               HashtagTopicCard(
-                hashtag: currentChannel?['name'] ?? 'No channel selected',
-                description: currentChannel?['description'] ??
-                    'No description available',
+                hashtag: currentChannel?.name ?? 'No channel selected',
+                description:
+                    currentChannel?.description ?? 'No description available',
                 onCreatePost: () {
                   Navigator.push(
                     context,

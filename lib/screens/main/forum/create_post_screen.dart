@@ -69,9 +69,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ], // Space or comma separates tags
                 letterCase: LetterCase.normal, // Normalize letter case
                 validator: (String tag) {
-                  if (tag == 'php') {
-                    return 'No, please just no';
-                  } else if (_stringTagController.getTags!.contains(tag)) {
+                  if (_stringTagController.getTags!.contains(tag)) {
                     return 'You\'ve already entered that';
                   }
                   return null;

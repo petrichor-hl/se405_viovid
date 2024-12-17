@@ -3,9 +3,13 @@ import 'package:viovid_app/features/channel/bloc/channel_cubit.dart';
 
 class CreateChannelScreen extends StatefulWidget {
   final ChannelCubit channelCubit;
+  final VoidCallback onChannelCreated;
 
-  const CreateChannelScreen({Key? key, required this.channelCubit})
-      : super(key: key);
+  const CreateChannelScreen({
+    required this.channelCubit,
+    required this.onChannelCreated,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _CreateChannelScreenState createState() => _CreateChannelScreenState();
@@ -16,7 +20,7 @@ class _CreateChannelScreenState extends State<CreateChannelScreen> {
   final TextEditingController _channelDescriptionController =
       TextEditingController();
 
-  void _createChannel() {
+  void _createChannel() async {
     final channelData = {
       'name': _channelNameController.text,
       'description': _channelDescriptionController.text,
@@ -25,7 +29,9 @@ class _CreateChannelScreenState extends State<CreateChannelScreen> {
     print(
       "channel data: ${channelData}",
     );
-    widget.channelCubit.createChannel(channelData);
+    await widget.channelCubit.createChannel(channelData);
+    widget.onChannelCreated(); // Call the callback function
+    Navigator.pop(context);
   }
 
   void _showConfirmationDialog() {
