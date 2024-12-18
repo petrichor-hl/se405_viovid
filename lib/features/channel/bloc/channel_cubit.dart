@@ -16,9 +16,9 @@ class ChannelCubit extends Cubit<void> {
     }
   }
 
-  Future<List<Channel>> getListChannel() async {
+  Future<List<Channel>> getListChannel(int currentChannelIndex) async {
     try {
-      final response = await repository.getChannels();
+      final response = await repository.getChannels(currentChannelIndex);
       emit(null); // Emit success state if needed
       return response.items;
     } catch (e) {

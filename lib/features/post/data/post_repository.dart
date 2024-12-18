@@ -5,15 +5,21 @@ class PostRepository {
 
   PostRepository(this.apiService);
 
-  Future<void> createPost(Map<String, dynamic> PostData) async {
-    await apiService.createPost(PostData);
+  Future<Post> createPost(Map<String, dynamic> PostData) async {
+    return await apiService.createPost(PostData);
   }
 
-  Future<Map<String, dynamic>> getPosts() async {
+  Future<PagingData<Post>> getPosts(int currentPostIndex) async {
     return await apiService.getPosts(
-      pageIndex: 0,
+      pageIndex: currentPostIndex,
       pageSize: 15,
       searchText: '',
     );
+  }
+
+  Future<PagingData<Post>> getPostsFromChannel(
+      int currentPostIndex, String channelId) async {
+    return await apiService.getPostsByChannel(
+        pageIndex: currentPostIndex, pageSize: 15, channelId: channelId);
   }
 }

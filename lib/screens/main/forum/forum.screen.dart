@@ -4,6 +4,9 @@ import 'package:viovid_app/config/api.config.dart';
 import 'package:viovid_app/features/channel/bloc/channel_cubit.dart';
 import 'package:viovid_app/features/channel/channel_api_service.dart';
 import 'package:viovid_app/features/channel/data/channel_repository.dart';
+import 'package:viovid_app/features/post/bloc/post_cubit.dart';
+import 'package:viovid_app/features/post/data/post_repository.dart';
+import 'package:viovid_app/features/post/post_api_service.dart';
 import 'package:viovid_app/screens/main/forum/comment_page.dart';
 import 'package:viovid_app/screens/main/forum/create_channel_screen.dart';
 import 'package:viovid_app/screens/main/forum/create_post_screen.dart';
@@ -18,22 +21,34 @@ class ForumScreen extends StatefulWidget {
 }
 
 class _ForumScreenState extends State<ForumScreen> {
-  late List<Map<String, dynamic>> posts = [];
   List<Channel> channels = [];
   Channel? currentChannel;
 
+  List<Post> posts = [];
+  Post? currentPost;
+
+  int _currentPostIndex = 0;
+  int _currentChannelIndex = 0;
+
   ChannelCubit get channelCubit => BlocProvider.of<ChannelCubit>(context);
+  PostCubit get postCubit => BlocProvider.of<PostCubit>(context);
 
   @override
   void initState() {
     super.initState();
     print('Forum screen init');
-    _getChannels();
+    _initialize();
+  }
+
+  void _initialize() async {
+    await _getChannels();
+    await _getPostsForChannel(currentChannel?.id ?? '');
   }
 
   Future<void> _getChannels() async {
     try {
-      final fetchedChannels = await channelCubit.getListChannel();
+      final fetchedChannels =
+          await channelCubit.getListChannel(_currentChannelIndex);
       print('Fetched channels: $fetchedChannels');
       setState(() {
         channels = fetchedChannels;
@@ -45,35 +60,50 @@ class _ForumScreenState extends State<ForumScreen> {
     }
   }
 
-  // Future<void> _getPostsForChannel(String channelId) async {
-  //   _logger.info('Fetching posts for channel $channelId...');
-  //   try {
-  //     // Replace this with the actual API call to fetch posts for the channel
-  //     final fetchedPosts = await channelCubit.getPostsForChannel(channelId);
-  //     _logger.info('Fetched posts: $fetchedPosts');
-  //     setState(() {
-  //       posts = fetchedPosts;
-  //     });
-  //   } catch (e) {
-  //     _logger.severe('Error fetching posts: $e');
-  //   }
-  // }
+  Future<void> _getPosts() async {
+    try {
+      final fetchedPosts = await postCubit.getListPost(_currentPostIndex);
+      print('Fetched posts: $fetchedPosts');
+      setState(() {
+        posts = fetchedPosts;
+        currentPost = fetchedPosts.isNotEmpty ? fetchedPosts.first : null;
+      });
+    } catch (e) {
+      print('Error fetching channels: $e');
+    }
+  }
+
+  Future<void> _getPostsForChannel(String channelId) async {
+    try {
+      final fetchedPosts =
+          await postCubit.getListPostFromChannel(_currentPostIndex, channelId);
+      setState(() {
+        posts = fetchedPosts;
+      });
+    } catch (e) {
+      print('Error fetching posts for channel: $e');
+    }
+  }
 
   void _onChannelTap(Channel channel) {
     setState(() {
       currentChannel = channel;
     });
-    // _getPostsForChannel(channel['id']);
+    _getPostsForChannel(channel.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    print('ForumScreen build called');
     return MultiBlocProvider(
       providers: [
         BlocProvider<ChannelCubit>(
           create: (context) => ChannelCubit(
             ChannelRepository(ChannelApiService(dio)),
+          ),
+        ),
+        BlocProvider<PostCubit>(
+          create: (context) => PostCubit(
+            PostRepository(PostApiService(dio)),
           ),
         ),
       ],
@@ -145,22 +175,22 @@ class _ForumScreenState extends State<ForumScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              if (currentChannel != null) ...[
-                Text(
-                  currentChannel!.name,
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                Text(currentChannel!.description),
-              ],
               HashtagTopicCard(
                 hashtag: currentChannel?.name ?? 'No channel selected',
                 description:
                     currentChannel?.description ?? 'No description available',
                 onCreatePost: () {
+                  final postCubit = context.read<PostCubit>();
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CreatePostScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => CreatePostScreen(
+                        postCubit: postCubit,
+                        channel: currentChannel!,
+                        onPostCreated: () =>
+                            _getPostsForChannel(currentChannel!.id),
+                      ),
+                    ),
                   );
                 },
               ),
@@ -194,7 +224,7 @@ class _ForumScreenState extends State<ForumScreen> {
 }
 
 class ForumItem extends StatelessWidget {
-  final Map<String, dynamic> postData;
+  final Post postData;
   final VoidCallback onCommentPressed;
 
   const ForumItem({
@@ -204,6 +234,11 @@ class ForumItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("postData.imageUrls.isNotEmpty: ${postData.imageUrls.isNotEmpty}");
+    print("postData.imageUrls.isNotEmpty: ${postData.imageUrls.length}");
+    print("postData.imageUrls runtimeType: ${postData.imageUrls.runtimeType}");
+    print("postData.imageUrls raw: ${postData.imageUrls}");
+
     return Card(
       margin: const EdgeInsets.all(8),
       child: Padding(
@@ -211,37 +246,61 @@ class ForumItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              postData['hashtags'].join(' '),
-              style: const TextStyle(
-                  color: Colors.red, fontWeight: FontWeight.bold),
+            Wrap(
+              spacing: 8.0, // Space between tags
+              runSpacing: 4.0, // Space between lines of tags
+              children: postData.hashtags.map((tag) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 5.0),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: Text(
+                    '#$tag',
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                );
+              }).toList(),
             ),
             const SizedBox(height: 8),
             Row(
               children: [
                 const CircleAvatar(child: Icon(Icons.person)),
                 const SizedBox(width: 8),
-                Text(postData['userId'], style: const TextStyle(fontSize: 16)),
+                Expanded(
+                  flex: 8, // 80% of the available width
+                  child: Text(
+                    (postData.applicationUser)["userName"],
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
                 const Spacer(),
                 Text(
-                  '${postData['createAt'].difference(DateTime.now()).inHours.abs()}h',
+                  '${postData.createdAt.difference(DateTime.now()).inHours.abs()}h',
                   style: const TextStyle(color: Colors.grey),
+                  overflow: TextOverflow.ellipsis, // Handle overflow
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             Text(
-              postData['content'],
+              postData.content,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
-            Image.network(
-              postData['imageUrl'],
-              height: 200,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            if (postData.imageUrls.isNotEmpty)
+              Image.network(
+                postData.imageUrls.first,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -249,13 +308,13 @@ class ForumItem extends StatelessWidget {
                   icon: const Icon(Icons.thumb_up_alt_outlined),
                   onPressed: () {},
                 ),
-                Text('${postData['like']}'),
+                Text('${postData.likes}'),
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.comment),
                   onPressed: onCommentPressed,
                 ),
-                Text('${postData['comments'].length}'),
+                Text('${postData.comments.length}'),
               ],
             ),
           ],

@@ -6,6 +6,9 @@ import 'package:viovid_app/cubits/app_bar_cubit.dart';
 import 'package:viovid_app/features/noti_center/cubit/noti_center_cubit.dart';
 import 'package:viovid_app/features/noti_center/data/noti_center_api_service.dart';
 import 'package:viovid_app/features/noti_center/data/noti_center_repository.dart';
+import 'package:viovid_app/features/post/bloc/post_cubit.dart';
+import 'package:viovid_app/features/post/data/post_repository.dart';
+import 'package:viovid_app/features/post/post_api_service.dart';
 import 'package:viovid_app/features/topic/cubit/topic_list_cubit.dart';
 import 'package:viovid_app/features/topic/data/topic_list_api_service.dart';
 import 'package:viovid_app/features/topic/data/topic_list_repository.dart';
@@ -80,6 +83,11 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
           BlocProvider<ChannelCubit>(
             create: (ctx) => ChannelCubit(
               ChannelRepository(ChannelApiService(dio)),
+            ),
+          ),
+          BlocProvider<PostCubit>(
+            create: (ctx) => PostCubit(
+              PostRepository(PostApiService(dio)),
             ),
           ),
         ],

@@ -9,9 +9,9 @@ class ChannelRepository {
     return await apiService.createChannel(channelData);
   }
 
-  Future<PagingData<Channel>> getChannels() async {
+  Future<PagingData<Channel>> getChannels(int currentChannelIndex) async {
     return await apiService.getChannels(
-      pageIndex: 0,
+      pageIndex: currentChannelIndex,
       pageSize: 15,
       searchText: '',
     );
