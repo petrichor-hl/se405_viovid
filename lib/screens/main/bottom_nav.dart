@@ -74,9 +74,6 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
               ),
             ),
           ),
-          BlocProvider<AppBarCubit>(
-            create: (ctx) => AppBarCubit(),
-          ),
           BlocProvider<ChannelCubit>(
             create: (ctx) => ChannelCubit(
               ChannelRepository(ChannelApiService(dio)),
