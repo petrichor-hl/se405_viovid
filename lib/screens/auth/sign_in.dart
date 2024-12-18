@@ -7,6 +7,7 @@ import 'package:viovid_app/config/styles.config.dart';
 import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
 import 'package:viovid_app/features/my_list/cubit/my_list_cubit.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/helpers/notification_helper.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key, required this.pageController});
@@ -52,7 +53,26 @@ class _SignInState extends State<SignInScreen> {
           await ctx.read<UserProfileCubit>().getUserProfile();
           await ctx.read<UserProfileCubit>().getTrackingProgress();
           await ctx.read<MyListCubit>().getMyList();
-          ctx.go(RouteName.bottomNav);
+
+          final notiHelper = NotificationHelper();
+          await notiHelper.initLocalNotification();
+
+          final payloadFcmNoti = await notiHelper.getPayloadFromFcmNoti();
+          final payloadLocalNoti = await notiHelper.getPayloadFromLocalNoti();
+
+          if (payloadFcmNoti != null) {
+            NotificationHelper.handleNavigateNotification(
+              payloadFcmNoti,
+              isResetRoute: true,
+            );
+          } else if (payloadLocalNoti != null) {
+            NotificationHelper.handleNavigateNotification(
+              payloadLocalNoti,
+              isResetRoute: true,
+            );
+          } else {
+            appRouter.go(RouteName.bottomNav);
+          }
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(

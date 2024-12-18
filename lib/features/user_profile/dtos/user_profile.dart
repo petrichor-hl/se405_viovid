@@ -3,6 +3,7 @@ class UserProfile {
   String name;
   String email;
   String avatar;
+  String? fcmToken;
   String planName;
   String? startDate;
   String? endDate;
@@ -12,6 +13,7 @@ class UserProfile {
     required this.name,
     required this.email,
     required this.avatar,
+    this.fcmToken,
     required this.planName,
     this.startDate,
     this.endDate,
@@ -23,6 +25,7 @@ class UserProfile {
       name: json['name'],
       email: json['email'],
       avatar: json['avatar'],
+      fcmToken: json['fcmToken'],
       planName: json['planName'],
       startDate: json['startDate'],
       endDate: json['endDate'],

@@ -52,7 +52,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
   @override
   void initState() {
     super.initState();
-    NotificationHelper().initNotifications();
+    NotificationHelper().initNotifications(context);
   }
 
   @override
@@ -76,9 +76,6 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
                 notiCenterApiService: NotiCenterApiService(dio),
               ),
             ),
-          ),
-          BlocProvider<AppBarCubit>(
-            create: (ctx) => AppBarCubit(),
           ),
           BlocProvider<ChannelCubit>(
             create: (ctx) => ChannelCubit(

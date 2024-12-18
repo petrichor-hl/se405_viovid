@@ -21,6 +21,7 @@ import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart'
 import 'package:viovid_app/features/user_profile/data/user_profile_api_service.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_repository.dart';
 import 'package:viovid_app/firebase_options.dart';
+import 'package:viovid_app/helpers/notification_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,9 +64,17 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    // Xử lý khi app đang chạy ở trạng thái background
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _handleNotification(message);
+    // Xử lý khi app đang chạy ở trạng thái Background
+    // Và User nhấn vào Notification
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleNotification);
+
+    // Xử lý khi app đang chạy ở trạng thái Foreground
+    FirebaseMessaging.onMessage.listen((message) async {
+      await NotificationHelper().pushLocalInstantNotification(
+        title: message.notification!.title!,
+        body: message.notification!.body!,
+        data: message.data,
+      );
     });
   }
 
@@ -76,16 +85,7 @@ class _MyAppState extends State<MyApp> {
     print(message.notification?.body);
     print(message.data);
 
-    if (message.data['type'] == 'NewFilm') {
-      appRouter.push(
-        RouteName.filmDetail.replaceFirst(
-          ':id',
-          message.data['filmId'],
-        ),
-      );
-    }
-
-    if (message.data['type'] == 'NewCommentOnYourPost') {}
+    NotificationHelper.handleNavigateNotification(message.data);
   }
 
   @override

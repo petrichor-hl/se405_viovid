@@ -18,7 +18,7 @@ class CreatePostScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CreatePostScreenState createState() => _CreatePostScreenState();
+  State<CreatePostScreen> createState() => _CreatePostScreenState();
 }
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
@@ -31,8 +31,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   final List<String> _initialTags = []; // Store hashtags
 
   void _pickImages() async {
-    final List<XFile>? images = await _picker.pickMultiImage();
-    if (images != null) {
+    final List<XFile> images = await _picker.pickMultiImage();
+    if (images.isNotEmpty) {
       setState(() {
         _pickedImages.addAll(images.map((image) => File(image.path)));
       });
@@ -124,7 +124,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                             ? ''
                             : "Enter tag...", // Display hint if no tags are entered
                         errorText: inputFieldValues.error,
-                        prefixIconConstraints: BoxConstraints(
+                        prefixIconConstraints: const BoxConstraints(
                           minWidth: 0,
                           minHeight: 0,
                         ),
