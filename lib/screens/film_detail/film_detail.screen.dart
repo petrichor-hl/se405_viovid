@@ -14,9 +14,9 @@ import 'package:viovid_app/features/film_detail/dtos/film.dart';
 import 'package:viovid_app/features/my_list/cubit/my_list_cubit.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_state.dart';
-import 'package:viovid_app/features/user_profile/dtos/tracking_progress.dart';
 import 'package:viovid_app/screens/film_detail/components/bottom_tabs.dart';
 import 'package:viovid_app/screens/film_detail/components/favorite_button.dart';
+import 'package:viovid_app/screens/film_detail/components/play_video.dart';
 
 class FilmDetailScreen extends StatefulWidget {
   const FilmDetailScreen({
@@ -310,48 +310,9 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                 const SizedBox(height: 12),
                 // isMovie
                 if (film.seasons[0].name == '')
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
-                    child: IconButton.filled(
-                      onPressed: () async {
-                        final TrackingProgress? trackingProgress =
-                            await context.push(
-                          '${GoRouterState.of(context).uri}/watching',
-                          extra: {
-                            'filmName': film.name,
-                            'seasons': film.seasons,
-                            'firstEpisodeIdToPlay':
-                                film.seasons[0].episodes[0].id,
-                            'initProgress': context
-                                    .read<UserProfileCubit>()
-                                    .state
-                                    .userTrackingProgress?[
-                                film.seasons[0].episodes[0].id]
-                          },
-                        );
-
-                        if (trackingProgress != null) {
-                          // ignore: use_build_context_synchronously
-                          context
-                              .read<UserProfileCubit>()
-                              .updateTrackingProgress(trackingProgress);
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.play_arrow_rounded,
-                        size: 32,
-                      ),
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
+                    child: PlayVideoButton(),
                   ),
                 // if (isMovie)
                 //   DownloadButton(

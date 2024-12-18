@@ -90,7 +90,7 @@ class _NotiCenterScreenState extends State<NotiCenterScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    'THG ${notifications[index].createdDateTime.month}',
+                                    'THG ${notifications[index].createdDateTime.toLocal().month}',
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -99,6 +99,7 @@ class _NotiCenterScreenState extends State<NotiCenterScreen> {
                                   Text(
                                     notifications[index]
                                         .createdDateTime
+                                        .toLocal()
                                         .day
                                         .toString()
                                         .padLeft(2, '0'),

@@ -23,7 +23,7 @@ class FavoriteButton extends StatelessWidget {
       icon: Icon(
         isAlreadyInMyList ? Icons.check_rounded : Icons.add_rounded,
         key: ValueKey(isAlreadyInMyList),
-        color: isAlreadyInMyList ? Colors.green : Colors.white,
+        color: isAlreadyInMyList ? Colors.amber : Colors.white,
       ),
     );
   }

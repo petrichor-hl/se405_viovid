@@ -10,6 +10,9 @@ import 'package:viovid_app/features/films_by_genre/data/films_by_genre_repositor
 import 'package:viovid_app/features/person_detail/cubit/person_detail_cubit.dart';
 import 'package:viovid_app/features/person_detail/data/person_detail_api_service.dart';
 import 'package:viovid_app/features/person_detail/data/person_detail_repository.dart';
+import 'package:viovid_app/features/register_plan/cubit/register_plan_cubit.dart';
+import 'package:viovid_app/features/register_plan/data/register_plan_api_service.dart';
+import 'package:viovid_app/features/register_plan/data/register_plan_repository.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_api_service.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_repository.dart';
@@ -22,6 +25,7 @@ import 'package:viovid_app/screens/main/bottom_nav.dart';
 import 'package:viovid_app/screens/my_list/my_list.screen.dart';
 import 'package:viovid_app/screens/onboarding/onboarding.screen.dart';
 import 'package:viovid_app/screens/person_detail/person_detail.screen.dart';
+import 'package:viovid_app/screens/register_plan/register_plan.screen.dart';
 import 'package:viovid_app/screens/spash/splash.screen.dart';
 import 'package:viovid_app/screens/video_player/video_player.screen.dart';
 
@@ -36,6 +40,7 @@ class RouteName {
   static const String person = '/person/:id';
   static const String genre = '/genre/:id';
   static const String changePassword = '/change-password';
+  static const String registerPlan = '/register-plan';
 }
 
 GoRouter appRouter = GoRouter(
@@ -142,6 +147,21 @@ GoRouter appRouter = GoRouter(
             ),
           ),
           child: const ChangePasswordScreen(),
+        );
+      },
+    ),
+    GoRoute(
+      path: RouteName.registerPlan,
+      builder: (ctx, state) {
+        return BlocProvider(
+          create: (context) => RegisterPlanCubit(
+            RegisterPlanRepository(
+              registerPlanApiService: RegisterPlanApiService(
+                dio,
+              ),
+            ),
+          ),
+          child: const RegisterPlanScreen(),
         );
       },
     ),

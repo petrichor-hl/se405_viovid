@@ -40,4 +40,11 @@ class Assets {
 
   static const String violetEvergarden = '${_images}violet_evergarden.jpg';
   static const String witcher = '${_images}witcher.jpg';
+
+  static const String rubySparkles = '${_images}ruby_sparkles.png';
+
+  // Payment Logo
+  static const String vnPayLogo = '${_images}vnpay-logo.webp';
+  static const String stripeLogo = '${_images}stripe_logo.webp';
+  static const String momoLogo = '${_images}momo_logo.png';
 }
