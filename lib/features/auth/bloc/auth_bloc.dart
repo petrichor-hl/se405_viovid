@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:viovid_app/features/auth/data/auth_repository.dart';
 import 'package:viovid_app/features/result_type.dart';
+import 'package:viovid_app/helpers/notification_helper.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -54,7 +55,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onAuthLogout(AuthLogout event, Emitter<AuthState> emit) async {
     emit(AuthLogoutInProgress());
-    await Future.delayed(const Duration(seconds: 2));
+    await NotificationHelper().removeNotificationListener();
     final result = await authRepository.logout();
     return (switch (result) {
       Success() => emit(AuthUnauthenticated()),
