@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:viovid_app/features/post/bloc/post_cubit.dart';
+import 'package:viovid_app/features/post/post_api_service.dart';
 import 'package:viovid_app/screens/main/forum/forum.screen.dart';
 
 class CommentPage extends StatefulWidget {
-  final Map<String, dynamic> postData;
+  final PostCubit postCubit;
+  final Post postData;
+  final VoidCallback onLikePressed;
+  final VoidCallback onUnlikePressed;
+  final VoidCallback onCommentPressed;
 
-  const CommentPage({required this.postData});
+  const CommentPage({
+    required this.postCubit,
+    required this.postData,
+    required this.onLikePressed,
+    required this.onUnlikePressed,
+    required this.onCommentPressed,
+  });
 
   @override
   State<CommentPage> createState() => _CommentPageState();
@@ -12,29 +24,42 @@ class CommentPage extends StatefulWidget {
 
 class _CommentPageState extends State<CommentPage> {
   final TextEditingController _commentController = TextEditingController();
-  late List<Map<String, dynamic>> comments = [];
+  late List<PostComment> comments = [];
+  int _currentCommentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    // Initialize comments safely
-    comments =
-        List<Map<String, dynamic>>.from(widget.postData['comments'] ?? []);
+    _init();
   }
 
-  void _addComment() {
-    final newComment = {
-      'id': 'c${comments.length + 1}',
-      'userId': 'currentUser',
+  Future<void> _init() async {
+    await _getCommentsForPost(widget.postData.id);
+  }
+
+  Future<void> _getCommentsForPost(String postId) async {
+    try {
+      final fetchedComments =
+          await widget.postCubit.listComments(_currentCommentIndex, postId);
+
+      print(fetchedComments);
+      setState(() {
+        comments = fetchedComments;
+      });
+    } catch (e) {
+      print('Error fetching posts for comments: $e');
+    }
+  }
+
+  void _addComment() async {
+    var postData = {
+      'postId': widget.postData.id,
       'content': _commentController.text,
-      'createAt': DateTime.now(),
     };
 
-    setState(() {
-      comments.add(newComment);
-    });
-
     _commentController.clear();
+    await widget.postCubit.addComment(postData);
+    _getCommentsForPost(widget.postData.id);
   }
 
   @override
@@ -49,7 +74,9 @@ class _CommentPageState extends State<CommentPage> {
             padding: const EdgeInsets.all(8.0),
             child: ForumItem(
               postData: widget.postData,
-              onCommentPressed: () {}, // No action required here
+              onCommentPressed: () {},
+              onLikePressed: widget.onLikePressed,
+              onUnlikePressed: widget.onUnlikePressed,
             ),
           ),
           const Divider(),
@@ -68,6 +95,7 @@ class _CommentPageState extends State<CommentPage> {
               children: [
                 Expanded(
                   child: TextField(
+                    style: const TextStyle(color: Colors.white),
                     controller: _commentController,
                     decoration: const InputDecoration(
                       hintText: 'Add a comment...',
@@ -94,7 +122,7 @@ class _CommentPageState extends State<CommentPage> {
 }
 
 class CommentItem extends StatelessWidget {
-  final Map<String, dynamic> comment;
+  final PostComment comment;
 
   const CommentItem({required this.comment});
 
@@ -112,20 +140,20 @@ class CommentItem extends StatelessWidget {
                 const CircleAvatar(child: Icon(Icons.person)),
                 const SizedBox(width: 8),
                 Text(
-                  comment['userId'],
-                  style: const TextStyle(fontSize: 16),
+                  comment.applicationUser['userName'],
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
                 const Spacer(),
                 Text(
-                  '${comment['createAt'].difference(DateTime.now()).inHours.abs()}h',
+                  '${comment.createdAt.difference(DateTime.now()).inHours.abs()}h',
                   style: const TextStyle(color: Colors.grey),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              comment['content'],
-              style: const TextStyle(fontSize: 14),
+              comment.content,
+              style: const TextStyle(fontSize: 14, color: Colors.white),
             ),
           ],
         ),

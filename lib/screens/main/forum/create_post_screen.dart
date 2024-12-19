@@ -2,9 +2,20 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:textfield_tags/textfield_tags.dart';
+import 'package:viovid_app/features/channel/channel_api_service.dart';
+import 'package:viovid_app/features/post/bloc/post_cubit.dart';
 
 class CreatePostScreen extends StatefulWidget {
-  const CreatePostScreen({super.key});
+  final PostCubit postCubit;
+  final VoidCallback onPostCreated;
+  final Channel channel;
+
+  const CreatePostScreen({
+    required this.postCubit,
+    required this.onPostCreated,
+    required this.channel,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<CreatePostScreen> createState() => _CreatePostScreenState();
@@ -28,14 +39,20 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
   }
 
-  void _createPost() {
+  void _createPost() async {
     final postData = {
       'content': _postContentController.text,
-      'images': _pickedImages.map((file) => file.path).toList(),
+      'imageUrls': ['https://picsum.photos/200/300'],
       'hashtags': _stringTagController.getTags,
+      'channelId': widget.channel.id,
     };
 
-    // context.read<PostCubit>().createPost(postData);
+    print('Post data: $postData');
+
+    await widget.postCubit.createPost(postData);
+    widget.onPostCreated(); // Call the callback function
+
+    Navigator.pop(context);
   }
 
   @override
@@ -59,7 +76,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             children: [
               const Text(
                 'Nhập hashtag bài đăng',
-                style: TextStyle(fontSize: 16, color: Colors.black),
+                style: TextStyle(fontSize: 16, color: Colors.white),
               ),
               const SizedBox(height: 8),
               TextFieldTags<String>(
@@ -71,9 +88,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ], // Space or comma separates tags
                 letterCase: LetterCase.normal, // Normalize letter case
                 validator: (String tag) {
-                  if (tag == 'php') {
-                    return 'No, please just no';
-                  } else if (_stringTagController.getTags!.contains(tag)) {
+                  if (_stringTagController.getTags!.contains(tag)) {
                     return 'You\'ve already entered that';
                   }
                   return null;
@@ -102,7 +117,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                             width: 3.0,
                           ),
                         ),
-                        helperText: 'Enter language...',
                         helperStyle: const TextStyle(
                           color: Color.fromARGB(255, 74, 137, 92),
                         ),
@@ -287,6 +301,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             ),
             TextButton(
               onPressed: () {
+                _createPost();
                 Navigator.of(context).pop(); // Close dialog
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

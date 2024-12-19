@@ -5,13 +5,13 @@ class ChannelRepository {
 
   ChannelRepository(this.apiService);
 
-  Future<void> createChannel(Map<String, dynamic> channelData) async {
-    await apiService.createChannel(channelData);
+  Future<Channel> createChannel(Map<String, dynamic> channelData) async {
+    return await apiService.createChannel(channelData);
   }
 
-  Future<Map<String, dynamic>> getChannels() async {
+  Future<PagingData<Channel>> getChannels(int currentChannelIndex) async {
     return await apiService.getChannels(
-      pageIndex: 0,
+      pageIndex: currentChannelIndex,
       pageSize: 15,
       searchText: '',
     );

@@ -5,15 +5,39 @@ class PostRepository {
 
   PostRepository(this.apiService);
 
-  Future<void> createPost(Map<String, dynamic> PostData) async {
-    await apiService.createPost(PostData);
+  Future<Post> createPost(Map<String, dynamic> PostData) async {
+    return await apiService.createPost(PostData);
   }
 
-  Future<Map<String, dynamic>> getPosts() async {
+  Future<PagingData<Post>> getPosts(int currentPostIndex) async {
     return await apiService.getPosts(
-      pageIndex: 0,
+      pageIndex: currentPostIndex,
       pageSize: 15,
       searchText: '',
     );
+  }
+
+  Future<PagingData<Post>> getPostsFromChannel(
+      int currentPostIndex, String channelId) async {
+    return await apiService.getPostsByChannel(
+        pageIndex: currentPostIndex, pageSize: 15, channelId: channelId);
+  }
+
+  Future<Post> likePost(String postId) async {
+    return await apiService.likePost(postId);
+  }
+
+  Future<Post> unlikePost(String postId) async {
+    return await apiService.unlikePost(postId);
+  }
+
+  Future<PostComment> addComment(Map<String, dynamic> postData) async {
+    return await apiService.addComment(postData);
+  }
+
+  Future<PagingData<PostComment>> listComments(
+      int currentPostIndex, String postId) async {
+    return await apiService.getCommentsByPost(
+        pageIndex: currentPostIndex, pageSize: 15, postId: postId);
   }
 }
