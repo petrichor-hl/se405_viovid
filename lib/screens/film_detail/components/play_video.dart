@@ -19,7 +19,8 @@ class PlayVideoButton extends StatelessWidget {
 
     return IconButton.filled(
       onPressed: () async {
-        if (context.read<UserProfileCubit>().checkNormalUser()) {
+        if (!film.seasons[0].episodes[0].isFree &&
+            context.read<UserProfileCubit>().checkNormalUser()) {
           await showDialog(
             context: context,
             builder: (ctx) => const PromoteDialog(),

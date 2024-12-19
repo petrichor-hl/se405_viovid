@@ -63,11 +63,11 @@ class ProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const ProfileHeader(),
-          ProfileSettingItem(
-            title: 'Thông tin tài khoản',
-            iconData: Icons.account_box,
-            onTap: () {},
-          ),
+          // ProfileSettingItem(
+          //   title: 'Thông tin tài khoản',
+          //   iconData: Icons.account_box,
+          //   onTap: () {},
+          // ),
           ProfileSettingItem(
             title: 'Danh sách của tôi',
             iconData: Icons.list_rounded,
@@ -81,7 +81,7 @@ class ProfileScreen extends StatelessWidget {
           ProfileSettingItem(
             title: 'Lịch sử thanh toán',
             iconData: Icons.download_done_rounded,
-            onTap: () {},
+            onTap: () => context.push(RouteName.paymentHistory),
           ),
           const Spacer(),
           FilledButton(

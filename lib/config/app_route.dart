@@ -1,12 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viovid_app/config/api.config.dart';
+import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_api_service.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
 import 'package:viovid_app/features/films_by_genre/cubit/films_by_genre_cubit.dart';
 import 'package:viovid_app/features/films_by_genre/data/films_by_genre_api_service.dart';
 import 'package:viovid_app/features/films_by_genre/data/films_by_genre_repository.dart';
+import 'package:viovid_app/features/payment_history/cubit/payment_history_cubit.dart';
+import 'package:viovid_app/features/payment_history/data/payment_history_api_service.dart';
+import 'package:viovid_app/features/payment_history/data/payment_history_repository.dart';
 import 'package:viovid_app/features/person_detail/cubit/person_detail_cubit.dart';
 import 'package:viovid_app/features/person_detail/data/person_detail_api_service.dart';
 import 'package:viovid_app/features/person_detail/data/person_detail_repository.dart';
@@ -22,6 +26,7 @@ import 'package:viovid_app/screens/change_password/change_password.screen.dart';
 import 'package:viovid_app/screens/film_detail/film_detail.screen.dart';
 import 'package:viovid_app/screens/films_by_genre/films_by_genre.screen.dart';
 import 'package:viovid_app/screens/main/bottom_nav.dart';
+import 'package:viovid_app/screens/main/profile/payment_history.dart';
 import 'package:viovid_app/screens/my_list/my_list.screen.dart';
 import 'package:viovid_app/screens/onboarding/onboarding.screen.dart';
 import 'package:viovid_app/screens/person_detail/person_detail.screen.dart';
@@ -41,9 +46,18 @@ class RouteName {
   static const String genre = '/genre/:id';
   static const String changePassword = '/change-password';
   static const String registerPlan = '/register-plan';
+  static const String paymentHistory = '/payment-history';
 }
 
 GoRouter appRouter = GoRouter(
+  redirect: (context, state) {
+    final authState = context.read<AuthBloc>().state;
+
+    return (switch (authState) {
+      AuthLoginSuccess() => null,
+      _ => RouteName.splash,
+    });
+  },
   routes: [
     GoRoute(
       path: RouteName.splash,
@@ -147,6 +161,19 @@ GoRouter appRouter = GoRouter(
             ),
           ),
           child: const ChangePasswordScreen(),
+        );
+      },
+    ),
+    GoRoute(
+      path: RouteName.paymentHistory,
+      builder: (ctx, state) {
+        return BlocProvider(
+          create: (context) => PaymentHistoryCubit(
+            PaymentHistoryRepository(
+              paymentHistoryApiService: PaymentHistoryApiService(dio),
+            ),
+          ),
+          child: const PaymentHistory(),
         );
       },
     ),

@@ -18,19 +18,10 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  void _redirect() async {
-    Future.delayed(const Duration(milliseconds: 700), () {
-      if (mounted) {
-        context.read<AuthBloc>().add(AuthCheckLocalStorage());
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    // Executes a function only one time after the layout is completed
-    WidgetsBinding.instance.addPostFrameCallback((_) => _redirect());
+    context.read<AuthBloc>().add(AuthCheckLocalStorage());
   }
 
   @override
