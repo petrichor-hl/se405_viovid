@@ -34,9 +34,9 @@ class UserProfileCubit extends Cubit<UserProfileState> {
   }
 
   bool checkNormalUser() {
-    // print(state.userProfile?.planName);
-    // print(state.userProfile?.startDate);
-    // print(state.userProfile?.endDate);
+    print(state.userProfile?.planName);
+    print(state.userProfile?.startDate);
+    print(state.userProfile?.endDate);
     if (state.userProfile == null) {
       return true;
     } else {

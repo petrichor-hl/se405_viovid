@@ -8,6 +8,7 @@ import 'package:viovid_app/features/film_detail/dtos/episode.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_state.dart';
 import 'package:viovid_app/features/user_profile/dtos/tracking_progress.dart';
+import 'package:viovid_app/screens/film_detail/components/promote_dialog.dart';
 
 class HorizontalEpisode extends StatelessWidget {
   const HorizontalEpisode({super.key, required this.episode});
@@ -26,6 +27,15 @@ class HorizontalEpisode extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 14),
       child: InkWell(
         onTap: () async {
+          if (!episode.isFree &&
+              context.read<UserProfileCubit>().checkNormalUser()) {
+            await showDialog(
+              context: context,
+              builder: (ctx) => const PromoteDialog(),
+            );
+            return;
+          }
+
           final TrackingProgress? trackingProgress = await context.push(
             '${GoRouterState.of(context).uri}/watching',
             extra: {
