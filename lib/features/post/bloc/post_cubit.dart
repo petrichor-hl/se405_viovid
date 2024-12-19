@@ -19,7 +19,6 @@ class PostCubit extends Cubit<void> {
   Future<List<Post>> getListPost(int currentPostIndex) async {
     try {
       final response = await repository.getPosts(currentPostIndex);
-      emit(null); // Emit success state if needed
       return response.items;
     } catch (e) {
       emit(null); // Emit failure state if needed
@@ -32,11 +31,48 @@ class PostCubit extends Cubit<void> {
     try {
       final response =
           await repository.getPostsFromChannel(currentPostIndex, channelId);
-      emit(null); // Emit success state if needed
       return response.items;
     } catch (e) {
       emit(null); // Emit failure state if needed
       return [];
+    }
+  }
+
+  Future<Post> likePost(String postId) async {
+    try {
+      return await repository.likePost(postId);
+    } catch (e) {
+      emit(null); // Emit failure state if needed
+      throw e;
+    }
+  }
+
+  Future<Post> unlikePost(String postId) async {
+    try {
+      return await repository.unlikePost(postId);
+    } catch (e) {
+      emit(null); // Emit failure state if needed
+      throw e;
+    }
+  }
+
+  Future<PostComment> addComment(Map<String, dynamic> postData) async {
+    try {
+      return await repository.addComment(postData);
+    } catch (e) {
+      emit(null); // Emit failure state if needed
+      throw e;
+    }
+  }
+
+  Future<List<PostComment>> listComments(
+      int currentIndex, String postId) async {
+    try {
+      final response = await repository.listComments(currentIndex, postId);
+      return response.items;
+    } catch (e) {
+      emit(null); // Emit failure state if needed
+      throw e;
     }
   }
 }

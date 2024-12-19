@@ -85,6 +85,52 @@ class _ForumScreenState extends State<ForumScreen> {
     }
   }
 
+  Future<void> _likePost(String postId) async {
+    try {
+      await postCubit.likePost(postId);
+    } catch (e) {
+      print('Error liking post: $e');
+    }
+  }
+
+  Future<void> _unlikePost(String postId) async {
+    try {
+      await postCubit.unlikePost(postId);
+    } catch (e) {
+      print('Error unliking post: $e');
+    }
+  }
+
+  void _onLikePressed(Post post) async {
+    setState(() {
+      post.likes += 1;
+    });
+
+    try {
+      await _likePost(post.id);
+    } catch (e) {
+      print('Error liking post: $e');
+      setState(() {
+        post.likes -= 1;
+      });
+    }
+  }
+
+  void _onUnlikePressed(Post post) async {
+    setState(() {
+      post.likes -= 1;
+    });
+
+    try {
+      await _unlikePost(post.id);
+    } catch (e) {
+      print('Error unliking post: $e');
+      setState(() {
+        post.likes += 1;
+      });
+    }
+  }
+
   void _onChannelTap(Channel channel) {
     setState(() {
       currentChannel = channel;
@@ -163,7 +209,6 @@ class _ForumScreenState extends State<ForumScreen> {
             IconButton(
               icon: const Icon(Icons.search),
               onPressed: () {
-                // Navigate to search screen
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SearchScreen()),
@@ -172,10 +217,10 @@ class _ForumScreenState extends State<ForumScreen> {
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              HashtagTopicCard(
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: HashtagTopicCard(
                 hashtag: currentChannel?.name ?? 'No channel selected',
                 description:
                     currentChannel?.description ?? 'No description available',
@@ -194,29 +239,35 @@ class _ForumScreenState extends State<ForumScreen> {
                   );
                 },
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.8,
-                child: ListView.builder(
-                  itemCount: posts.length,
-                  itemBuilder: (context, index) {
-                    return ForumItem(
-                      postData: posts[index],
-                      onCommentPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CommentPage(
-                              postData: posts[index],
-                            ),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final post = posts[index];
+                  return ForumItem(
+                    postData: post,
+                    onCommentPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CommentPage(
+                            postCubit: postCubit,
+                            postData: post,
+                            onCommentPressed: () {},
+                            onLikePressed: () => _onLikePressed(post),
+                            onUnlikePressed: () => _onUnlikePressed(post),
                           ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                        ),
+                      );
+                    },
+                    onLikePressed: () => _onLikePressed(post),
+                    onUnlikePressed: () => _onUnlikePressed(post),
+                  );
+                },
+                childCount: posts.length,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -225,20 +276,19 @@ class _ForumScreenState extends State<ForumScreen> {
 
 class ForumItem extends StatelessWidget {
   final Post postData;
+  final VoidCallback onLikePressed;
+  final VoidCallback onUnlikePressed;
   final VoidCallback onCommentPressed;
 
   const ForumItem({
     required this.postData,
+    required this.onLikePressed,
+    required this.onUnlikePressed,
     required this.onCommentPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    print("postData.imageUrls.isNotEmpty: ${postData.imageUrls.isNotEmpty}");
-    print("postData.imageUrls.isNotEmpty: ${postData.imageUrls.length}");
-    print("postData.imageUrls runtimeType: ${postData.imageUrls.runtimeType}");
-    print("postData.imageUrls raw: ${postData.imageUrls}");
-
     return Card(
       margin: const EdgeInsets.all(8),
       child: Padding(
@@ -247,8 +297,8 @@ class ForumItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Wrap(
-              spacing: 8.0, // Space between tags
-              runSpacing: 4.0, // Space between lines of tags
+              spacing: 8.0,
+              runSpacing: 4.0,
               children: postData.hashtags.map((tag) {
                 return Container(
                   padding: const EdgeInsets.symmetric(
@@ -271,7 +321,7 @@ class ForumItem extends StatelessWidget {
                 const CircleAvatar(child: Icon(Icons.person)),
                 const SizedBox(width: 8),
                 Expanded(
-                  flex: 8, // 80% of the available width
+                  flex: 8,
                   child: Text(
                     (postData.applicationUser)["userName"],
                     style: const TextStyle(
@@ -283,7 +333,7 @@ class ForumItem extends StatelessWidget {
                 Text(
                   '${postData.createdAt.difference(DateTime.now()).inHours.abs()}h',
                   style: const TextStyle(color: Colors.grey),
-                  overflow: TextOverflow.ellipsis, // Handle overflow
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -305,8 +355,11 @@ class ForumItem extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.thumb_up_alt_outlined),
-                  onPressed: () {},
+                  icon: postData.likes > 0
+                      ? const Icon(Icons.thumb_up, color: Colors.blue)
+                      : const Icon(Icons.thumb_up_alt_outlined),
+                  onPressed:
+                      postData.likes > 0 ? onUnlikePressed : onLikePressed,
                 ),
                 Text('${postData.likes}'),
                 const Spacer(),

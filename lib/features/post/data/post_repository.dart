@@ -22,4 +22,22 @@ class PostRepository {
     return await apiService.getPostsByChannel(
         pageIndex: currentPostIndex, pageSize: 15, channelId: channelId);
   }
+
+  Future<Post> likePost(String postId) async {
+    return await apiService.likePost(postId);
+  }
+
+  Future<Post> unlikePost(String postId) async {
+    return await apiService.unlikePost(postId);
+  }
+
+  Future<PostComment> addComment(Map<String, dynamic> postData) async {
+    return await apiService.addComment(postData);
+  }
+
+  Future<PagingData<PostComment>> listComments(
+      int currentPostIndex, String postId) async {
+    return await apiService.getCommentsByPost(
+        pageIndex: currentPostIndex, pageSize: 15, postId: postId);
+  }
 }
