@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:viovid_app/base/components/skeleton_loading.dart';
 import 'package:viovid_app/features/post/bloc/post_cubit.dart';
 import 'package:viovid_app/features/post/post_api_service.dart';
-import 'package:viovid_app/screens/main/forum/forum.screen.dart';
+import 'package:viovid_app/screens/main/forum/post_card.dart';
 
 class CommentPage extends StatefulWidget {
   final PostCubit postCubit;
@@ -26,6 +27,7 @@ class _CommentPageState extends State<CommentPage> {
   final TextEditingController _commentController = TextEditingController();
   late List<PostComment> comments = [];
   int _currentCommentIndex = 0;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -42,12 +44,16 @@ class _CommentPageState extends State<CommentPage> {
       final fetchedComments =
           await widget.postCubit.listComments(_currentCommentIndex, postId);
 
-      print(fetchedComments);
       setState(() {
         comments = fetchedComments;
+        isLoading = false; // Set loading to false once the data is fetched
       });
     } catch (e) {
       print('Error fetching posts for comments: $e');
+      setState(() {
+        isLoading =
+            false; // Ensure loading state is also false if there's an error
+      });
     }
   }
 
@@ -72,22 +78,35 @@ class _CommentPageState extends State<CommentPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ForumItem(
-              postData: widget.postData,
-              onCommentPressed: () {},
-              onLikePressed: widget.onLikePressed,
-              onUnlikePressed: widget.onUnlikePressed,
-            ),
+            child: isLoading
+                ? const SkeletonLoading(height: 200, width: double.infinity)
+                : PostItem(
+                    postData: widget.postData,
+                    onCommentPressed: widget.onCommentPressed,
+                    onLikePressed: widget.onLikePressed,
+                    onUnlikePressed: widget.onUnlikePressed,
+                  ),
           ),
           const Divider(),
           Expanded(
-            child: ListView.builder(
-              itemCount: comments.length,
-              itemBuilder: (context, index) {
-                final comment = comments[index];
-                return CommentItem(comment: comment);
-              },
-            ),
+            child: isLoading
+                ? ListView.builder(
+                    itemCount: 2,
+                    itemBuilder: (context, index) {
+                      return const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child:
+                            SkeletonLoading(height: 80, width: double.infinity),
+                      );
+                    },
+                  )
+                : ListView.builder(
+                    itemCount: comments.length,
+                    itemBuilder: (context, index) {
+                      final comment = comments[index];
+                      return CommentItem(comment: comment);
+                    },
+                  ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),

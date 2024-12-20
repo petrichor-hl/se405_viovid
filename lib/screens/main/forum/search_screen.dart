@@ -1,33 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:viovid_app/features/channel/bloc/channel_cubit.dart';
+import 'package:viovid_app/features/channel/channel_api_service.dart';
 
-class SearchScreen extends StatefulWidget {
+class SearchChannelScreen extends StatefulWidget {
+  final ChannelCubit channelCubit;
+  final void Function(Channel channel) onChannelSelected;
+
+  const SearchChannelScreen(
+      {Key? key, required this.channelCubit, required this.onChannelSelected})
+      : super(key: key);
+
   @override
-  _SearchScreenState createState() => _SearchScreenState();
+  _SearchScreenChannelState createState() => _SearchScreenChannelState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenChannelState extends State<SearchChannelScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<String> _channels = [];
+  List<Channel> _channels = [];
+  int _currentChannelIndex = 0;
   bool _isSearching = false;
 
-  void _performSearch() {
-    setState(() {
-      _isSearching = true;
-
-      // Simulate search results
-      _channels = [
-        'Channel 1',
-        'Channel 2',
-        'Channel 3',
-        'Channel 4',
-      ]
-          .where((channel) => channel
-              .toLowerCase()
-              .contains(_searchController.text.toLowerCase()))
-          .toList();
-
-      _isSearching = false;
-    });
+  Future<void> _getChannels() async {
+    try {
+      setState(() {
+        _isSearching = true;
+      });
+      final fetchedChannels = await widget.channelCubit
+          .getListChannel(_currentChannelIndex, _searchController.text);
+      if (mounted) {
+        setState(() {
+          _channels = fetchedChannels;
+          _isSearching = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching channels: $e');
+    }
   }
 
   @override
@@ -61,18 +69,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: _performSearch,
+                  onPressed: _getChannels,
                   child: const Text('Tìm kiếm'),
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const Wrap(
-              spacing: 8,
-              children: [
-                Chip(label: Text('#Cận đây')),
-                Chip(label: Text('#Kinh dị')),
-                Chip(label: Text('#Du lịch')),
               ],
             ),
             const SizedBox(height: 20),
@@ -85,7 +84,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     final channel = _channels[index];
                     return ListTile(
                       title: Text(
-                        channel,
+                        channel.name,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -93,12 +92,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                       trailing: ElevatedButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Đã theo dõi $channel')),
-                          );
+                        onPressed: () => {
+                          widget.onChannelSelected(channel),
+                          Navigator.pop(context)
                         },
-                        child: const Text('Theo dõi'),
+                        child: const Text('Chọn'),
                       ),
                     );
                   },

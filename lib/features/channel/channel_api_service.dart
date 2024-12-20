@@ -100,6 +100,20 @@ class ChannelApiService {
     return response;
   }
 
+  Future<Channel> getChannelById({
+    required String channelId,
+  }) async {
+    print("getting channel detail...");
+    final response = await ApiClient(dio).request<void, Channel>(
+      url: '/Channel/$channelId',
+      method: ApiMethod.get,
+      fromJson: (json) => Channel.fromJson(json),
+    );
+
+    print(response);
+    return response;
+  }
+
   Future<PagingData<Channel>> getChannelsByUser({
     required int pageIndex,
     required int pageSize,
@@ -122,7 +136,6 @@ class ChannelApiService {
   }
 
   Future<bool> subscribeChannel(Map<String, dynamic> channelData) async {
-    print("subscribing channel...");
     print(channelData);
     final result = await ApiClient(dio).request<Map<String, dynamic>, bool>(
       url: '/Channel/Subscribe',
@@ -134,7 +147,6 @@ class ChannelApiService {
   }
 
   Future<bool> unsubscribeChannel(Map<String, dynamic> channelData) async {
-    print("unsubscribing channel...");
     print(channelData);
     final result = await ApiClient(dio).request<Map<String, dynamic>, bool>(
       url: '/Channel/Unsubscribe',
