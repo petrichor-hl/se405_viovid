@@ -23,6 +23,7 @@ class ForumScreen extends StatefulWidget {
 class _ForumScreenState extends State<ForumScreen> {
   List<Channel> channels = [];
   Channel? currentChannel;
+  Map<String, bool> subscriptionStatus = {};
 
   List<Post> posts = [];
   Post? currentPost;
@@ -48,30 +49,34 @@ class _ForumScreenState extends State<ForumScreen> {
     await _checkSubscriptionStatus();
   }
 
-  Future<void> _getChannels() async {
-    try {
-      final fetchedChannels =
-          await channelCubit.getListChannel(_currentChannelIndex);
-      print('Fetched channels: $fetchedChannels');
-      setState(() {
-        channels = fetchedChannels;
-        currentChannel =
-            fetchedChannels.isNotEmpty ? fetchedChannels.first : null;
-      });
-    } catch (e) {
-      print('Error fetching channels: $e');
-    }
-  }
+  // Future<void> _getChannels() async {
+  //   try {
+  //     final fetchedChannels =
+  //         await channelCubit.getListChannel(_currentChannelIndex);
+  //     print('Fetched channels: $fetchedChannels');
+  //     setState(() {
+  //       channels = fetchedChannels;
+  //       currentChannel =
+  //           fetchedChannels.isNotEmpty ? fetchedChannels.first : null;
+  //     });
+  //   } catch (e) {
+  //     print('Error fetching channels: $e');
+  //   }
+  // }
 
   Future<void> _getChannelsByUser() async {
     try {
       final fetchedChannels =
           await channelCubit.getListChannelByUser(_currentChannelIndex);
-      print('Fetched channels: $fetchedChannels');
       setState(() {
         channels = fetchedChannels;
         currentChannel =
             fetchedChannels.isNotEmpty ? fetchedChannels.first : null;
+        // Initialize subscription status for each channel
+        for (var channel in channels) {
+          final userChannels = channel!.userChannels;
+          subscriptionStatus[channel.id] = userChannels.isNotEmpty;
+        }
       });
     } catch (e) {
       print('Error fetching channels: $e');
@@ -163,23 +168,27 @@ class _ForumScreenState extends State<ForumScreen> {
     }
   }
 
-  // Subscribe or unsubscribe from the channel
-  Future<void> _toggleSubscription() async {
-    if (currentChannel == null) return;
+  Future<void> _toggleSubscription(Channel channel) async {
+    print("subscriptionStatus: $subscriptionStatus");
+    if (channel == null) return;
 
     var payload = {
-      'channelId': currentChannel!.id,
+      'channelId': channel.id,
     };
 
     try {
-      if (isSubscribed) {
+      if (subscriptionStatus[channel.id] == true) {
         await channelCubit.unsubscribeChannel(payload);
       } else {
         await channelCubit.subscribeChannel(payload);
       }
 
       setState(() {
-        isSubscribed = !isSubscribed;
+        subscriptionStatus[channel.id] = !subscriptionStatus[channel.id]!;
+
+        if (currentChannel != null && currentChannel!.id == channel.id) {
+          isSubscribed = subscriptionStatus[channel.id]!;
+        }
       });
     } catch (e) {
       print('Error toggling subscription: $e');
@@ -250,6 +259,27 @@ class _ForumScreenState extends State<ForumScreen> {
                       channel.name,
                       style: TextStyle(color: Colors.white),
                     ),
+                    trailing: ElevatedButton.icon(
+                      onPressed: () => _toggleSubscription(channel),
+                      icon: Icon(
+                        subscriptionStatus[channel.id] == true
+                            ? Icons.notifications_off
+                            : Icons.notifications_on,
+                        color: subscriptionStatus[channel.id] == true
+                            ? Colors.grey
+                            : Colors.blue,
+                      ),
+                      label: Text(
+                        subscriptionStatus[channel.id] == true
+                            ? 'Unsubscribe'
+                            : 'Subscribe',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: subscriptionStatus[channel.id] == true
+                            ? Colors.grey
+                            : Colors.blue,
+                      ),
+                    ),
                     onTap: () {
                       _onChannelTap(channel);
                     },
@@ -302,7 +332,7 @@ class _ForumScreenState extends State<ForumScreen> {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: ElevatedButton.icon(
-                    onPressed: _toggleSubscription,
+                    onPressed: () => _toggleSubscription(currentChannel!),
                     icon: Icon(
                       isSubscribed
                           ? Icons.notifications_off

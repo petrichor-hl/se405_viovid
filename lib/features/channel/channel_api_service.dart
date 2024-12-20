@@ -122,6 +122,8 @@ class ChannelApiService {
   }
 
   Future<bool> subscribeChannel(Map<String, dynamic> channelData) async {
+    print("subscribing channel...");
+    print(channelData);
     final result = await ApiClient(dio).request<Map<String, dynamic>, bool>(
       url: '/Channel/Subscribe',
       method: ApiMethod.post,
@@ -132,6 +134,8 @@ class ChannelApiService {
   }
 
   Future<bool> unsubscribeChannel(Map<String, dynamic> channelData) async {
+    print("unsubscribing channel...");
+    print(channelData);
     final result = await ApiClient(dio).request<Map<String, dynamic>, bool>(
       url: '/Channel/Unsubscribe',
       method: ApiMethod.post,
