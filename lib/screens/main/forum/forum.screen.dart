@@ -41,7 +41,7 @@ class _ForumScreenState extends State<ForumScreen> {
   }
 
   void _initialize() async {
-    await _getChannels();
+    await _getChannelsByUser();
     await _getPostsForChannel(currentChannel?.id ?? '');
   }
 
@@ -49,6 +49,21 @@ class _ForumScreenState extends State<ForumScreen> {
     try {
       final fetchedChannels =
           await channelCubit.getListChannel(_currentChannelIndex);
+      print('Fetched channels: $fetchedChannels');
+      setState(() {
+        channels = fetchedChannels;
+        currentChannel =
+            fetchedChannels.isNotEmpty ? fetchedChannels.first : null;
+      });
+    } catch (e) {
+      print('Error fetching channels: $e');
+    }
+  }
+
+  Future<void> _getChannelsByUser() async {
+    try {
+      final fetchedChannels =
+          await channelCubit.getListChannelByUser(_currentChannelIndex);
       print('Fetched channels: $fetchedChannels');
       setState(() {
         channels = fetchedChannels;
@@ -173,7 +188,7 @@ class _ForumScreenState extends State<ForumScreen> {
                       MaterialPageRoute(
                         builder: (context) => CreateChannelScreen(
                           channelCubit: channelCubit,
-                          onChannelCreated: _getChannels,
+                          onChannelCreated: _getChannelsByUser,
                         ),
                       ),
                     );

@@ -26,4 +26,33 @@ class ChannelCubit extends Cubit<void> {
       return [];
     }
   }
+
+  Future<List<Channel>> getListChannelByUser(int currentChannelIndex) async {
+    try {
+      final response = await repository.getChannelsByUser(currentChannelIndex);
+      emit(null); // Emit success state if needed
+      return response.items;
+    } catch (e) {
+      emit(null); // Emit failure state if needed
+      return [];
+    }
+  }
+
+  Future<bool> subscribeChannel(Map<String, dynamic> channelData) async {
+    try {
+      return await repository.subscribeChannel(channelData);
+    } catch (e) {
+      emit(null); // Emit failure state if needed
+      throw e;
+    }
+  }
+
+  Future<bool> unsubscribeChannel(Map<String, dynamic> channelData) async {
+    try {
+      return await repository.unsubscribeChannel(channelData);
+    } catch (e) {
+      emit(null); // Emit failure state if needed
+      throw e;
+    }
+  }
 }

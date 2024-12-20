@@ -16,4 +16,20 @@ class ChannelRepository {
       searchText: '',
     );
   }
+
+  Future<PagingData<Channel>> getChannelsByUser(int currentChannelIndex) async {
+    return await apiService.getChannelsByUser(
+      pageIndex: currentChannelIndex,
+      pageSize: 15,
+      searchText: '',
+    );
+  }
+
+  Future<bool> subscribeChannel(Map<String, dynamic> channelData) async {
+    return await apiService.subscribeChannel(channelData);
+  }
+
+  Future<bool> unsubscribeChannel(Map<String, dynamic> channelData) async {
+    return await apiService.unsubscribeChannel(channelData);
+  }
 }

@@ -141,7 +141,7 @@ class CommentItem extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   comment.applicationUser['userName'],
-                  style: const TextStyle(fontSize: 16, color: Colors.white),
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
                 ),
                 const Spacer(),
                 Text(
@@ -153,7 +153,7 @@ class CommentItem extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               comment.content,
-              style: const TextStyle(fontSize: 14, color: Colors.white),
+              style: const TextStyle(fontSize: 14, color: Colors.black),
             ),
           ],
         ),
