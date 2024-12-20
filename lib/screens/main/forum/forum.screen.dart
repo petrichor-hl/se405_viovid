@@ -27,6 +27,8 @@ class _ForumScreenState extends State<ForumScreen> {
   List<Post> posts = [];
   Post? currentPost;
 
+  bool isSubscribed = false;
+
   int _currentPostIndex = 0;
   int _currentChannelIndex = 0;
 
@@ -43,6 +45,7 @@ class _ForumScreenState extends State<ForumScreen> {
   void _initialize() async {
     await _getChannelsByUser();
     await _getPostsForChannel(currentChannel?.id ?? '');
+    await _checkSubscriptionStatus();
   }
 
   Future<void> _getChannels() async {
@@ -146,11 +149,49 @@ class _ForumScreenState extends State<ForumScreen> {
     }
   }
 
-  void _onChannelTap(Channel channel) {
+  // Check subscription status of the current user for the channel
+  Future<void> _checkSubscriptionStatus() async {
+    if (currentChannel != null) {
+      try {
+        final userChannels = currentChannel!.userChannels;
+        setState(() {
+          isSubscribed = userChannels.isNotEmpty;
+        });
+      } catch (e) {
+        print('Error checking subscription status: $e');
+      }
+    }
+  }
+
+  // Subscribe or unsubscribe from the channel
+  Future<void> _toggleSubscription() async {
+    if (currentChannel == null) return;
+
+    var payload = {
+      'channelId': currentChannel!.id,
+    };
+
+    try {
+      if (isSubscribed) {
+        await channelCubit.unsubscribeChannel(payload);
+      } else {
+        await channelCubit.subscribeChannel(payload);
+      }
+
+      setState(() {
+        isSubscribed = !isSubscribed;
+      });
+    } catch (e) {
+      print('Error toggling subscription: $e');
+    }
+  }
+
+  void _onChannelTap(Channel channel) async {
     setState(() {
       currentChannel = channel;
     });
-    _getPostsForChannel(channel.id);
+    await _getPostsForChannel(channel.id);
+    await _checkSubscriptionStatus();
   }
 
   @override
@@ -253,6 +294,29 @@ class _ForumScreenState extends State<ForumScreen> {
                     ),
                   );
                 },
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton.icon(
+                    onPressed: _toggleSubscription,
+                    icon: Icon(
+                      isSubscribed
+                          ? Icons.notifications_off
+                          : Icons.notifications_on,
+                      color: isSubscribed ? Colors.grey : Colors.blue,
+                    ),
+                    label: Text(
+                      isSubscribed ? 'Unsubscribe' : 'Subscribe',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isSubscribed ? Colors.grey : Colors.blue,
+                    ),
+                  ),
+                ),
               ),
             ),
             SliverList(

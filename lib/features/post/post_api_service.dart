@@ -19,6 +19,14 @@ class PostComment {
   });
 
   factory PostComment.fromJson(Map<String, dynamic> json) {
+    var postComment = PostComment(
+      id: json['id'],
+      createdAt: DateTime.parse(json['createdAt']),
+      content: json['content'],
+      applicationUserId: json['applicationUserId'],
+      applicationUser: json['applicationUser'],
+      postId: json['postId'],
+    );
     return PostComment(
       id: json['id'],
       createdAt: DateTime.parse(json['createdAt']),
@@ -86,12 +94,14 @@ class PagingData<T> {
     required this.items,
   });
 
-  factory PagingData.fromJson(Map<String, dynamic> json) {
+  factory PagingData.fromJson(
+    Map<String, dynamic> json,
+    T Function(Map<String, dynamic>) fromJsonT,
+  ) {
     print("json: $json");
     var res = PagingData(
-      items: List<T>.from(json['items'].map((item) => Post.fromJson(item))),
+      items: List<T>.from(json['items'].map((item) => fromJsonT(item))),
     );
-
     print("res: ${res.items}");
     return res;
   }
@@ -128,7 +138,7 @@ class PostApiService {
         'PageSize': pageSize,
         'SearchText': searchText,
       },
-      fromJson: (json) => PagingData.fromJson(json),
+      fromJson: (json) => PagingData.fromJson(json, Post.fromJson),
     );
 
     print(response);
@@ -149,7 +159,7 @@ class PostApiService {
         'PageSize': pageSize,
         'ChannelId': channelId,
       },
-      fromJson: (json) => PagingData.fromJson(json),
+      fromJson: (json) => PagingData.fromJson(json, Post.fromJson),
     );
 
     return response;
@@ -205,7 +215,7 @@ class PostApiService {
         'PageSize': pageSize,
         'PostId': postId,
       },
-      fromJson: (json) => PagingData.fromJson(json),
+      fromJson: (json) => PagingData.fromJson(json, PostComment.fromJson),
     );
 
     return response;
