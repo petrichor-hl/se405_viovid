@@ -4,6 +4,7 @@ import 'package:viovid_app/features/result_type.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_api_service.dart';
 import 'package:viovid_app/features/user_profile/dtos/change_password_dto.dart';
 import 'package:viovid_app/features/user_profile/dtos/tracking_progress.dart';
+import 'package:viovid_app/features/user_profile/dtos/update_fcm_token_dto.dart';
 import 'package:viovid_app/features/user_profile/dtos/user_profile.dart';
 
 class UserProfileRepository {
@@ -59,6 +60,21 @@ class UserProfileRepository {
             currentPassword: currentPassword,
             newPassword: newPassword,
           ),
+        ),
+      );
+    } catch (error) {
+      log('$error');
+      return Failure('$error');
+    }
+  }
+
+  Future<Result<bool>> updateFcmToken(
+    String fcmToken,
+  ) async {
+    try {
+      return Success(
+        await userProfileApiService.updateFcmToken(
+          UpdateFcmTokenDto(fcmToken: fcmToken),
         ),
       );
     } catch (error) {

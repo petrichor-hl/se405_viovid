@@ -16,7 +16,7 @@ class ApiClient {
   Future<ResponseType> request<RequestType, ResponseType>({
     required String url,
     required ApiMethod method,
-    RequestType? payload, // POST, PUT
+    Object? payload, // POST, PUT
     Map<String, dynamic>? queryParameters, // GET
     ResponseType Function(dynamic)? fromJson,
   }) async {

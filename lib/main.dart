@@ -36,7 +36,6 @@ void main() async {
 
   // Ctrl + F5
   // flutter run --dart-define-from-file=lib/config/.env
-
   runApp(
     MyApp(
       sharedPreferences: sf,
@@ -90,47 +89,50 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (ctx) => AuthBloc(
-            AuthRepository(
-              authApiService: AuthApiService(dio),
-              authLocalStorageService:
-                  AuthLocalStorageService(widget.sharedPreferences),
+    return RepositoryProvider(
+      create: (context) => UserProfileRepository(
+        userProfileApiService: UserProfileApiService(dio),
+      ),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (ctx) => AuthBloc(
+              AuthRepository(
+                authApiService: AuthApiService(dio),
+                authLocalStorageService:
+                    AuthLocalStorageService(widget.sharedPreferences),
+              ),
             ),
           ),
-        ),
-        BlocProvider(
-          create: (ctx) => UserProfileCubit(
-            UserProfileRepository(
-              userProfileApiService: UserProfileApiService(dio),
+          BlocProvider(
+            create: (ctx) => UserProfileCubit(
+              ctx.read<UserProfileRepository>(),
             ),
           ),
-        ),
-        BlocProvider(
-          create: (ctx) => MyListCubit(
-            MyListRepository(
-              myListApiService: MyListApiService(dio),
+          BlocProvider(
+            create: (ctx) => MyListCubit(
+              MyListRepository(
+                myListApiService: MyListApiService(dio),
+              ),
             ),
           ),
-        ),
-      ],
-      child: MaterialApp.router(
-        routerConfig: appRouter,
-        title: 'Movie App',
-        theme: ThemeData(
-          appBarTheme: appBarTheme,
-          colorScheme: appColorScheme,
-          filledButtonTheme: appFilledButtonTheme,
-          textTheme: GoogleFonts.montserratTextTheme(),
-          useMaterial3: true,
-          scaffoldBackgroundColor: Colors.black,
-          sliderTheme: const SliderThemeData(
-            showValueIndicator: ShowValueIndicator.always,
+        ],
+        child: MaterialApp.router(
+          routerConfig: appRouter,
+          title: 'Movie App',
+          theme: ThemeData(
+            appBarTheme: appBarTheme,
+            colorScheme: appColorScheme,
+            filledButtonTheme: appFilledButtonTheme,
+            textTheme: GoogleFonts.montserratTextTheme(),
+            useMaterial3: true,
+            scaffoldBackgroundColor: Colors.black,
+            sliderTheme: const SliderThemeData(
+              showValueIndicator: ShowValueIndicator.always,
+            ),
           ),
+          debugShowCheckedModeBanner: false,
         ),
-        debugShowCheckedModeBanner: false,
       ),
     );
   }

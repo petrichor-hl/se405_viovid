@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/config/styles.config.dart';
 import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';

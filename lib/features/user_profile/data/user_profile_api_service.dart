@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:viovid_app/features/api_client.dart';
 import 'package:viovid_app/features/user_profile/dtos/change_password_dto.dart';
 import 'package:viovid_app/features/user_profile/dtos/tracking_progress.dart';
+import 'package:viovid_app/features/user_profile/dtos/update_fcm_token_dto.dart';
 import 'package:viovid_app/features/user_profile/dtos/user_profile.dart';
 
 class UserProfileApiService {
@@ -69,6 +70,22 @@ class UserProfileApiService {
       );
     } on DioException catch (e) {
       print(e);
+      if (e.response != null) {
+        throw Exception(e.response!.data['Errors'][0]['Message']);
+      } else {
+        throw Exception(e.message);
+      }
+    }
+  }
+
+  Future<bool> updateFcmToken(UpdateFcmTokenDto updateFcmTokenDto) async {
+    try {
+      return await ApiClient(dio).request<UpdateFcmTokenDto, bool>(
+        url: '/Account/update-fcm-token',
+        payload: updateFcmTokenDto,
+        method: ApiMethod.put,
+      );
+    } on DioException catch (e) {
       if (e.response != null) {
         throw Exception(e.response!.data['Errors'][0]['Message']);
       } else {

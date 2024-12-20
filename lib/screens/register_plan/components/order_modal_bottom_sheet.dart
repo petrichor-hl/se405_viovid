@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:viovid_app/base/assets.dart';
 import 'package:viovid_app/base/extension.dart';
@@ -59,16 +60,9 @@ class _OrderModalBottomSheetState extends State<OrderModalBottomSheet> {
           final uri = Uri.parse(paymentUrl);
 
           if (await canLaunchUrl(uri)) {
-            await launchUrl(uri, mode: LaunchMode.inAppWebView);
+            context.pop();
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
           }
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (ctx) => PaymentWebView(
-          //       paymentUrl: paymentUrl,
-          //     ),
-          //   ),
-          // );
         } else {
           // TODO: show Error dialog
         }

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/features/user_profile/data/user_profile_repository.dart';
 
 class NotificationHelper {
   final _firebaseMessaging = FirebaseMessaging.instance;
@@ -24,7 +25,7 @@ class NotificationHelper {
     if (fcmToken != null &&
         userProfile != null &&
         fcmToken != userProfile.fcmToken) {
-      // TODO: Update fcmToken
+      await context.read<UserProfileRepository>().updateFcmToken(fcmToken);
     }
 
     _firebaseMessaging.onTokenRefresh.listen((newFcmToken) {

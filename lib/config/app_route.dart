@@ -26,7 +26,7 @@ import 'package:viovid_app/screens/change_password/change_password.screen.dart';
 import 'package:viovid_app/screens/film_detail/film_detail.screen.dart';
 import 'package:viovid_app/screens/films_by_genre/films_by_genre.screen.dart';
 import 'package:viovid_app/screens/main/bottom_nav.dart';
-import 'package:viovid_app/screens/main/profile/payment_history.dart';
+import 'package:viovid_app/screens/main/profile/payment_history.screen.dart';
 import 'package:viovid_app/screens/my_list/my_list.screen.dart';
 import 'package:viovid_app/screens/onboarding/onboarding.screen.dart';
 import 'package:viovid_app/screens/person_detail/person_detail.screen.dart';
@@ -47,16 +47,25 @@ class RouteName {
   static const String changePassword = '/change-password';
   static const String registerPlan = '/register-plan';
   static const String paymentHistory = '/payment-history';
+
+  static const publicRoutes = [
+    onboarding,
+    auth,
+    splash,
+  ];
 }
 
 GoRouter appRouter = GoRouter(
-  redirect: (context, state) {
-    final authState = context.read<AuthBloc>().state;
+  redirect: (ctx, state) {
+    if (RouteName.publicRoutes.contains(state.fullPath)) {
+      return null;
+    }
 
-    return (switch (authState) {
-      AuthLoginSuccess() => null,
-      _ => RouteName.splash,
-    });
+    if (ctx.read<AuthBloc>().state is AuthLoginSuccess) {
+      return null;
+    }
+
+    return RouteName.splash;
   },
   routes: [
     GoRoute(
