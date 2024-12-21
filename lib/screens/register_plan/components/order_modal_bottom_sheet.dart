@@ -21,10 +21,10 @@ final _paymentMethods = [
     'name': 'Stripe',
     'logo': Assets.stripeLogo,
   },
-  // {
-  //   'name': 'Momo',
-  //   'logo': Assets.momoLogo,
-  // }
+  {
+    'name': 'Momo',
+    'logo': Assets.momoLogo,
+  }
 ];
 
 class OrderModalBottomSheet extends StatefulWidget {
@@ -49,12 +49,13 @@ class _OrderModalBottomSheetState extends State<OrderModalBottomSheet> {
       paymentApiService: PaymentApiService(dio),
     );
 
+    setState(() {
+      isLoading = true;
+    });
+
     switch (paymentType) {
       case 'VNPAY':
-        setState(() {
-          isLoading = true;
-        });
-        final result = await paymentRepo.getPaymentUrl(widget.plan.id);
+        final result = await paymentRepo.getVnpayPaymentUrl(widget.plan.id);
         if (result is Success<String>) {
           final paymentUrl = (result as Success).data;
           final uri = Uri.parse(paymentUrl);
@@ -66,15 +67,33 @@ class _OrderModalBottomSheetState extends State<OrderModalBottomSheet> {
         } else {
           // TODO: show Error dialog
         }
-        setState(() {
-          isLoading = false;
-        });
         break;
+
       case 'Stripe':
         break;
+
+      case 'Momo':
+        final result = await paymentRepo.getMomoPaymentUrl(widget.plan.id);
+        if (result is Success<String>) {
+          final paymentUrl = (result as Success).data;
+          final uri = Uri.parse(paymentUrl);
+
+          if (await canLaunchUrl(uri)) {
+            context.pop();
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        } else {
+          // TODO: show Error dialog
+        }
+        break;
+
       default:
         break;
     }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override

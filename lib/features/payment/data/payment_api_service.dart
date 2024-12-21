@@ -7,10 +7,26 @@ class PaymentApiService {
 
   final Dio dio;
 
-  Future<String> getPaymentUrl(PayloadCreatePaymentUrlDto payload) async {
+  Future<String> getVnpayPaymentUrl(PayloadCreatePaymentUrlDto payload) async {
     try {
       return await ApiClient(dio).request<PayloadCreatePaymentUrlDto, String>(
         url: '/Payment/vn-pay',
+        payload: payload,
+        method: ApiMethod.post,
+      );
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw Exception(e.response!.data['Errors'][0]['Message']);
+      } else {
+        throw Exception(e.message);
+      }
+    }
+  }
+
+  Future<String> getMomoPaymentUrl(PayloadCreatePaymentUrlDto payload) async {
+    try {
+      return await ApiClient(dio).request<PayloadCreatePaymentUrlDto, String>(
+        url: '/Payment/momo',
         payload: payload,
         method: ApiMethod.post,
       );

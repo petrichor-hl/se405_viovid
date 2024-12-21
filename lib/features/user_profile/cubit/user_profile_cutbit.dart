@@ -33,22 +33,6 @@ class UserProfileCubit extends Cubit<UserProfileState> {
     });
   }
 
-  bool checkNormalUser() {
-    print(state.userProfile?.planName);
-    print(state.userProfile?.startDate);
-    print(state.userProfile?.endDate);
-    if (state.userProfile == null) {
-      return true;
-    } else {
-      final userProfile = state.userProfile!;
-      if (userProfile.endDate == null) {
-        return true;
-      } else {
-        return DateTime.parse(userProfile.endDate!).isBefore(DateTime.now());
-      }
-    }
-  }
-
   Future<void> getTrackingProgress() async {
     emit(
       state.copyWith(

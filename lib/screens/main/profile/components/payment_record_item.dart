@@ -23,6 +23,7 @@ class PaymentRecordItem extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Column(
         spacing: 4,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             spacing: 8,
@@ -33,7 +34,7 @@ class PaymentRecordItem extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  record.userPlanId,
+                  record.paymentId,
                   style: const TextStyle(
                     fontSize: 18,
                     color: Colors.white,
@@ -45,57 +46,76 @@ class PaymentRecordItem extends StatelessWidget {
               ),
             ],
           ),
-          Row(
-            spacing: 8,
-            children: [
-              const Icon(
-                Icons.price_change,
-                color: Colors.white,
-              ),
-              Text(
-                record.amount.toVnCurrencyFormat(),
-                style: const TextStyle(
-                  fontSize: 18,
+          if (record.isDone)
+            Row(
+              spacing: 8,
+              children: [
+                const Icon(
+                  Icons.price_change,
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
                 ),
-              ),
-            ],
-          ),
-          Row(
-            spacing: 8,
-            children: [
-              const Icon(
-                Icons.start_rounded,
-                color: Colors.white,
-              ),
-              Text(
-                'Bắt đầu: ${record.startDate.toVnFormat()}',
-                style: const TextStyle(
-                  fontSize: 16,
+                Text(
+                  record.amount!.toVnCurrencyFormat(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          if (record.isDone)
+            Row(
+              spacing: 8,
+              children: [
+                const Icon(
+                  Icons.start_rounded,
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
                 ),
-              ),
-            ],
-          ),
-          Row(
-            spacing: 8,
-            children: [
-              const Icon(
-                Icons.done_rounded,
-                color: Colors.white,
-              ),
-              Text(
-                'Bắt đầu: ${record.endDate.toVnFormat()}',
-                style: const TextStyle(
-                  fontSize: 16,
+                Text(
+                  'Bắt đầu: ${record.startDate!.toVnFormat()}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          if (record.isDone)
+            Row(
+              spacing: 8,
+              children: [
+                const Icon(
+                  Icons.done_rounded,
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
                 ),
+                Text(
+                  'Kết thúc: ${record.endDate!.toVnFormat()}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          Container(
+            margin: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: record.isDone ? Colors.green : Colors.red,
+            ),
+            child: Text(
+              record.isDone ? "Thành Công" : "Không thành không",
+              style: const TextStyle(
+                // fontSize: 16,
+                color: Colors.white,
+                // fontWeight: FontWeight.bold,
               ),
-            ],
-          ),
+            ),
+          )
         ],
       ),
     );

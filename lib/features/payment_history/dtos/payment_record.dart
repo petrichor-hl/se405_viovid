@@ -1,23 +1,26 @@
 class PaymentRecord {
-  String userPlanId;
+  String paymentId;
   String planName;
-  int amount;
-  DateTime startDate;
-  DateTime endDate;
+  bool isDone;
+  int? amount;
+  DateTime? startDate;
+  DateTime? endDate;
 
   PaymentRecord({
-    required this.userPlanId,
+    required this.paymentId,
     required this.planName,
+    required this.isDone,
     required this.amount,
     required this.startDate,
     required this.endDate,
   });
 
   factory PaymentRecord.fromJson(Map<String, dynamic> json) => PaymentRecord(
-        userPlanId: json["userPlanId"],
+        paymentId: json["paymentId"],
         planName: json["planName"],
+        isDone: json["isDone"],
         amount: json["amount"],
-        startDate: DateTime.parse(json["startDate"]),
-        endDate: DateTime.parse(json["endDate"]),
+        startDate: DateTime.tryParse(json["startDate"] ?? ''),
+        endDate: DateTime.tryParse(json["endDate"] ?? ''),
       );
 }

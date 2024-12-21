@@ -28,7 +28,8 @@ class HorizontalEpisode extends StatelessWidget {
       child: InkWell(
         onTap: () async {
           if (!episode.isFree &&
-              context.read<UserProfileCubit>().checkNormalUser()) {
+              context.read<UserProfileCubit>().state.userProfile?.planName ==
+                  "Normal") {
             await showDialog(
               context: context,
               builder: (ctx) => const PromoteDialog(),

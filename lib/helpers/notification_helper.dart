@@ -25,6 +25,7 @@ class NotificationHelper {
     if (fcmToken != null &&
         userProfile != null &&
         fcmToken != userProfile.fcmToken) {
+      log('UPDATE_FCM_TOKEN');
       await context.read<UserProfileRepository>().updateFcmToken(fcmToken);
     }
 

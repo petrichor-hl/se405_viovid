@@ -1,37 +1,26 @@
 import useSWR from "swr";
 import { BASE_URL } from "../constants";
 import axios, { AxiosResponse } from "axios";
-import Loading from "../components/Loading";
+import rubySparkles from "../../../assets/images/ruby_sparkles.png";
 import { ApiResult } from "../api_result";
+import Loading from "../components/Loading";
 
-interface IPayloadVnpayResult {
-  vnp_Amount: string;
-  vnp_BankCode: string;
-  vnp_BankTranNo: string;
-  vnp_CardType: string;
-  vnp_OrderInfo: string;
-  vnp_PayDate: string;
-  vnp_ResponseCode: string;
-  vnp_TmnCode: string;
-  vnp_TransactionNo: string;
-  vnp_TransactionStatus: string;
-  vnp_TxnRef: string;
-  vnp_SecureHash: string;
+interface IMomoCallBackData {
+  paymentId: string;
+  resultCode: number;
+  amount: number;
 }
 
-const fetcher = async (
-  url: string,
-  payload: IPayloadVnpayResult
-): Promise<ApiResult<boolean>> => {
+const fetcher = async (url: string, payload: IMomoCallBackData) => {
   const response = await axios.post<
     ApiResult<boolean>,
     AxiosResponse<ApiResult<boolean>>,
-    IPayloadVnpayResult
+    IMomoCallBackData
   >(url, payload);
   return response.data; // Trả về phần data từ AxiosResponse
 };
 
-const VnpayResultScreen = () => {
+const MomoResultScreen = () => {
   const currentUrl = window.location.href;
 
   // Parse query params
@@ -39,26 +28,17 @@ const VnpayResultScreen = () => {
 
   console.log(queryParams);
 
-  const payload: IPayloadVnpayResult = {
-    vnp_Amount: queryParams.get("vnp_Amount") || "",
-    vnp_BankCode: queryParams.get("vnp_BankCode") || "",
-    vnp_BankTranNo: queryParams.get("vnp_BankTranNo") || "",
-    vnp_CardType: queryParams.get("vnp_CardType") || "",
-    vnp_OrderInfo: decodeURIComponent(queryParams.get("vnp_OrderInfo") || ""),
-    vnp_PayDate: queryParams.get("vnp_PayDate") || "",
-    vnp_ResponseCode: queryParams.get("vnp_ResponseCode") || "",
-    vnp_TmnCode: queryParams.get("vnp_TmnCode") || "",
-    vnp_TransactionNo: queryParams.get("vnp_TransactionNo") || "",
-    vnp_TransactionStatus: queryParams.get("vnp_TransactionStatus") || "",
-    vnp_TxnRef: queryParams.get("vnp_TxnRef") || "",
-    vnp_SecureHash: queryParams.get("vnp_SecureHash") || "",
+  const payload: IMomoCallBackData = {
+    paymentId: queryParams.get("orderId") || "",
+    resultCode: Number(queryParams.get("resultCode") ?? -1),
+    amount: Number(queryParams.get("amount")),
   };
 
   console.log(payload);
 
   const { data, error, isValidating } = useSWR(
-    [`${BASE_URL}/api/Payment/validate-vnpay-result`, payload],
-    ([url, payload]: [string, IPayloadVnpayResult]) => fetcher(url, payload),
+    [`${BASE_URL}/api/Payment/momo-callback`, payload],
+    ([url, payload]: [string, IMomoCallBackData]) => fetcher(url, payload),
     {
       revalidateOnFocus: false, // Không gọi lại API khi tab được focus
       revalidateOnReconnect: false, // Không gọi lại API khi mạng được khôi phục
@@ -68,18 +48,18 @@ const VnpayResultScreen = () => {
   if (error) return <h2 style={styles.errorMessage}>Có lỗi xảy ra</h2>;
   if (isValidating) return <Loading />;
 
-  console.log(data);
-  console.log("data.result = ", data?.result);
-
   return (
     <div style={styles.container}>
       {data?.result === true ? (
         <>
-          <h2 style={styles.successMessage}>Thanh toán thành công</h2>
+          <a target="_blank">
+            <img src={rubySparkles} className="logo react" alt="React logo" />
+          </a>
+          <p style={styles.successMessage}>Thanh toán thành công</p>
           <button
             style={styles.button}
             onClick={() => {
-              window.location.href = "petrichor-viovid://deeplink-to-app/";
+              window.location.href = "petrichor-viovid://deeplink-to-app";
             }}
           >
             Trở về Viovid
@@ -87,7 +67,7 @@ const VnpayResultScreen = () => {
         </>
       ) : (
         <>
-          <h2 style={styles.errorMessage}>Thanh toán thất bại</h2>
+          <h2 style={styles.errorMessage}>Thanh toán không thành công</h2>
           <button
             style={styles.button}
             onClick={() => {
@@ -132,4 +112,4 @@ const styles = {
   },
 };
 
-export default VnpayResultScreen;
+export default MomoResultScreen;
