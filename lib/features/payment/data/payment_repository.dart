@@ -11,10 +11,23 @@ class PaymentRepository {
     required this.paymentApiService,
   });
 
-  Future<Result<String>> getPaymentUrl(String planId) async {
+  Future<Result<String>> getVnpayPaymentUrl(String planId) async {
     try {
       return Success(
-        await paymentApiService.getPaymentUrl(
+        await paymentApiService.getVnpayPaymentUrl(
+          PayloadCreatePaymentUrlDto(planId: planId),
+        ),
+      );
+    } catch (error) {
+      log('$error');
+      return Failure('$error');
+    }
+  }
+
+  Future<Result<String>> getMomoPaymentUrl(String planId) async {
+    try {
+      return Success(
+        await paymentApiService.getMomoPaymentUrl(
           PayloadCreatePaymentUrlDto(planId: planId),
         ),
       );
