@@ -3,6 +3,7 @@ import { BASE_URL } from "../constants";
 import axios, { AxiosResponse } from "axios";
 import Loading from "../components/Loading";
 import { ApiResult } from "../api_result";
+import rubySparkles from "../../../assets/images/ruby_sparkles.png";
 
 interface IPayloadVnpayResult {
   vnp_Amount: string;
@@ -37,7 +38,7 @@ const VnpayResultScreen = () => {
   // Parse query params
   const queryParams = new URLSearchParams(currentUrl.split("?")[1]);
 
-  console.log(queryParams);
+  // console.log(queryParams);
 
   const payload: IPayloadVnpayResult = {
     vnp_Amount: queryParams.get("vnp_Amount") || "",
@@ -54,7 +55,7 @@ const VnpayResultScreen = () => {
     vnp_SecureHash: queryParams.get("vnp_SecureHash") || "",
   };
 
-  console.log(payload);
+  // console.log(payload);
 
   const { data, error, isValidating } = useSWR(
     [`${BASE_URL}/api/Payment/validate-vnpay-result`, payload],
@@ -75,6 +76,9 @@ const VnpayResultScreen = () => {
     <div style={styles.container}>
       {data?.result === true ? (
         <>
+          <a target="_blank">
+            <img src={rubySparkles} className="logo react" alt="React logo" />
+          </a>
           <h2 style={styles.successMessage}>Thanh toán thành công</h2>
           <button
             style={styles.button}
@@ -91,8 +95,7 @@ const VnpayResultScreen = () => {
           <button
             style={styles.button}
             onClick={() => {
-              window.location.href =
-                "petrichor-viovid://deeplink-to-app/register-plan";
+              window.location.href = "petrichor-viovid://deeplink-to-app";
             }}
           >
             Quay về VioVid
