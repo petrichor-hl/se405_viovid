@@ -18,13 +18,13 @@ final _paymentMethods = [
     'logo': Assets.vnPayLogo,
   },
   {
+    'name': 'Momo',
+    'logo': Assets.momoLogo,
+  },
+  {
     'name': 'Stripe',
     'logo': Assets.stripeLogo,
   },
-  {
-    'name': 'Momo',
-    'logo': Assets.momoLogo,
-  }
 ];
 
 class OrderModalBottomSheet extends StatefulWidget {
@@ -70,6 +70,18 @@ class _OrderModalBottomSheetState extends State<OrderModalBottomSheet> {
         break;
 
       case 'Stripe':
+        final result = await paymentRepo.getStripePaymentUrl(widget.plan.id);
+        if (result is Success<String>) {
+          final paymentUrl = (result as Success).data;
+          final uri = Uri.parse(paymentUrl);
+
+          if (await canLaunchUrl(uri)) {
+            context.pop();
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        } else {
+          // TODO: show Error dialog
+        }
         break;
 
       case 'Momo':

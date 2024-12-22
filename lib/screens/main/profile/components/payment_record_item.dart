@@ -46,6 +46,27 @@ class PaymentRecordItem extends StatelessWidget {
               ),
             ],
           ),
+          Row(
+            spacing: 8,
+            children: [
+              const Icon(
+                Icons.abc,
+                color: Colors.white,
+              ),
+              Expanded(
+                child: Text(
+                  'Đăng ký ${record.planName}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
           if (record.isDone)
             Row(
               spacing: 8,

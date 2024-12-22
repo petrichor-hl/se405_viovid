@@ -24,6 +24,19 @@ class PaymentRepository {
     }
   }
 
+  Future<Result<String>> getStripePaymentUrl(String planId) async {
+    try {
+      return Success(
+        await paymentApiService.getStripePaymentUrl(
+          PayloadCreatePaymentUrlDto(planId: planId),
+        ),
+      );
+    } catch (error) {
+      log('$error');
+      return Failure('$error');
+    }
+  }
+
   Future<Result<String>> getMomoPaymentUrl(String planId) async {
     try {
       return Success(

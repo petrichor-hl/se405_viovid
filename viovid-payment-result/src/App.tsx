@@ -3,8 +3,10 @@ import "./App.css";
 import VnpayResultScreen from "./pages/VnpayResult";
 import HomeScreen from "./pages/Home";
 import MomoResultScreen from "./pages/MomoResult";
+import StripeSuccessResultScreen from "./pages/StripeSuccessResult";
+import StripeCancelledResultScreen from "./pages/StripeCancelledResult";
 
-// vite --host 192.168.1.8 --port 5416
+// vite --host 192.168.1.6 --port 5416
 
 function App() {
   return (
@@ -13,6 +15,15 @@ function App() {
         <Route path="/" element={<HomeScreen />} />
         <Route path="/vnpay-result" element={<VnpayResultScreen />} />
         <Route path="/momo-result" element={<MomoResultScreen />} />
+
+        <Route
+          path="/stripe-callback-success"
+          element={<StripeSuccessResultScreen />}
+        />
+        <Route
+          path="/stripe-callback-cancelled"
+          element={<StripeCancelledResultScreen />}
+        />
       </Routes>
     </Router>
   );
