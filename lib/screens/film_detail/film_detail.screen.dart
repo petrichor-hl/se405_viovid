@@ -162,6 +162,10 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
       );
     final isOverflowed = textPainter.didExceedMaxLines;
 
+    final isNormalUser =
+        context.read<UserProfileCubit>().state.userProfile?.planName ==
+            "Normal";
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,12 +247,41 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
-                  'Phát hành: ${film.releaseDate.toVnFormat()}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Phát hành: ${film.releaseDate.toVnFormat()}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (isNormalUser && film.seasons[0].name == '')
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: film.seasons[0].episodes[0].isFree
+                              ? Colors.green
+                              : Colors.amber,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 4,
+                            horizontal: 12,
+                          ),
+                          child: Text(
+                            film.seasons[0].episodes[0].isFree
+                                ? "Miễn phí"
+                                : "Trả phí",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 // StatefulBuilder(builder: (ctx, setStateVoteAverage) {
                 //   return Row(

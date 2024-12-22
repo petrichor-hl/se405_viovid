@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viovid_app/features/film_detail/dtos/episode.dart';
 import 'package:viovid_app/features/film_detail/dtos/season.dart';
+import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/screens/film_detail/components/promote_dialog.dart';
 
 class SeasonModalBottomSheet extends StatefulWidget {
   const SeasonModalBottomSheet({
@@ -124,17 +127,29 @@ class _EpisodeItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isNormalUser =
+        context.read<UserProfileCubit>().state.userProfile?.planName ==
+            "Normal";
+
     return Ink(
       padding: const EdgeInsets.only(right: 10),
       width: 227,
       child: InkWell(
         borderRadius: BorderRadius.circular(4),
-        onTap: () => context.pop(
-          {
+        onTap: () async {
+          if (!episode.isFree && isNormalUser) {
+            await showDialog(
+              context: context,
+              builder: (ctx) => const PromoteDialog(),
+            );
+            return;
+          }
+
+          context.pop({
             'season_index': seasonIndex,
             'episode_index': episodeIndex,
-          },
-        ),
+          });
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
@@ -160,15 +175,44 @@ class _EpisodeItem extends StatelessWidget {
               ),
             ),
             const Gap(6),
-            Text(
-              episode.title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            Row(
+              spacing: 8,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    episode.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (isNormalUser)
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: episode.isFree ? Colors.green : Colors.amber,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 4,
+                        horizontal: 12,
+                      ),
+                      child: Text(
+                        episode.isFree ? "Miễn phí" : "Trả phí",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const Divider(
               thickness: 1,

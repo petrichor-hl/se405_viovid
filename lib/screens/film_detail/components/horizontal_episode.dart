@@ -23,13 +23,15 @@ class HorizontalEpisode extends StatelessWidget {
       _ => null,
     })!;
 
+    final isNormalUser =
+        context.read<UserProfileCubit>().state.userProfile?.planName ==
+            "Normal";
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: InkWell(
         onTap: () async {
-          if (!episode.isFree &&
-              context.read<UserProfileCubit>().state.userProfile?.planName ==
-                  "Normal") {
+          if (!episode.isFree && isNormalUser) {
             await showDialog(
               context: context,
               builder: (ctx) => const PromoteDialog(),
@@ -65,6 +67,7 @@ class HorizontalEpisode extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Stack(
                     children: [
@@ -106,12 +109,43 @@ class HorizontalEpisode extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            episode.title,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Row(
+                            spacing: 8,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  episode.title,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              if (isNormalUser)
+                                DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: episode.isFree
+                                        ? Colors.green
+                                        : Colors.amber,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 4,
+                                      horizontal: 12,
+                                    ),
+                                    child: Text(
+                                      episode.isFree ? "Miễn phí" : "Trả phí",
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                           Text(
                             '${episode.duration} phút',

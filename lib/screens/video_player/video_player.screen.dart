@@ -7,14 +7,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:screen_brightness/screen_brightness.dart';
+// import 'package:screen_brightness/screen_brightness.dart';
 import 'package:video_player/video_player.dart';
 import 'package:viovid_app/features/film_detail/dtos/episode.dart';
 import 'package:viovid_app/features/film_detail/dtos/season.dart';
 import 'package:viovid_app/features/user_profile/dtos/tracking_progress.dart';
 import 'package:viovid_app/features/video_player/cubit/video_player_cubit.dart';
 import 'package:viovid_app/features/video_player/cubit/video_player_state.dart';
-import 'package:viovid_app/screens/video_player/components/brightness_bar.dart';
+// import 'package:viovid_app/screens/video_player/components/brightness_bar.dart';
 import 'package:viovid_app/screens/video_player/components/season_modal_bottom_sheet.dart';
 import 'package:viovid_app/screens/video_player/components/video_progress_bar.dart';
 import 'package:viovid_app/screens/video_player/components/video_speed_dialog.dart';
@@ -110,11 +110,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     super.initState();
     WakelockPlus.enable();
 
-    try {
-      ScreenBrightness().setApplicationScreenBrightness(1);
-    } catch (e) {
-      //
-    }
+    // try {
+    //   ScreenBrightness().setApplicationScreenBrightness(1);
+    // } catch (e) {
+    //   //
+    // }
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
@@ -136,11 +136,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   void dispose() {
     WakelockPlus.disable();
-    try {
-      ScreenBrightness().resetApplicationScreenBrightness();
-    } catch (e) {
-      //
-    }
+    // try {
+    //   ScreenBrightness().resetApplicationScreenBrightness();
+    // } catch (e) {
+    //   //
+    // }
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -513,20 +513,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               ),
             ),
             // Brightness Screen Slider
-            Positioned(
-              right: paddingSide,
-              top: 0,
-              bottom: 0,
-              child: AnimatedOpacity(
-                opacity: _controlsOverlayVisible ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 250),
-                child: BrightnessBar(
-                  startCountdownToDismissControls:
-                      _startCountdownToDismissControls,
-                  cancelTimer: () => _controlsTimer.cancel(),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   right: paddingSide,
+            //   top: 0,
+            //   bottom: 0,
+            //   child: AnimatedOpacity(
+            //     opacity: _controlsOverlayVisible ? 1.0 : 0.0,
+            //     duration: const Duration(milliseconds: 250),
+            //     child: BrightnessBar(
+            //       startCountdownToDismissControls:
+            //           _startCountdownToDismissControls,
+            //       cancelTimer: () => _controlsTimer.cancel(),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
