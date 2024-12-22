@@ -159,7 +159,7 @@ class CommentItem extends StatelessWidget {
                 const CircleAvatar(child: Icon(Icons.person)),
                 const SizedBox(width: 8),
                 Text(
-                  comment.applicationUser['userName'],
+                  comment.applicationUser?['userName'],
                   style: const TextStyle(fontSize: 16, color: Colors.black),
                 ),
                 const Spacer(),

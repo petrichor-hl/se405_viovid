@@ -8,6 +8,7 @@ class PostItem extends StatefulWidget {
   final VoidCallback onCommentPressed;
 
   const PostItem({
+    super.key,
     required this.postData,
     required this.onLikePressed,
     required this.onUnlikePressed,
@@ -15,7 +16,7 @@ class PostItem extends StatefulWidget {
   });
 
   @override
-  _PostItemState createState() => _PostItemState();
+  State<PostItem> createState() => _PostItemState();
 }
 
 class _PostItemState extends State<PostItem> {
@@ -69,7 +70,7 @@ class _PostItemState extends State<PostItem> {
                 Expanded(
                   flex: 8,
                   child: Text(
-                    (widget.postData.applicationUser)["userName"],
+                    (widget.postData.applicationUser)?["userName"] ?? '',
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,

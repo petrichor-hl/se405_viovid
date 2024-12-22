@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:viovid_app/features/post/data/post_repository.dart';
 import 'package:viovid_app/features/post/post_api_service.dart';
@@ -29,10 +31,13 @@ class PostCubit extends Cubit<void> {
   Future<List<Post>> getListPostFromChannel(
       int currentPostIndex, String channelId) async {
     try {
-      final response =
-          await repository.getPostsFromChannel(currentPostIndex, channelId);
+      final response = await repository.getPostsFromChannel(
+        currentPostIndex,
+        channelId,
+      );
       return response.items;
     } catch (e) {
+      print(e);
       emit(null); // Emit failure state if needed
       return [];
     }

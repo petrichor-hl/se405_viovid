@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:viovid_app/features/api_client.dart';
 
@@ -6,7 +8,7 @@ class PostComment {
   final DateTime createdAt;
   String content;
   final String applicationUserId;
-  final Map<String, dynamic> applicationUser;
+  final Map<String, dynamic>? applicationUser;
   final String postId;
 
   PostComment({
@@ -47,7 +49,7 @@ class Post {
   List<String> imageUrls;
   int likes;
   final String applicationUserId;
-  final Map<String, dynamic> applicationUser;
+  final Map<String, dynamic>? applicationUser;
   final String channelId;
   final List<PostComment> comments;
 
@@ -102,7 +104,7 @@ class PagingData<T> {
     var res = PagingData(
       items: List<T>.from(json['items'].map((item) => fromJsonT(item))),
     );
-    print("res: ${res.items}");
+    // print("res: ${res.items}");
     return res;
   }
 }

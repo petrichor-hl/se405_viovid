@@ -19,7 +19,7 @@ class ForumScreen extends StatefulWidget {
 class _ForumScreenState extends State<ForumScreen> {
   List<Channel> channels = [];
   Channel? currentChannel;
-  // Map<String, bool> subscriptionStatus = {};
+  Map<String, bool> subscriptionStatus = {};
   bool isSubscribed = false;
 
   int _currentChannelIndex = 0;
@@ -30,7 +30,7 @@ class _ForumScreenState extends State<ForumScreen> {
   @override
   void initState() {
     super.initState();
-    print('Forum screen init');
+    // print('Forum screen init');
     _initialize();
   }
 
@@ -40,8 +40,9 @@ class _ForumScreenState extends State<ForumScreen> {
 
   Future<void> _getChannelsByUser() async {
     try {
-      final fetchedChannels =
-          await channelCubit.getListChannelByUser(_currentChannelIndex);
+      final fetchedChannels = await channelCubit.getListChannelByUser(
+        _currentChannelIndex,
+      );
       setState(() {
         channels = fetchedChannels;
         currentChannel =
@@ -54,6 +55,47 @@ class _ForumScreenState extends State<ForumScreen> {
     } catch (e) {
       print('Error fetching channels: $e');
     }
+  }
+
+  Future<void> _toggleSubscription(Channel channel) async {
+    print("subscriptionStatus: $subscriptionStatus");
+    if (channel == null) return;
+
+    var payload = {
+      'channelId': channel.id,
+    };
+
+    try {
+      if (subscriptionStatus[channel.id] == true) {
+        await channelCubit.unsubscribeChannel(payload);
+      } else {
+        await channelCubit.subscribeChannel(payload);
+      }
+
+      setState(() {
+        subscriptionStatus[channel.id] = !subscriptionStatus[channel.id]!;
+
+        if (currentChannel != null && currentChannel!.id == channel.id) {
+          isSubscribed = subscriptionStatus[channel.id]!;
+        }
+      });
+    } catch (e) {
+      print('Error toggling subscription: $e');
+    }
+  }
+
+  Future<void> _updateSubscriptionStatus(
+      Channel channel, bool subscribed) async {
+    if (subscriptionStatus[channel.id] == null) {
+      channels.add(channel);
+    }
+    setState(() {
+      subscriptionStatus[channel.id] = subscribed;
+
+      if (currentChannel != null && currentChannel!.id == channel.id) {
+        isSubscribed = subscribed;
+      }
+    });
   }
 
   void _onChannelTap(Channel channel) async {
@@ -100,13 +142,6 @@ class _ForumScreenState extends State<ForumScreen> {
                   title: Text(
                     '#${channel.name}',
                     style: const TextStyle(color: Colors.white),
-                  ),
-                  trailing: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.logout_rounded,
-                      color: Colors.white54,
-                    ),
                   ),
                   // trailing: ElevatedButton.icon(
                   //   onPressed: () => _toggleSubscription(channel),
@@ -200,11 +235,19 @@ class _ForumScreenState extends State<ForumScreen> {
                 channel: currentChannel!,
                 channelCubit: channelCubit,
                 postCubit: postCubit,
+                onSubscriptionChanged: (channel, subscribed) {
+                  _updateSubscriptionStatus(channel, subscribed);
+                },
               )
             : const Center(
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
-                  child: Text('No channel selected'),
+                  child: Text(
+                    'No channel selected',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
       ),

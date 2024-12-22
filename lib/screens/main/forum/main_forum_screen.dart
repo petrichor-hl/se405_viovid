@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:viovid_app/base/components/skeleton_loading.dart';
@@ -14,13 +16,14 @@ class MainForumPage extends StatefulWidget {
   final Channel channel;
   final PostCubit postCubit;
   final ChannelCubit channelCubit;
+  final Function(Channel, bool) onSubscriptionChanged;
 
-  const MainForumPage({
-    super.key,
-    required this.channel,
-    required this.postCubit,
-    required this.channelCubit,
-  });
+  const MainForumPage(
+      {super.key,
+      required this.channel,
+      required this.postCubit,
+      required this.channelCubit,
+      required this.onSubscriptionChanged});
 
   @override
   State<MainForumPage> createState() => _MainForumPageState();
@@ -50,7 +53,7 @@ class _MainForumPageState extends State<MainForumPage> {
 
   void _initialize() async {
     currentChannel = widget.channel;
-    print('Current channel: $currentChannel');
+    log(' _getPostsForChannel(currentChannel!.id)');
     await _getPostsForChannel(currentChannel!.id);
     await _checkSubscriptionStatus();
 
@@ -61,8 +64,10 @@ class _MainForumPageState extends State<MainForumPage> {
 
   Future<void> _getPostsForChannel(String channelId) async {
     try {
-      final fetchedPosts =
-          await postCubit.getListPostFromChannel(_currentPostIndex, channelId);
+      final fetchedPosts = await postCubit.getListPostFromChannel(
+        _currentPostIndex,
+        channelId,
+      );
       if (mounted) {
         setState(() {
           posts = fetchedPosts;
@@ -134,6 +139,29 @@ class _MainForumPageState extends State<MainForumPage> {
     }
   }
 
+  Future<void> _toggleSubscription(Channel channel) async {
+    if (channel == null) return;
+
+    var payload = {
+      'channelId': channel.id,
+    };
+
+    try {
+      if (isSubscribed) {
+        await widget.channelCubit.unsubscribeChannel(payload);
+      } else {
+        await widget.channelCubit.subscribeChannel(payload);
+      }
+
+      setState(() {
+        isSubscribed = !isSubscribed;
+      });
+      widget.onSubscriptionChanged(channel, isSubscribed);
+    } catch (e) {
+      print('Error toggling subscription: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return isLoading
@@ -158,6 +186,30 @@ class _MainForumPageState extends State<MainForumPage> {
                       ),
                     );
                   },
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: FilledButton.icon(
+                      onPressed: () => _toggleSubscription(currentChannel!),
+                      icon: Icon(
+                        isSubscribed
+                            ? Icons.notifications_off
+                            : Icons.notifications_on,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        isSubscribed ? 'Unsubscribe' : 'Subscribe',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            isSubscribed ? Colors.grey : Colors.blue,
+                      ),
+                    ),
+                  ),
                 ),
               ),
               SliverList(

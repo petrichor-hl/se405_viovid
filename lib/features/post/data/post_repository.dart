@@ -20,7 +20,10 @@ class PostRepository {
   Future<PagingData<Post>> getPostsFromChannel(
       int currentPostIndex, String channelId) async {
     return await apiService.getPostsByChannel(
-        pageIndex: currentPostIndex, pageSize: 15, channelId: channelId);
+      pageIndex: currentPostIndex,
+      pageSize: 15,
+      channelId: channelId,
+    );
   }
 
   Future<Post> likePost(String postId) async {
@@ -38,6 +41,9 @@ class PostRepository {
   Future<PagingData<PostComment>> listComments(
       int currentPostIndex, String postId) async {
     return await apiService.getCommentsByPost(
-        pageIndex: currentPostIndex, pageSize: 15, postId: postId);
+      pageIndex: currentPostIndex,
+      pageSize: 15,
+      postId: postId,
+    );
   }
 }
