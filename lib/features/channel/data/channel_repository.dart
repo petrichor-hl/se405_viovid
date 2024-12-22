@@ -1,4 +1,5 @@
 import 'package:viovid_app/features/channel/channel_api_service.dart';
+import 'package:viovid_app/features/channel/dtos/channel.dart';
 
 class ChannelRepository {
   final ChannelApiService apiService;

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:screen_brightness/screen_brightness.dart';
 import 'package:viovid_app/base/assets.dart';
 import 'package:viovid_app/config/app_route.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';

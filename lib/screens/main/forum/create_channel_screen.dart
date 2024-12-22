@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:viovid_app/features/channel/bloc/channel_cubit.dart';
 
 class CreateChannelScreen extends StatefulWidget {
@@ -6,13 +7,13 @@ class CreateChannelScreen extends StatefulWidget {
   final VoidCallback onChannelCreated;
 
   const CreateChannelScreen({
+    super.key,
     required this.channelCubit,
     required this.onChannelCreated,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
-  _CreateChannelScreenState createState() => _CreateChannelScreenState();
+  State<CreateChannelScreen> createState() => _CreateChannelScreenState();
 }
 
 class _CreateChannelScreenState extends State<CreateChannelScreen> {
@@ -70,64 +71,106 @@ class _CreateChannelScreenState extends State<CreateChannelScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tạo Kênh Mới'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () async {
+            FocusScope.of(context).unfocus();
+            await Future.delayed(const Duration(milliseconds: 300));
+            Navigator.pop(context);
+          },
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Tên kênh',
-                style: TextStyle(fontSize: 16, color: Colors.white)),
-            const SizedBox(height: 8),
-            TextField(
-              style: const TextStyle(color: Colors.white),
-              controller: _channelNameController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Nhập tên kênh',
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text('Nội dung kênh',
-                style: TextStyle(fontSize: 16, color: Colors.white)),
-            const SizedBox(height: 8),
-            TextField(
-              style: const TextStyle(color: Colors.white),
-              controller: _channelDescriptionController,
-              maxLines: 4,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Nhập nội dung kênh',
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the screen
-                  },
-                  child: const Text('Huỷ'),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Tên kênh',
+                  style: TextStyle(fontSize: 16, color: Colors.white)),
+              const Gap(8),
+              TextField(
+                style: const TextStyle(color: Colors.white),
+                controller: _channelNameController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 51, 51, 51),
+                  hintText: 'VD: #violet_evergarden',
+                  hintStyle: TextStyle(color: Color(0xFFACACAC)),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: EdgeInsets.fromLTRB(16, 20, 16, 12),
                 ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_channelNameController.text.isNotEmpty &&
-                        _channelDescriptionController.text.isNotEmpty) {
-                      _showConfirmationDialog();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Vui lòng nhập đầy đủ thông tin.')),
-                      );
-                    }
-                  },
-                  child: const Text('Đồng ý'),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Nội dung kênh',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
                 ),
-              ],
-            ),
-          ],
+              ),
+              const Gap(8),
+              TextField(
+                style: const TextStyle(color: Colors.white),
+                controller: _channelDescriptionController,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 51, 51, 51),
+                  hintText: 'Nhập nội dung kênh',
+                  hintStyle: TextStyle(color: Color(0xFFACACAC)),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: EdgeInsets.fromLTRB(16, 20, 16, 12),
+                ),
+              ),
+              const Gap(16),
+              Row(
+                spacing: 16,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the screen
+                    },
+                    child: const Text(
+                      'Huỷ',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  FilledButton(
+                    onPressed: () {
+                      if (_channelNameController.text.isNotEmpty &&
+                          _channelDescriptionController.text.isNotEmpty) {
+                        _showConfirmationDialog();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Vui lòng nhập đầy đủ thông tin.',
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'Đồng ý',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

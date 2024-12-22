@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:textfield_tags/textfield_tags.dart';
-import 'package:viovid_app/features/channel/channel_api_service.dart';
+import 'package:viovid_app/features/channel/dtos/channel.dart';
 import 'package:viovid_app/features/post/bloc/post_cubit.dart';
 
 class CreatePostScreen extends StatefulWidget {
@@ -14,8 +14,8 @@ class CreatePostScreen extends StatefulWidget {
     required this.postCubit,
     required this.onPostCreated,
     required this.channel,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<CreatePostScreen> createState() => _CreatePostScreenState();

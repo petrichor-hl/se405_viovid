@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:viovid_app/features/channel/channel_api_service.dart';
 import 'package:viovid_app/features/channel/data/channel_repository.dart';
+import 'package:viovid_app/features/channel/dtos/channel.dart';
 
 class ChannelCubit extends Cubit<void> {
   final ChannelRepository repository;

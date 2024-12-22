@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:viovid_app/base/components/skeleton_loading.dart';
 import 'package:viovid_app/features/channel/bloc/channel_cubit.dart';
-import 'package:viovid_app/features/channel/channel_api_service.dart';
+import 'package:viovid_app/features/channel/dtos/channel.dart';
 import 'package:viovid_app/features/post/bloc/post_cubit.dart';
 import 'package:viovid_app/features/post/post_api_service.dart';
 import 'package:viovid_app/screens/main/forum/comment_page.dart';
@@ -14,18 +14,16 @@ class MainForumPage extends StatefulWidget {
   final Channel channel;
   final PostCubit postCubit;
   final ChannelCubit channelCubit;
-  final Function(Channel, bool) onSubscriptionChanged;
 
-  const MainForumPage(
-      {Key? key,
-      required this.channel,
-      required this.postCubit,
-      required this.channelCubit,
-      required this.onSubscriptionChanged})
-      : super(key: key);
+  const MainForumPage({
+    super.key,
+    required this.channel,
+    required this.postCubit,
+    required this.channelCubit,
+  });
 
   @override
-  _MainForumPageState createState() => _MainForumPageState();
+  State<MainForumPage> createState() => _MainForumPageState();
 }
 
 class _MainForumPageState extends State<MainForumPage> {
@@ -136,29 +134,6 @@ class _MainForumPageState extends State<MainForumPage> {
     }
   }
 
-  Future<void> _toggleSubscription(Channel channel) async {
-    if (channel == null) return;
-
-    var payload = {
-      'channelId': channel.id,
-    };
-
-    try {
-      if (isSubscribed) {
-        await widget.channelCubit.unsubscribeChannel(payload);
-      } else {
-        await widget.channelCubit.subscribeChannel(payload);
-      }
-
-      setState(() {
-        isSubscribed = !isSubscribed;
-      });
-      widget.onSubscriptionChanged(channel, isSubscribed);
-    } catch (e) {
-      print('Error toggling subscription: $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return isLoading
@@ -183,30 +158,6 @@ class _MainForumPageState extends State<MainForumPage> {
                       ),
                     );
                   },
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton.icon(
-                      onPressed: () => _toggleSubscription(currentChannel!),
-                      icon: Icon(
-                        isSubscribed
-                            ? Icons.notifications_off
-                            : Icons.notifications_on,
-                        color: isSubscribed ? Colors.grey : Colors.blue,
-                      ),
-                      label: Text(
-                        isSubscribed ? 'Unsubscribe' : 'Subscribe',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isSubscribed ? Colors.grey : Colors.blue,
-                      ),
-                    ),
-                  ),
                 ),
               ),
               SliverList(
@@ -251,25 +202,25 @@ class _MainForumPageState extends State<MainForumPage> {
             onCreatePost: () {},
           ),
         ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton.icon(
-                onPressed: null,
-                icon: const Icon(
-                  Icons.notifications_off,
-                  color: Colors.grey,
-                ),
-                label: const Text('Loading...'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey,
-                ),
-              ),
-            ),
-          ),
-        ),
+        // SliverToBoxAdapter(
+        //   child: Padding(
+        //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        //     child: Align(
+        //       alignment: Alignment.centerRight,
+        //       child: ElevatedButton.icon(
+        //         onPressed: null,
+        //         icon: const Icon(
+        //           Icons.notifications_off,
+        //           color: Colors.grey,
+        //         ),
+        //         label: const Text('Loading...'),
+        //         style: ElevatedButton.styleFrom(
+        //           backgroundColor: Colors.grey,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (context, index) {

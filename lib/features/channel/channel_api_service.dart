@@ -1,51 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:viovid_app/features/api_client.dart';
-
-class UserChannel {
-  final String applicationUserId;
-  final String channelId;
-
-  UserChannel({
-    required this.applicationUserId,
-    required this.channelId,
-  });
-}
-
-class Channel {
-  final String id;
-  final String name;
-  final String description;
-  final DateTime createdAt;
-  List<UserChannel> userChannels = [];
-
-  Channel({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.createdAt,
-    required this.userChannels,
-  });
-
-  // Factory method to create a Channel from JSON
-  factory Channel.fromJson(Map<String, dynamic> json) {
-    print(
-      "user chanel: ${json['userChannels']}",
-    );
-    var userChannels = List.from(json['userChannels'] ?? [])
-        .map((item) => UserChannel(
-              applicationUserId: item['applicationUserId'],
-              channelId: item['channelId'],
-            ))
-        .toList();
-    return Channel(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      createdAt: DateTime.parse(json['createdAt']),
-      userChannels: userChannels,
-    );
-  }
-}
+import 'package:viovid_app/features/channel/dtos/channel.dart';
 
 class PagingData<T> {
   final List<T> items;
@@ -149,7 +104,7 @@ class ChannelApiService {
   Future<bool> unsubscribeChannel(Map<String, dynamic> channelData) async {
     print(channelData);
     final result = await ApiClient(dio).request<Map<String, dynamic>, bool>(
-      url: '/Channel/Unsubscribe',
+      url: '/Channel/unsubscribe',
       method: ApiMethod.post,
       payload: channelData,
     );
