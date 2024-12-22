@@ -48,6 +48,12 @@ const MomoResultScreen = () => {
   if (error) return <h2 style={styles.errorMessage}>Có lỗi xảy ra</h2>;
   if (isValidating) return <Loading />;
 
+  if (data?.succeeded !== undefined) {
+    setTimeout(() => {
+      window.location.href = "http://192.168.1.8:5416/";
+    }, 10000);
+  }
+
   return (
     <div style={styles.container}>
       {data?.result === true ? (

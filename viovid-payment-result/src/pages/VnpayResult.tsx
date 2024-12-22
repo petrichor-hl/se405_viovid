@@ -72,6 +72,12 @@ const VnpayResultScreen = () => {
   console.log(data);
   console.log("data.result = ", data?.result);
 
+  if (data?.succeeded !== undefined) {
+    setTimeout(() => {
+      window.location.href = "http://192.168.1.8:5416/";
+    }, 10000);
+  }
+
   return (
     <div style={styles.container}>
       {data?.result === true ? (
@@ -84,6 +90,7 @@ const VnpayResultScreen = () => {
             style={styles.button}
             onClick={() => {
               window.location.href = "petrichor-viovid://deeplink-to-app/";
+              window.location.href = "https://vnpay.vn/";
             }}
           >
             Trở về Viovid
@@ -96,6 +103,7 @@ const VnpayResultScreen = () => {
             style={styles.button}
             onClick={() => {
               window.location.href = "petrichor-viovid://deeplink-to-app";
+              window.location.href = "https://vnpay.vn/";
             }}
           >
             Quay về VioVid

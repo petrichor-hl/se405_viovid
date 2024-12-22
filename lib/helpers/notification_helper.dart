@@ -160,8 +160,27 @@ class NotificationHelper {
                 data['filmId'],
               ),
             );
+      return;
     }
 
-    if (data['type'] == 'NewCommentOnYourPost') {}
+    if (data['type'] == 'NewCommentOnYourPost') {
+      return;
+    }
+
+    if (data['type'] == 'Payment') {
+      isResetRoute
+          ? appRouter.go(
+              RouteName.paymentHistory,
+            )
+          : appRouter.push(
+              RouteName.paymentHistory,
+            );
+
+      return;
+    }
+
+    appRouter.go(
+      RouteName.bottomNav,
+    );
   }
 }

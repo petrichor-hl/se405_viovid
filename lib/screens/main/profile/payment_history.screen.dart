@@ -36,6 +36,12 @@ class _PaymentHistoryState extends State<PaymentHistory> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: context.canPop()
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.home_rounded),
+                onPressed: () => context.go(RouteName.bottomNav),
+              ),
         title: const Text('Lịch sử thanh toán'),
         foregroundColor: Colors.white,
         backgroundColor: Colors.transparent,
