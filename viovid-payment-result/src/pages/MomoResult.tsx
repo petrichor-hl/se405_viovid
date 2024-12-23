@@ -25,7 +25,7 @@ const handleRedirect = () => {
   window.location.href = "petrichor-viovid://deeplink-to-app";
   setTimeout(() => {
     // Di chuyển về trang chủ
-    window.location.href = "http://192.168.1.6:5416/";
+    window.location.href = "http://192.168.1.5:5416/";
   }, 500);
 };
 

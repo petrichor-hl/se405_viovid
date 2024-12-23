@@ -5,18 +5,23 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viovid_app/base/assets.dart';
 import 'package:viovid_app/base/extension.dart';
+import 'package:viovid_app/config/api.config.dart';
 import 'package:viovid_app/config/app_route.dart';
 import 'package:viovid_app/features/film_detail/cubit/casts/casts_cubit.dart';
 import 'package:viovid_app/features/film_detail/cubit/crews/crews_cubit.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
 import 'package:viovid_app/features/film_detail/dtos/film.dart';
+import 'package:viovid_app/features/film_reviews/cubit/film_reviews_cutbit.dart';
+import 'package:viovid_app/features/film_reviews/data/film_reviews_api_service.dart';
+import 'package:viovid_app/features/film_reviews/data/film_reviews_repository.dart';
 import 'package:viovid_app/features/my_list/cubit/my_list_cubit.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_state.dart';
 import 'package:viovid_app/screens/film_detail/components/bottom_tabs.dart';
 import 'package:viovid_app/screens/film_detail/components/favorite_button.dart';
 import 'package:viovid_app/screens/film_detail/components/play_video.dart';
+import 'package:viovid_app/screens/film_detail/components/review_button.dart';
 
 class FilmDetailScreen extends StatefulWidget {
   const FilmDetailScreen({
@@ -282,6 +287,14 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                         ),
                       ),
                   ],
+                ),
+                BlocProvider(
+                  create: (context) => FilmReviewsCutbit(
+                    FilmReviewsRepository(
+                      filmReviewsApiService: FilmReviewsApiService(dio),
+                    ),
+                  ),
+                  child: const ReviewButton(),
                 ),
                 // StatefulBuilder(builder: (ctx, setStateVoteAverage) {
                 //   return Row(

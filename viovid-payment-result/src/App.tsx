@@ -6,7 +6,7 @@ import MomoResultScreen from "./pages/MomoResult";
 import StripeSuccessResultScreen from "./pages/StripeSuccessResult";
 import StripeCancelledResultScreen from "./pages/StripeCancelledResult";
 
-// vite --host 192.168.1.6 --port 5416
+// vite --host 192.168.1.5 --port 5416
 
 function App() {
   return (
