@@ -70,13 +70,13 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
               ),
             ),
           ),
-          BlocProvider(
-            create: (ctx) => NotiCenterCubit(
-              NotiCenterRepository(
-                notiCenterApiService: NotiCenterApiService(dio),
-              ),
-            ),
-          ),
+          // BlocProvider(
+          //   create: (ctx) => NotiCenterCubit(
+          //     NotiCenterRepository(
+          //       notiCenterApiService: NotiCenterApiService(dio),
+          //     ),
+          //   ),
+          // ),
           BlocProvider<ChannelCubit>(
             create: (ctx) => ChannelCubit(
               ChannelRepository(ChannelApiService(dio)),

@@ -25,7 +25,7 @@ class _NotiCenterScreenState extends State<NotiCenterScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NotiCenterCubit, NotiCenterState>(
-      buildWhen: (previous, current) => previous != current,
+      // buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
         var notiCenterWidget = (switch (state) {
           NotiCenterInProgress() => _buildInProgressNotiWidget(),
@@ -61,8 +61,9 @@ class _NotiCenterScreenState extends State<NotiCenterScreen> {
     return SafeArea(
       child: Column(
         children: [
+          const Gap(10),
           const Text(
-            'Mới ra mắt',
+            'Trung tâm thông báo',
             style: TextStyle(
               color: Colors.white,
               fontSize: 24,
@@ -74,108 +75,129 @@ class _NotiCenterScreenState extends State<NotiCenterScreen> {
               onRefresh: () => context
                   .read<NotiCenterCubit>()
                   .getNotiCenter(), // Hàm làm mới
-              child: ListView.builder(
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  return Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 60,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'THG ${notifications[index].createdDateTime.toLocal().month}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    notifications[index]
-                                        .createdDateTime
-                                        .toLocal()
-                                        .day
-                                        .toString()
-                                        .padLeft(2, '0'),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  notifications[index].category == 0
-                                      ? Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                          width: double.infinity,
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 8,
-                                          ),
-                                          child: const Text(
-                                            'Phim mới',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        )
-                                      : const CircleAvatar(
-                                          radius: 3,
-                                          backgroundColor: Colors.red,
-                                        ),
-                                ],
-                              ),
-                            ),
-                            const Gap(10),
-                            Expanded(
-                              child: notifications[index].category == 0
-                                  ? NewFilmNoti(
-                                      notification: notifications[index],
-                                    )
-                                  : const NewCommentNoti(),
-                            ),
-                          ],
+              child: notifications.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'Hiện chưa có thông báo nào.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Positioned.fill(
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {
-                              context.push(
-                                RouteName.filmDetail.replaceFirst(
-                                  ':id',
-                                  notifications[index].params['filmId'],
-                                ),
-                              );
-                              // Update ReadStatus if category = 'post' && readStatus == unread
-                              if (notifications[index].category == 1 &&
-                                  notifications[index].readStatus == 0) {
-                                context
-                                    .read<NotiCenterCubit>()
-                                    .updateReadStatus(
-                                      notifications[index].id,
-                                    );
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+                    )
+                  : NotificationList(
+                      notifications: notifications,
+                    ),
+              // : ListView.builder(
+              //     itemCount: notifications.length,
+              // itemBuilder: (context, index) {
+              //   return Stack(
+              //     children: [
+              //       Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: Row(
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //             SizedBox(
+              //               width: 60,
+              //               child: Column(
+              //                 mainAxisSize: MainAxisSize.min,
+              //                 children: [
+              //                   Text(
+              //                     'THG ${notifications[index].createdDateTime.toLocal().month}',
+              //                     style: const TextStyle(
+              //                       color: Colors.white,
+              //                       fontWeight: FontWeight.bold,
+              //                     ),
+              //                   ),
+              //                   Text(
+              //                     notifications[index]
+              //                         .createdDateTime
+              //                         .toLocal()
+              //                         .day
+              //                         .toString()
+              //                         .padLeft(2, '0'),
+              //                     style: const TextStyle(
+              //                       color: Colors.white,
+              //                       fontSize: 36,
+              //                       fontWeight: FontWeight.bold,
+              //                     ),
+              //                   ),
+              //                   notifications[index].category == 0
+              //                       ? Container(
+              //                           decoration: BoxDecoration(
+              //                             borderRadius:
+              //                                 BorderRadius.circular(4),
+              //                             color: Theme.of(context)
+              //                                 .primaryColor,
+              //                           ),
+              //                           width: double.infinity,
+              //                           padding:
+              //                               const EdgeInsets.symmetric(
+              //                             vertical: 8,
+              //                           ),
+              //                           child: const Text(
+              //                             'Phim mới',
+              //                             textAlign: TextAlign.center,
+              //                             style: TextStyle(
+              //                               color: Colors.white,
+              //                               fontWeight: FontWeight.bold,
+              //                             ),
+              //                           ),
+              //                         )
+              //                       : const CircleAvatar(
+              //                           radius: 3,
+              //                           backgroundColor: Colors.red,
+              //                         ),
+              //                 ],
+              //               ),
+              //             ),
+              //             const Gap(10),
+              //             Expanded(
+              //               child: notifications[index].category == 0
+              //                   ? NewFilmNoti(
+              //                       notification: notifications[index],
+              //                     )
+              //                   : NewCommentNoti(
+              //                       notification: notifications[index],
+              //                     ),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //       Positioned.fill(
+              //         child: Material(
+              //           color: Colors.transparent,
+              //           child: InkWell(
+              //             onTap: () {
+              //               if (notifications[index].category == 0) {
+              //                 context.push(
+              //                   RouteName.filmDetail.replaceFirst(
+              //                     ':id',
+              //                     notifications[index].params['filmId'],
+              //                   ),
+              //                 );
+              //               }
+
+              //               // Update ReadStatus if category = 'post' && readStatus == unread
+              //               // if (notifications[index].category == 1 &&
+              //               //     notifications[index].readStatus == 0) {
+              //               //   context
+              //               //       .read<NotiCenterCubit>()
+              //               //       .updateReadStatus(
+              //               //         notifications[index].id,
+              //               //       );
+              //               // }
+              //             },
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   );
+              //     },
+              //   ),
             ),
           ),
         ],
@@ -195,6 +217,140 @@ class _NotiCenterScreenState extends State<NotiCenterScreen> {
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class NotificationList extends StatefulWidget {
+  const NotificationList({
+    super.key,
+    required this.notifications,
+  });
+
+  final List<UserNotification> notifications;
+
+  @override
+  State<NotificationList> createState() => _NotificationListState();
+}
+
+class _NotificationListState extends State<NotificationList> {
+  final _reviewsListKey = GlobalKey<AnimatedListState>();
+
+  @override
+  void didUpdateWidget(covariant NotificationList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.notifications != oldWidget.notifications) {
+      _reviewsListKey.currentState?.insertItem(0);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedList(
+      key: _reviewsListKey,
+      initialItemCount: widget.notifications.length,
+      itemBuilder: (ctx, index, animation) => SizeTransition(
+        sizeFactor: animation,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 60,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'THG ${widget.notifications[index].createdDateTime.toLocal().month}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          widget.notifications[index].createdDateTime
+                              .toLocal()
+                              .day
+                              .toString()
+                              .padLeft(2, '0'),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        widget.notifications[index].category == 0
+                            ? Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                child: const Text(
+                                  'Phim mới',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )
+                            : const CircleAvatar(
+                                radius: 3,
+                                backgroundColor: Colors.red,
+                              ),
+                      ],
+                    ),
+                  ),
+                  const Gap(10),
+                  Expanded(
+                    child: widget.notifications[index].category == 0
+                        ? NewFilmNoti(
+                            notification: widget.notifications[index],
+                          )
+                        : NewCommentNoti(
+                            notification: widget.notifications[index],
+                          ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    if (widget.notifications[index].category == 0) {
+                      context.push(
+                        RouteName.filmDetail.replaceFirst(
+                          ':id',
+                          widget.notifications[index].params['filmId'],
+                        ),
+                      );
+                    }
+                    // Update ReadStatus if category = 'post' && readStatus == unread
+                    // if (widget.notifications[index].category == 1 &&
+                    //     notifications[index].readStatus == 0) {
+                    //   context
+                    //       .read<NotiCenterCubit>()
+                    //       .updateReadStatus(
+                    //         notifications[index].id,
+                    //       );
+                    // }
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

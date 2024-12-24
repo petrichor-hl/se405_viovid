@@ -69,7 +69,6 @@ class Post {
 
   // Factory method to create a Post from JSON
   factory Post.fromJson(Map<String, dynamic> json) {
-    print("json: $json");
     return Post(
       id: json['id'],
       createdAt: DateTime.parse(json['createdAt']),
@@ -100,7 +99,6 @@ class PagingData<T> {
     Map<String, dynamic> json,
     T Function(Map<String, dynamic>) fromJsonT,
   ) {
-    print("json: $json");
     var res = PagingData(
       items: List<T>.from(json['items'].map((item) => fromJsonT(item))),
     );

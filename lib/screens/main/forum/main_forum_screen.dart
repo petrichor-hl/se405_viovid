@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:viovid_app/base/components/skeleton_loading.dart';
@@ -53,7 +51,6 @@ class _MainForumPageState extends State<MainForumPage> {
 
   void _initialize() async {
     currentChannel = widget.channel;
-    log(' _getPostsForChannel(currentChannel!.id)');
     await _getPostsForChannel(currentChannel!.id);
     await _checkSubscriptionStatus();
 

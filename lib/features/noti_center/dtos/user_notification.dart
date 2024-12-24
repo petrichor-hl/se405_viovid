@@ -10,34 +10,34 @@
 
 class UserNotification {
   String id;
-  String? applicationUserId;
+  // String? applicationUserId;
   int category; // NotificationCategory
   DateTime createdDateTime;
-  int readStatus; // NotificationReadStatus
-  String title;
-  String body;
+  // int readStatus; // NotificationReadStatus
+  // String title;
+  // String body;
   Map<String, dynamic> params;
 
   UserNotification({
     required this.id,
-    required this.applicationUserId,
+    // required this.applicationUserId,
     required this.category,
     required this.createdDateTime,
-    required this.readStatus,
-    required this.title,
-    required this.body,
+    // required this.readStatus,
+    // required this.title,
+    // required this.body,
     required this.params,
   });
 
   factory UserNotification.fromJson(Map<String, dynamic> json) =>
       UserNotification(
         id: json["id"],
-        applicationUserId: json["applicationUserId"],
+        // applicationUserId: json["applicationUserId"],
         category: json["category"],
         createdDateTime: DateTime.parse(json["createdDateTime"]),
-        readStatus: json["readStatus"],
-        title: json["title"],
-        body: json["body"],
+        // readStatus: json["readStatus"],
+        // title: json["title"],
+        // body: json["body"],
         params: json["params"],
       );
 }

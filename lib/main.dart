@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:viovid_app/config/api.config.dart';
@@ -18,6 +19,10 @@ import 'package:viovid_app/features/auth/data/auth_repository.dart';
 import 'package:viovid_app/features/my_list/cubit/my_list_cubit.dart';
 import 'package:viovid_app/features/my_list/data/my_list_api_service.dart';
 import 'package:viovid_app/features/my_list/data/my_list_repository.dart';
+import 'package:viovid_app/features/noti_center/cubit/noti_center_cubit.dart';
+import 'package:viovid_app/features/noti_center/data/noti_center_api_service.dart';
+import 'package:viovid_app/features/noti_center/data/noti_center_repository.dart';
+import 'package:viovid_app/features/noti_center/dtos/user_notification.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_api_service.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_repository.dart';
@@ -41,8 +46,15 @@ void main() async {
   // Ctrl + F5
   // flutter run --dart-define-from-file=lib/config/.env
   runApp(
-    MyApp(
-      sharedPreferences: sf,
+    BlocProvider(
+      create: (ctx) => NotiCenterCubit(
+        NotiCenterRepository(
+          notiCenterApiService: NotiCenterApiService(dio),
+        ),
+      ),
+      child: MyApp(
+        sharedPreferences: sf,
+      ),
     ),
   );
 }
@@ -68,16 +80,42 @@ class _MyAppState extends State<MyApp> {
 
     // Xử lý khi app đang chạy ở trạng thái Background
     // Và User nhấn vào Notification
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleNotification);
+    FirebaseMessaging.onMessageOpenedApp.listen((message) async {
+      _addNotiToCenter(message);
+      _handleNotification(message);
+    });
 
-    // Xử lý khi app đang chạy ở trạng thái Foreground
+    // Xử lý NHẬN thông báo khi app đang chạy ở trạng thái Foreground
     FirebaseMessaging.onMessage.listen((message) async {
       await NotificationHelper().pushLocalInstantNotification(
         title: message.notification!.title!,
         body: message.notification!.body!,
         data: message.data,
       );
+
+      _addNotiToCenter(message);
     });
+  }
+
+  void _addNotiToCenter(RemoteMessage message) async {
+    context.read<NotiCenterCubit>().addNotiToCenter(
+          UserNotification(
+            id: message.data['userNotificationId'],
+            category: int.parse(message.data['category']),
+            createdDateTime: DateFormat('dd/MM/yyyy HH:mm:ss').parse(
+              message.data['createdDateTime'],
+            ),
+            // title: title,
+            // body: body,
+            params: {
+              "filmId": message.data['filmId'],
+              "name": message.data['name'],
+              "overview": message.data['overview'],
+              "backdropPath": message.data['backdropPath'],
+              "contentRating": message.data['contentRating'],
+            },
+          ),
+        );
   }
 
   void _handleNotification(RemoteMessage message) async {

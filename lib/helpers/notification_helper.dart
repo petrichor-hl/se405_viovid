@@ -146,7 +146,8 @@ class NotificationHelper {
     Map<String, dynamic> data, {
     bool isResetRoute = false,
   }) {
-    if (data['type'] == 'NewFilm') {
+    // NewFilm = 0
+    if (data['category'] == '0') {
       isResetRoute
           ? appRouter.go(
               RouteName.filmDetail.replaceFirst(
@@ -163,11 +164,15 @@ class NotificationHelper {
       return;
     }
 
-    if (data['type'] == 'NewCommentOnYourPost') {
-      return;
+    // NewCommentOnYourPost = 1
+    if (data['category'] == '1') {
+      appRouter.go(
+        RouteName.bottomNav,
+      );
     }
 
-    if (data['type'] == 'Payment') {
+    // Payment = 2
+    if (data['category'] == '2') {
       isResetRoute
           ? appRouter.go(
               RouteName.paymentHistory,
