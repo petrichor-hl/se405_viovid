@@ -4,13 +4,13 @@ class FilmReviewsState {
   final List<Review>? reviews;
   final bool isLoadingGetReviews;
   final bool isLoadingPostReview;
-  final String? errorMessage;
+  final String errorMessage;
 
   FilmReviewsState({
     this.reviews,
     this.isLoadingGetReviews = false,
     this.isLoadingPostReview = false,
-    this.errorMessage,
+    this.errorMessage = "",
   });
 
   FilmReviewsState copyWith({

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dart_openai/dart_openai.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,9 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
+  OpenAI.apiKey =
+      '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';
+
   // Ctrl + F5
   // flutter run --dart-define-from-file=lib/config/.env
   runApp(
@@ -42,7 +46,6 @@ void main() async {
     ),
   );
 }
-// const openAIApiKey = String.fromEnvironment('OPEN_AI_API_KEY');
 
 class MyApp extends StatefulWidget {
   // This widget is the root of your application.

@@ -10,6 +10,7 @@ import 'package:viovid_app/features/film_reviews/cubit/film_reviews_cutbit.dart'
 import 'package:viovid_app/features/film_reviews/cubit/film_reviews_state.dart';
 import 'package:viovid_app/features/film_reviews/dtos/review.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
+import 'package:viovid_app/screens/film_detail/components/error_dialog.dart';
 
 class ReviewButton extends StatefulWidget {
   const ReviewButton({super.key});
@@ -101,6 +102,7 @@ class _ReviewsBottomSheetState extends State<ReviewsBottomSheet> {
     if (_contentReviewController.text.isEmpty) {
       return;
     }
+
     await context.read<FilmReviewsCutbit>().postReview(
           widget.filmId,
           _rate,
@@ -123,162 +125,177 @@ class _ReviewsBottomSheetState extends State<ReviewsBottomSheet> {
   Widget build(BuildContext context) {
     final userProfile = context.read<UserProfileCubit>().state.userProfile;
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        21,
-        40,
-        5,
-        MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: widget.isLoadingGetReviews
-          ? const SizedBox(
-              width: double.infinity,
-              height: 200,
-              child: Center(child: CircularProgressIndicator()),
-            )
-          : Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      "ĐÁNH GIÁ   ●   ${widget.reviews.length} lượt",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      icon: const Icon(Icons.close_rounded),
-                    )
-                  ],
-                ),
-                Expanded(
-                  child: widget.reviews.isEmpty
-                      ? const Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Chưa có nhận xét nào'),
-                              Text('Hãy là người đánh giá đầu tiên'),
-                            ],
-                          ),
-                        )
-                      : AnimatedList(
-                          key: _reviewsListKey,
-                          initialItemCount: widget.reviews.length,
-                          itemBuilder: (ctx, index, animation) =>
-                              SizeTransition(
-                            sizeFactor: animation,
-                            child: _buildReviewItem(context, index),
-                          ),
-                        ),
-                ),
-                Divider(
-                  endIndent: 16,
-                  color: Theme.of(context).colorScheme.primary.withAlpha(80),
-                  height: 30,
-                ),
-                if (userProfile != null)
+    return BlocListener<FilmReviewsCutbit, FilmReviewsState>(
+      listenWhen: (previous, current) => current.errorMessage.isNotEmpty,
+      listener: (context, state) {
+        if (state.errorMessage.isNotEmpty) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (ctx) => ErrorDialog(
+              errorMessage: state.errorMessage,
+            ),
+          );
+        }
+      },
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          21,
+          40,
+          5,
+          MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: widget.isLoadingGetReviews
+            ? const SizedBox(
+                width: double.infinity,
+                height: 200,
+                child: Center(child: CircularProgressIndicator()),
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: CachedNetworkImage(
-                            imageUrl: userProfile.avatar,
-                            fit: BoxFit.cover,
-                            // fadeInDuration: là thời gian xuất hiện của Image khi đã load xong
-                            fadeInDuration: const Duration(milliseconds: 400),
-                            // fadeOutDuration: là thời gian biến mất của placeholder khi Image khi đã load xong
-                            fadeOutDuration: const Duration(milliseconds: 800),
-                            placeholder: (context, url) => const Padding(
-                              padding: EdgeInsets.all(12),
-                              child: CircularProgressIndicator(
-                                strokeCap: StrokeCap.round,
-                                strokeWidth: 3,
-                              ),
-                            ),
-                          ),
+                      Text(
+                        "ĐÁNH GIÁ   ●   ${widget.reviews.length} lượt",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Gap(14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              userProfile.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(Icons.close_rounded),
+                      )
+                    ],
+                  ),
+                  Expanded(
+                    child: widget.reviews.isEmpty
+                        ? const Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Chưa có nhận xét nào'),
+                                Text('Hãy là người đánh giá đầu tiên'),
+                              ],
                             ),
-                            _buildStarRate(),
-                          ],
-                        ),
-                      ),
-                      const Gap(14),
-                      IconButton.filled(
-                        onPressed:
-                            widget.isLoadingPostReview ? null : postReview,
-                        style: IconButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
+                          )
+                        : AnimatedList(
+                            key: _reviewsListKey,
+                            initialItemCount: widget.reviews.length,
+                            itemBuilder: (ctx, index, animation) =>
+                                SizeTransition(
+                              sizeFactor: animation,
+                              child: _buildReviewItem(context, index),
+                            ),
                           ),
-                        ),
-                        icon: widget.isLoadingPostReview
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
+                  ),
+                  Divider(
+                    endIndent: 16,
+                    color: Theme.of(context).colorScheme.primary.withAlpha(80),
+                    height: 30,
+                  ),
+                  if (userProfile != null)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: CachedNetworkImage(
+                              imageUrl: userProfile.avatar,
+                              fit: BoxFit.cover,
+                              // fadeInDuration: là thời gian xuất hiện của Image khi đã load xong
+                              fadeInDuration: const Duration(milliseconds: 400),
+                              // fadeOutDuration: là thời gian biến mất của placeholder khi Image khi đã load xong
+                              fadeOutDuration:
+                                  const Duration(milliseconds: 800),
+                              placeholder: (context, url) => const Padding(
+                                padding: EdgeInsets.all(12),
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
                                   strokeCap: StrokeCap.round,
                                   strokeWidth: 3,
                                 ),
-                              )
-                            : const Icon(Icons.arrow_upward_rounded),
-                      ),
-                      const Gap(12),
-                    ],
-                  ),
-                const Gap(6),
-                TextFormField(
-                  controller: _contentReviewController,
-                  decoration: const InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: 'Bình luận của bạn',
-                    hintStyle: TextStyle(color: Color(0xFFACACAC)),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Gap(14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                userProfile.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              _buildStarRate(),
+                            ],
+                          ),
+                        ),
+                        const Gap(14),
+                        IconButton.filled(
+                          onPressed:
+                              widget.isLoadingPostReview ? null : postReview,
+                          style: IconButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          icon: widget.isLoadingPostReview
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeCap: StrokeCap.round,
+                                    strokeWidth: 3,
+                                  ),
+                                )
+                              : const Icon(Icons.arrow_upward_rounded),
+                        ),
+                        const Gap(12),
+                      ],
                     ),
-                    contentPadding: EdgeInsets.fromLTRB(16, 20, 16, 12),
+                  const Gap(6),
+                  TextFormField(
+                    controller: _contentReviewController,
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: 'Bình luận của bạn',
+                      hintStyle: TextStyle(color: Color(0xFFACACAC)),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.fromLTRB(16, 20, 16, 12),
+                    ),
+                    style: const TextStyle(color: Colors.black),
+                    autocorrect: false,
+                    enableSuggestions: false, // No work
+                    keyboardType: TextInputType
+                        .emailAddress, // Trick: disable suggestions
+                    validator: (value) {
+                      // print('Value = $value');
+                      if (value == null || value.isEmpty) {
+                        return 'Bạn chưa nhập Email';
+                      }
+                      return null;
+                    },
                   ),
-                  style: const TextStyle(color: Colors.black),
-                  autocorrect: false,
-                  enableSuggestions: false, // No work
-                  keyboardType:
-                      TextInputType.emailAddress, // Trick: disable suggestions
-                  validator: (value) {
-                    // print('Value = $value');
-                    if (value == null || value.isEmpty) {
-                      return 'Bạn chưa nhập Email';
-                    }
-                    return null;
-                  },
-                ),
-                if (Platform.isAndroid) const Gap(14)
-              ],
-            ),
+                  if (Platform.isAndroid) const Gap(14)
+                ],
+              ),
+      ),
     );
   }
 
