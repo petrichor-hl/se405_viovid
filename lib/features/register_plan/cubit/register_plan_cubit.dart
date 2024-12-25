@@ -17,7 +17,7 @@ class RegisterPlanCubit extends Cubit<RegisterPlanState> {
       case Success():
         result.data.insert(
           0,
-          Plan(id: 'Normal', name: 'Thường', price: 0, duration: 0, order: -1),
+          Plan(id: 'Normal', name: 'Thường', price: 0, duration: 0),
         );
         emit(RegisterPlanSuccess(result.data));
         break;

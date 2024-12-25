@@ -26,12 +26,10 @@ class UserProfileRepository {
   Future<Result<Map<String, int>>> getTrackingProgress() async {
     try {
       final result = await userProfileApiService.getTrackingProgress();
-      print(result);
       Map<String, int> trackingMap = {};
       for (var item in result) {
         trackingMap[item.episodeId] = item.progress;
       }
-      print(trackingMap);
       return Success(trackingMap);
     } catch (error) {
       log('$error');
