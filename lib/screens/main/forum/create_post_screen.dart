@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:textfield_tags/textfield_tags.dart';
@@ -30,29 +32,54 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   final List<String> _initialTags = []; // Store hashtags
 
-  void _pickImages() async {
+  Future<void> _pickImages() async {
     final List<XFile> images = await _picker.pickMultiImage();
     if (images.isNotEmpty) {
       setState(() {
         _pickedImages.addAll(images.map((image) => File(image.path)));
       });
+
+      // If you want to access the image data as a byte stream:
+      for (var image in images) {
+        final file = File(image.path);
+        final imageData = await file.readAsBytes();
+        print('Image data length: ${imageData.length}');
+      }
     }
   }
 
+  Future<List<MultipartFile>> _getImageData(List<File> pickedImages) async {
+    List<MultipartFile> imageFiles = [];
+
+    for (var image in pickedImages) {
+      // Convert each picked image into a MultipartFile
+      final bytes = await image.readAsBytes(); // Read the image as bytes
+      final multipartFile = MultipartFile.fromBytes(
+        bytes,
+        filename: image.path.split('/').last, // Extract filename from path
+      );
+      imageFiles.add(multipartFile);
+    }
+
+    return imageFiles; // Return the list of MultipartFile
+  }
+
   void _createPost() async {
-    final postData = {
-      'content': _postContentController.text,
-      'imageUrls': ['https://picsum.photos/200/300'],
-      'hashtags': _stringTagController.getTags,
-      'channelId': widget.channel.id,
-    };
+    try {
+      final postData = {
+        'content': _postContentController.text,
+        'hashtags': _stringTagController.getTags,
+        'channelId': widget.channel.id,
+        'images': await _getImageData(_pickedImages),
+      };
 
-    print('Post data: $postData');
+      final post = await widget.postCubit.createPost(postData);
 
-    await widget.postCubit.createPost(postData);
-    widget.onPostCreated(); // Call the callback function
-
-    Navigator.pop(context);
+      widget.onPostCreated();
+      Navigator.pop(context);
+    } catch (e) {
+      print('Error creating post: $e');
+    }
   }
 
   @override
