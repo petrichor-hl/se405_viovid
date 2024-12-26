@@ -5,8 +5,9 @@ import HomeScreen from "./pages/Home";
 import MomoResultScreen from "./pages/MomoResult";
 import StripeSuccessResultScreen from "./pages/StripeSuccessResult";
 import StripeCancelledResultScreen from "./pages/StripeCancelledResult";
+import ConfirmEmailScreen from "./pages/ConfirmEmail";
 
-// vite --host 192.168.1.5 --port 5416
+// vite --host 192.168.109.88 --port 5416
 
 function App() {
   return (
@@ -24,6 +25,8 @@ function App() {
           path="/stripe-callback-cancelled"
           element={<StripeCancelledResultScreen />}
         />
+
+        <Route path="/confirm-email" element={<ConfirmEmailScreen />} />
       </Routes>
     </Router>
   );

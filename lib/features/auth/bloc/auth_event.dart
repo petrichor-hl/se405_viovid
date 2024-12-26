@@ -18,11 +18,13 @@ class AuthLoginStarted extends AuthEvent {
 
 class AuthRegisterStarted extends AuthEvent {
   AuthRegisterStarted({
-    required this.username,
+    required this.name,
+    required this.email,
     required this.password,
   });
 
-  final String username;
+  final String name;
+  final String email;
   final String password;
 }
 

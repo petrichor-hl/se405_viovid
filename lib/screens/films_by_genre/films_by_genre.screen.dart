@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,8 +62,8 @@ class _FilmsByGenreScreennState extends State<FilmsByGenreScreen> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: Image.network(
-                      filmsByGenreState.genre.films[index].posterPath,
+                    child: CachedNetworkImage(
+                      imageUrl: filmsByGenreState.genre.films[index].posterPath,
                     ),
                   ).animate().fade().scale(),
                 ),

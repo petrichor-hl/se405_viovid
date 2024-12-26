@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:viovid_app/base/common_variables.dart';
 import 'package:viovid_app/config/styles.config.dart';
+import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
+import 'package:viovid_app/screens/film_detail/components/error_dialog.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -13,112 +16,33 @@ class SignUpScreen extends StatefulWidget {
 class _SignInState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _usernameControllber = TextEditingController();
-  final _dobController = TextEditingController();
+  final _nameControllber = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  bool _isProcessing = false;
+  void _signUpAccount() {
+    final isValid = _formKey.currentState!.validate();
 
-  String _errorText = '';
-
-  void _signUpAccount() async {
-    // final isValid = _formKey.currentState!.validate();
-
-    // if (!isValid) {
-    //   return;
-    // }
-
-    // _errorText = '';
-
-    // setState(() {
-    //   _isProcessing = true;
-    // });
-
-    // final enteredUsername = _usernameControllber.text;
-    // final enteredDob = _dobController.text;
-    // final enteredEmail = _emailController.text;
-    // final enteredPassword = _passwordController.text;
-
-    // print(_dobController.text);
-
-    //   try {
-    //     // final List<Map<String, dynamic>> checkDuplicate = await supabase
-    //     //     .from('profile')
-    //     //     .select('email')
-    //     //     .eq('email', enteredEmail);
-
-    //     if (checkDuplicate.isEmpty) {
-    //       // await supabase.auth.signUp(
-    //       //   email: enteredEmail,
-    //       //   password: enteredPassword,
-    //       //   emailRedirectTo: 'http://localhost:5416/#/cofirmed-sign-up',
-    //       //   data: {
-    //       //     'email': enteredEmail,
-    //       //     'password': enteredPassword,
-    //       //     'full_name': enteredUsername,
-    //       //     'dob': enteredDob,
-    //       //     'avatar_url': 'default_avt.png',
-    //       //   },
-    //       // );
-
-    //       if (mounted) {
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //           const SnackBar(
-    //             content: Text('Xác thực Email trong Hộp thư đến.'),
-    //             behavior: SnackBarBehavior.floating,
-    //           ),
-    //         );
-    //       }
-    //     } else {
-    //       _errorText = 'Email $enteredEmail đã tồn tại.';
-    //     }
-    //   } on AuthException catch (error) {
-    //     if (mounted) {
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //           content: Text(error.message),
-    //           behavior: SnackBarBehavior.floating,
-    //         ),
-    //       );
-    //     }
-    //   } catch (error) {
-    //     if (mounted) {
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //           content: const Text('Có lỗi xảy ra, vui lòng thử lại.'),
-    //           backgroundColor: Theme.of(context).colorScheme.error,
-    //           duration: const Duration(seconds: 2),
-    //         ),
-    //       );
-    //     }
-    //   }
-
-    //   if (mounted) {
-    //     setState(() {
-    //       _isProcessing = false;
-    //     });
-    //   }
-  }
-
-  Future<void> _openDatePicker(BuildContext context) async {
-    DateTime? chosenDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (chosenDate != null) {
-      _dobController.text = vnDateFormat.format(chosenDate);
-    } else {
-      _dobController.text = '';
+    if (!isValid) {
+      return;
     }
+
+    final enteredUsername = _nameControllber.text;
+    final enteredEmail = _emailController.text;
+    final enteredPassword = _passwordController.text;
+
+    context.read<AuthBloc>().add(
+          AuthRegisterStarted(
+            name: enteredUsername,
+            email: enteredEmail,
+            password: enteredPassword,
+          ),
+        );
   }
 
   @override
   void dispose() {
-    _usernameControllber.dispose();
-    _dobController.dispose();
+    _nameControllber.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -126,6 +50,114 @@ class _SignInState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<AuthBloc, AuthState>(
+      listenWhen: (previous, current) =>
+          current is AuthRegisterSuccess || current is AuthRegisterFailure,
+      listener: (context, state) {
+        switch (state) {
+          case AuthRegisterSuccess():
+            showDialog(
+              context: context,
+              builder: (ctx) => Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                surfaceTintColor: Theme.of(context).colorScheme.primary,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 30, horizontal: 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.check_rounded,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 60,
+                      ),
+                      const Gap(8),
+                      const Text(
+                        'Đăng ký thành công!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                          // color: Colors.white,
+                        ),
+                      ),
+                      const Gap(12),
+                      const Text(
+                        'Vui lòng xác thực Email trong Hộp thư đến.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          // color: Colors.white,
+                        ),
+                      ),
+                      const Gap(20),
+                      FilledButton(
+                        onPressed: () {
+                          // TODO quay về trang SIGN IN
+                        },
+                        child: const Text(
+                          'Đã hiểu',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            );
+            break;
+          case AuthRegisterFailure():
+            showDialog(
+              context: context,
+              builder: (ctx) => ErrorDialog(errorMessage: state.message),
+            );
+            break;
+          default:
+            break;
+        }
+      },
+      buildWhen: (previous, current) =>
+          current is AuthRegisterInProgress ||
+          current is AuthRegisterSuccess ||
+          current is AuthRegisterFailure,
+      builder: (context, state) {
+        var registerWiget = (switch (state) {
+          AuthRegisterInProgress() => _buildInProgressRegisterWidget(),
+          _ => _buildRegisterWidget(),
+        });
+
+        return registerWiget;
+      },
+    );
+  }
+
+  Widget _buildInProgressRegisterWidget() {
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(),
+        Gap(14),
+        Text(
+          'Đang đăng ký tài khoản',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Gap(50),
+      ],
+    );
+  }
+
+  Widget _buildRegisterWidget() {
     final screenSize = MediaQuery.sizeOf(context);
 
     return SingleChildScrollView(
@@ -141,55 +173,12 @@ class _SignInState extends State<SignUpScreen> {
                 alignment: Alignment.bottomRight,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Image.network(
-                      'https://kpaxjjmelbqpllxenpxz.supabase.co/storage/v1/object/public/avatar/default_avt.png',
-                      height: 150,
+                    borderRadius: BorderRadius.circular(12),
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          'https://kpaxjjmelbqpllxenpxz.supabase.co/storage/v1/object/public/avatar/default_avt.png',
                       width: 150,
-                      fit: BoxFit.cover,
-                      frameBuilder: (
-                        BuildContext context,
-                        Widget child,
-                        int? frame,
-                        bool wasSynchronouslyLoaded,
-                      ) {
-                        if (wasSynchronouslyLoaded) {
-                          return child;
-                        }
-                        return AnimatedOpacity(
-                          opacity: frame == null ? 0 : 1,
-                          duration: const Duration(
-                              milliseconds:
-                                  500), // Adjust the duration as needed
-                          curve: Curves.easeInOut,
-                          child: child, // Adjust the curve as needed
-                        );
-                      },
-                      // https://api.flutter.dev/flutter/widgets/Image/loadingBuilder.html
-                      loadingBuilder: (
-                        BuildContext context,
-                        Widget child,
-                        ImageChunkEvent? loadingProgress,
-                      ) {
-                        if (loadingProgress == null) {
-                          return child;
-                        }
-                        // print("loadingProgress: $loadingProgress");
-                        return Center(
-                          child: SizedBox(
-                            width: 32,
-                            height: 32,
-                            child: CircularProgressIndicator(
-                              // value: loadingProgress.expectedTotalBytes != null
-                              //     ? loadingProgress.cumulativeBytesLoaded /
-                              //         loadingProgress.expectedTotalBytes!
-                              //     : null,
-                              color: Theme.of(context).colorScheme.primary,
-                              strokeCap: StrokeCap.round,
-                            ),
-                          ),
-                        );
-                      },
+                      height: 150,
                     ),
                   ),
                   Container(
@@ -219,10 +208,9 @@ class _SignInState extends State<SignUpScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-
               const Gap(24),
               TextFormField(
-                controller: _usernameControllber,
+                controller: _nameControllber,
                 decoration: const InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 51, 51, 51),
@@ -247,45 +235,8 @@ class _SignInState extends State<SignUpScreen> {
                 },
               ),
               const SizedBox(
-                height: 12,
+                height: 24,
               ),
-              GestureDetector(
-                onTap: () => _openDatePicker(context),
-                child: TextFormField(
-                  controller: _dobController,
-                  enabled: false,
-                  mouseCursor: SystemMouseCursors.click,
-                  decoration: const InputDecoration(
-                    filled: true,
-                    fillColor: Color.fromARGB(255, 51, 51, 51),
-                    hintText: 'dd/MM/yyyy',
-                    hintStyle: TextStyle(color: Color(0xFFACACAC)),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: EdgeInsets.fromLTRB(16, 20, 16, 12),
-                    suffixIcon: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14),
-                      child: Icon(
-                        Icons.edit_calendar,
-                        color: Color(0xFFACACAC),
-                      ),
-                    ),
-                    errorStyle: TextStyle(fontSize: 14),
-                  ),
-                  style: const TextStyle(color: Colors.white),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Bạn chưa nhập Ngày sinh'; // 68 44
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              // _DobTextFormField(dobController: _dobController),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(
@@ -316,37 +267,16 @@ class _SignInState extends State<SignUpScreen> {
               ),
               _PasswordTextFormField(passwordController: _passwordController),
               const Gap(50),
-
-              if (_errorText.isNotEmpty) ...[
-                Text(
-                  _errorText,
-                  style: errorTextStyle(
-                    context,
-                    fontWeight: FontWeight.bold,
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: _signUpAccount,
+                  child: const Text(
+                    'ĐĂNG KÝ',
                   ),
                 ),
-                const Gap(12),
-              ],
-              _isProcessing
-                  ? const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      child: SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                        ),
-                      ),
-                    )
-                  : SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: _signUpAccount,
-                        child: const Text(
-                          'ĐĂNG KÝ',
-                        ),
-                      ),
-                    ),
+              ),
+              const Gap(20),
             ],
           ),
         ),

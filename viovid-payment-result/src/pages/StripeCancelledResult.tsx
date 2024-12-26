@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { BASE_URL } from "../constants";
+import { BASE_API_URL, BASE_URL } from "../constants";
 import axios, { AxiosResponse } from "axios";
 import { ApiResult } from "../api_result";
 import Loading from "../components/Loading";
@@ -22,7 +22,7 @@ const handleRedirect = () => {
   window.location.href = "petrichor-viovid://deeplink-to-app";
   setTimeout(() => {
     // Di chuyển về trang chủ
-    window.location.href = "http://192.168.1.5:5416/";
+    window.location.href = BASE_URL;
   }, 500);
 };
 
@@ -37,7 +37,7 @@ const StripeCancelledResultScreen = () => {
   };
 
   const { error, isValidating } = useSWR(
-    [`${BASE_URL}/api/Payment/stripe-callback-cancelled`, payload],
+    [`${BASE_API_URL}/Payment/stripe-callback-cancelled`, payload],
     ([url, payload]: [string, IStripeSuccessCallBackData]) =>
       fetcher(url, payload),
     {

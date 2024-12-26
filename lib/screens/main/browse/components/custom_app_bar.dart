@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:viovid_app/base/assets.dart';
+import 'package:viovid_app/config/app_route.dart';
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({
@@ -35,20 +37,7 @@ class CustomAppBar extends StatelessWidget {
                       () => scaffoldKey.currentState!.openEndDrawer()),
                   IconButton(
                     onPressed: () {
-                      // context
-                      //     .read<RouteStackCubit>()
-                      //     .push('/search_film_screen');
-                      // context.read<RouteStackCubit>().printRouteStack();
-                      // Navigator.of(context).push(
-                      //   PageTransition(
-                      //     child: const SearchFilmScreen(),
-                      //     type: PageTransitionType.rightToLeft,
-                      //     duration: 300.ms,
-                      //     reverseDuration: 300.ms,
-                      //     settings:
-                      //         const RouteSettings(name: '/search_film_screen'),
-                      //   ),
-                      // );
+                      context.push(RouteName.searchFilm);
                     },
                     style: IconButton.styleFrom(foregroundColor: Colors.white),
                     icon: const Icon(

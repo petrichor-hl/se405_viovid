@@ -78,15 +78,15 @@ class _SignInState extends State<SignInScreen> {
         buildWhen: (previous, current) =>
             current is AuthLoginInProgress || current is AuthLoginFailure,
         builder: (ctx, state) {
-          var loginWiget = (switch (state) {
-            AuthUnauthenticated() => _buildLoginWidget(),
+          var loginWidget = (switch (state) {
+            // AuthUnauthenticated() => _buildLoginWidget(),
             AuthLoginInProgress() => _buildInProgressLoginWidget(),
             AuthLoginFailure() =>
               _buildLoginWidget(errorMessage: state.message),
-            _ => const SizedBox(),
+            _ => _buildLoginWidget(),
           });
 
-          return loginWiget;
+          return loginWidget;
         },
       ),
     );

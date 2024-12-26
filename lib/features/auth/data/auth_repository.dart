@@ -6,6 +6,7 @@ import 'package:viovid_app/features/auth/data/auth_api_service.dart';
 import 'package:viovid_app/features/auth/data/auth_local_data_source_service.dart';
 import 'package:viovid_app/features/auth/dtos/login_dto.dart';
 import 'package:viovid_app/features/auth/dtos/refresh_token_dto.dart';
+import 'package:viovid_app/features/auth/dtos/register_dto.dart';
 import 'package:viovid_app/features/result_type.dart';
 
 class AuthRepository {
@@ -16,6 +17,22 @@ class AuthRepository {
     required this.authApiService,
     required this.authLocalStorageService,
   });
+
+  Future<Result<bool>> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await authApiService.register(
+        RegisterDto(email: email, password: password, name: name),
+      );
+      return Success(true);
+    } catch (error) {
+      log('$error');
+      return Failure('$error');
+    }
+  }
 
   Future<Result> login({
     required String email,

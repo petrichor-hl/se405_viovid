@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { BASE_URL } from "../constants";
+import { BASE_API_URL, BASE_URL } from "../constants";
 import axios, { AxiosResponse } from "axios";
 import rubySparkles from "../../../assets/images/ruby_sparkles.png";
 import { ApiResult } from "../api_result";
@@ -23,7 +23,7 @@ const handleRedirect = () => {
   window.location.href = "petrichor-viovid://deeplink-to-app";
   setTimeout(() => {
     // Di chuyển về trang chủ
-    window.location.href = "http://192.168.1.5:5416/";
+    window.location.href = BASE_URL;
   }, 500);
 };
 
@@ -40,7 +40,7 @@ const StripeSuccessResultScreen = () => {
   //   console.log(payload);
 
   const { data, error, isValidating } = useSWR(
-    [`${BASE_URL}/api/Payment/stripe-callback-success`, payload],
+    [`${BASE_API_URL}/Payment/stripe-callback-success`, payload],
     ([url, payload]: [string, IStripeSuccessCallBackData]) =>
       fetcher(url, payload),
     {

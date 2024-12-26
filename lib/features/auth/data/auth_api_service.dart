@@ -4,6 +4,7 @@ import 'package:viovid_app/features/auth/dtos/login_dto.dart';
 import 'package:viovid_app/features/auth/dtos/login_success_dto.dart';
 import 'package:viovid_app/features/auth/dtos/refresh_token_dto.dart';
 import 'package:viovid_app/features/auth/dtos/refresh_token_success_dto.dart';
+import 'package:viovid_app/features/auth/dtos/register_dto.dart';
 
 class AuthApiService {
   AuthApiService(this.dio);
@@ -27,20 +28,21 @@ class AuthApiService {
     }
   }
 
-  // Future<void> register(RegisterDto registerDto) async {
-  //   try {
-  //     await dio.post(
-  //       '/auth/register',
-  //       data: registerDto.toJson(),
-  //     );
-  //   } on DioException catch (e) {
-  //     if (e.response != null) {
-  //       throw Exception(e.response!.data['message']);
-  //     } else {
-  //       throw Exception(e.message);
-  //     }
-  //   }
-  // }
+  Future<String> register(RegisterDto registerDto) async {
+    try {
+      return await ApiClient(dio).request<RegisterDto, String>(
+        url: '/Account/register',
+        method: ApiMethod.post,
+        payload: registerDto,
+      );
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw Exception(e.response!.data['Errors'][0]['Message']);
+      } else {
+        throw Exception(e.message);
+      }
+    }
+  }
 
   Future<RefreshTokenSuccessDto> refreshToken(
     RefreshTokenDto refreshTokenDto,

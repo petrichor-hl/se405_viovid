@@ -17,6 +17,9 @@ import 'package:viovid_app/features/person_detail/data/person_detail_repository.
 import 'package:viovid_app/features/register_plan/cubit/register_plan_cubit.dart';
 import 'package:viovid_app/features/register_plan/data/register_plan_api_service.dart';
 import 'package:viovid_app/features/register_plan/data/register_plan_repository.dart';
+import 'package:viovid_app/features/search_film/cubit/search_film_cubit.dart';
+import 'package:viovid_app/features/search_film/data/search_film_api_service.dart';
+import 'package:viovid_app/features/search_film/data/search_film_repository.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_api_service.dart';
 import 'package:viovid_app/features/user_profile/data/user_profile_repository.dart';
@@ -31,6 +34,7 @@ import 'package:viovid_app/screens/my_list/my_list.screen.dart';
 import 'package:viovid_app/screens/onboarding/onboarding.screen.dart';
 import 'package:viovid_app/screens/person_detail/person_detail.screen.dart';
 import 'package:viovid_app/screens/register_plan/register_plan.screen.dart';
+import 'package:viovid_app/screens/search_film/search_film.screen.dart';
 import 'package:viovid_app/screens/spash/splash.screen.dart';
 import 'package:viovid_app/screens/video_player/video_player.screen.dart';
 
@@ -47,6 +51,7 @@ class RouteName {
   static const String changePassword = '/change-password';
   static const String registerPlan = '/register-plan';
   static const String paymentHistory = '/payment-history';
+  static const String searchFilm = '/search-film';
 
   static const publicRoutes = [
     onboarding,
@@ -198,6 +203,19 @@ GoRouter appRouter = GoRouter(
             ),
           ),
           child: const RegisterPlanScreen(),
+        );
+      },
+    ),
+    GoRoute(
+      path: RouteName.searchFilm,
+      builder: (ctx, state) {
+        return BlocProvider(
+          create: (context) => SearchFilmCubit(
+            SearchFilmRepository(
+              searchFilmApiService: SearchFilmApiService(dio),
+            ),
+          ),
+          child: const SearchFilmScreen(),
         );
       },
     ),
