@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:viovid_app/features/api_client.dart';
@@ -113,15 +115,50 @@ class PostApiService {
   PostApiService(this.dio);
 
   Future<Post> createPost(Map<String, dynamic> postData) async {
-    print('creating Post...');
-    final result = await ApiClient(dio).request<Map<String, dynamic>, Post>(
-      url: '/Post',
-      method: ApiMethod.post,
-      payload: postData,
-      fromJson: (result) => Post.fromJson(result),
+    print('Creating post in PostApiService...');
+
+    final formData = FormData();
+
+    // Add content and hashtags to FormData
+    formData.fields.add(MapEntry('content', postData['content']));
+    formData.fields.add(MapEntry(
+      'hashtags',
+      postData['hashtags'].join(','), // Assuming hashtags are joined by commas
+    ));
+
+    // Add channelId to FormData
+    formData.fields
+        .add(MapEntry('channelId', postData['channelId'].toString()));
+
+    // Ensure 'images' is awaited before checking if it's empty
+    final images = await postData["images"]; // Await to get the resolved list
+
+    print("images: $images");
+
+    // Add images to FormData (now images contain the binary data)
+    if (images.isNotEmpty) {
+      for (var i = 0; i < images.length; i++) {
+        final image = images[i];
+        formData.files.add(MapEntry(
+          'images',
+          image,
+        ));
+      }
+    } else {
+      print("No images to upload.");
+    }
+
+    // Send the POST request with FormData
+    final response = await dio.post<Map<String, dynamic>>(
+      '/Post', // Adjust API URL as needed
+      data: formData,
     );
-    print(result);
-    return result;
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Post.fromJson(response.data!);
+    } else {
+      throw Exception('Failed to create post: ${response.statusMessage}');
+    }
   }
 
   Future<PagingData<Post>> getPosts({

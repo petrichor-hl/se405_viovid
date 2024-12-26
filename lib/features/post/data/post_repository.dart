@@ -5,8 +5,8 @@ class PostRepository {
 
   PostRepository(this.apiService);
 
-  Future<Post> createPost(Map<String, dynamic> PostData) async {
-    return await apiService.createPost(PostData);
+  Future<Post> createPost(Map<String, dynamic> postData) async {
+    return await apiService.createPost(postData);
   }
 
   Future<PagingData<Post>> getPosts(int currentPostIndex) async {

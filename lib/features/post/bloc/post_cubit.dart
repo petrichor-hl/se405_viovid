@@ -7,9 +7,10 @@ class PostCubit extends Cubit<void> {
 
   PostCubit(this.repository) : super(null);
 
-  Future<Post> createPost(Map<String, dynamic> PostData) async {
+  Future<Post> createPost(Map<String, dynamic> postData) async {
     try {
-      return await repository.createPost(PostData);
+      final post = await repository.createPost(postData);
+      return post;
     } catch (e) {
       emit(null); // Emit failure state if needed
       throw e;
