@@ -267,32 +267,36 @@ class _ReviewsBottomSheetState extends State<ReviewsBottomSheet> {
                       ],
                     ),
                   const Gap(6),
-                  TextFormField(
-                    controller: _contentReviewController,
-                    decoration: const InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      hintText: 'Bình luận của bạn',
-                      hintStyle: TextStyle(color: Color(0xFFACACAC)),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: TextFormField(
+                      controller: _contentReviewController,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: 'Bình luận của bạn',
+                        hintStyle: TextStyle(color: Color(0xFFACACAC)),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.fromLTRB(16, 20, 16, 12),
                       ),
-                      contentPadding: EdgeInsets.fromLTRB(16, 20, 16, 12),
+                      style: const TextStyle(color: Colors.black),
+                      autocorrect: false,
+                      enableSuggestions: false, // No work
+                      keyboardType: TextInputType
+                          .emailAddress, // Trick: disable suggestions
+                      validator: (value) {
+                        // print('Value = $value');
+                        if (value == null || value.isEmpty) {
+                          return 'Bạn chưa nhập Email';
+                        }
+                        return null;
+                      },
                     ),
-                    style: const TextStyle(color: Colors.black),
-                    autocorrect: false,
-                    enableSuggestions: false, // No work
-                    keyboardType: TextInputType
-                        .emailAddress, // Trick: disable suggestions
-                    validator: (value) {
-                      // print('Value = $value');
-                      if (value == null || value.isEmpty) {
-                        return 'Bạn chưa nhập Email';
-                      }
-                      return null;
-                    },
                   ),
-                  if (Platform.isAndroid) const Gap(14)
+                  // const Gap(20),
+                  if (Platform.isAndroid) const Gap(20)
                 ],
               ),
       ),

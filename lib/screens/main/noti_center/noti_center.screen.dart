@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -242,13 +244,17 @@ class _NotificationListState extends State<NotificationList> {
   void didUpdateWidget(covariant NotificationList oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.notifications != oldWidget.notifications) {
+    if (widget.notifications.length != oldWidget.notifications.length) {
+      log('widget.notifications != oldWidget.notifications');
+      log('widget.notifications.length = ${widget.notifications.length}');
+      log('oldWidget.notifications.length = ${oldWidget.notifications.length}');
       _reviewsListKey.currentState?.insertItem(0);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    log('widget.notifications.length = ${widget.notifications.length}');
     return AnimatedList(
       key: _reviewsListKey,
       initialItemCount: widget.notifications.length,
