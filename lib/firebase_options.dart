@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -50,19 +41,47 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDJpAU_YxV2PwbVxdUYAa_nTRk7ed9OiUc',
-    appId: '1:239242608213:android:0abd2343a7fb9a6d4e1edc',
-    messagingSenderId: '239242608213',
-    projectId: 'viovid-fe752',
-    storageBucket: 'viovid-fe752.firebasestorage.app',
+    apiKey: 'AIzaSyCS9PO9zCgcxX4GumNW4I7PM8QNY7eovJ8',
+    appId: '1:983859430699:android:f92647f9e98846e571716e',
+    messagingSenderId: '983859430699',
+    projectId: 'viovid-e5899',
+    storageBucket: 'viovid-e5899.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyALfeQpfgV3JCLVMQM53PyuEKR55bGU7Oo',
-    appId: '1:239242608213:ios:4d125c407f7ff6dd4e1edc',
-    messagingSenderId: '239242608213',
-    projectId: 'viovid-fe752',
-    storageBucket: 'viovid-fe752.firebasestorage.app',
+    apiKey: 'AIzaSyA6ukRV8kPMXQnLkqAzCNRCKuiPi6aRlGU',
+    appId: '1:983859430699:ios:676eb9be06eb384e71716e',
+    messagingSenderId: '983859430699',
+    projectId: 'viovid-e5899',
+    storageBucket: 'viovid-e5899.firebasestorage.app',
     iosBundleId: 'com.example.viovidApp',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDlzeEp2V2qZFaUEnbfrsgiih58Yun4PUc',
+    appId: '1:564614101400:web:444b9a3d0ff3a947e753ed',
+    messagingSenderId: '564614101400',
+    projectId: 'viovid-2',
+    authDomain: 'viovid-2.firebaseapp.com',
+    storageBucket: 'viovid-2.firebasestorage.app',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBNXGsuPi8cUvSLh3UTK-ycwvWvc3o48lw',
+    appId: '1:564614101400:ios:b9ab0eed94e82a55e753ed',
+    messagingSenderId: '564614101400',
+    projectId: 'viovid-2',
+    storageBucket: 'viovid-2.firebasestorage.app',
+    iosBundleId: 'com.example.viovidApp',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDlzeEp2V2qZFaUEnbfrsgiih58Yun4PUc',
+    appId: '1:564614101400:web:a35efda478751069e753ed',
+    messagingSenderId: '564614101400',
+    projectId: 'viovid-2',
+    authDomain: 'viovid-2.firebaseapp.com',
+    storageBucket: 'viovid-2.firebasestorage.app',
+  );
+
 }

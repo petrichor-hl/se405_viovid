@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:viovid_app/features/film_reviews/cubit/film_reviews_state.dart';
@@ -56,6 +58,7 @@ class FilmReviewsCutbit extends Cubit<FilmReviewsState> {
     );
 
     final flagged = moderation.results[0].flagged;
+    log('flagged = $flagged');
     if (flagged) {
       emit(
         state.copyWith(

@@ -190,10 +190,13 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                 child: Column(
                   spacing: 8,
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 6, horizontal: 16),
+                        vertical: 6,
+                        horizontal: 16,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),
                         color: Colors.black,
@@ -220,16 +223,11 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                           final episode = film.seasons[0].episodes[0];
                           final currentProgress =
                               state.userTrackingProgress?[episode.id] ?? 0;
-                          return Positioned(
-                            bottom: 4,
-                            left: 4,
-                            right: 4,
-                            child: LinearProgressIndicator(
-                              value: currentProgress / episode.duration,
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(2),
-                              backgroundColor: Colors.white54,
-                            ),
+                          return LinearProgressIndicator(
+                            value: currentProgress / episode.duration,
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(2),
+                            backgroundColor: Colors.white54,
                           );
                         },
                       ),
