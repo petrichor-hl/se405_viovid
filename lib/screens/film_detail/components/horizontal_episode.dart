@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
+import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
 import 'package:viovid_app/features/film_detail/dtos/episode.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_state.dart';
@@ -38,6 +39,8 @@ class HorizontalEpisode extends StatelessWidget {
             );
             return;
           }
+
+          context.read<FilmDetailRepository>().countView(film.filmId);
 
           final TrackingProgress? trackingProgress = await context.push(
             '${GoRouterState.of(context).uri}/watching',

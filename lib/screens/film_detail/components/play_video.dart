@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
+import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_cutbit.dart';
 import 'package:viovid_app/features/user_profile/dtos/tracking_progress.dart';
 import 'package:viovid_app/screens/film_detail/components/promote_dialog.dart';
@@ -28,6 +29,8 @@ class PlayVideoButton extends StatelessWidget {
           );
           return;
         }
+
+        context.read<FilmDetailRepository>().countView(film.filmId);
 
         final TrackingProgress? trackingProgress = await context.push(
           '${GoRouterState.of(context).uri}/watching',

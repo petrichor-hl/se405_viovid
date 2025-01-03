@@ -75,4 +75,19 @@ class FilmDetailApiService {
       }
     }
   }
+
+  Future<bool> countView(String filmId) async {
+    try {
+      return await ApiClient(dio).request<void, bool>(
+        url: '/Film/$filmId/count-view',
+        method: ApiMethod.post,
+      );
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw Exception(e.response!.data['Errors'][0]['Message']);
+      } else {
+        throw Exception(e.message);
+      }
+    }
+  }
 }

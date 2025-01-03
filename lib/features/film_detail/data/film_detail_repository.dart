@@ -44,4 +44,12 @@ class FilmDetailRepository {
       return Failure('$error');
     }
   }
+
+  Future<Result<bool>> countView(String filmId) async {
+    try {
+      return Success(await filmDetailApiService.countView(filmId));
+    } catch (error) {
+      return Failure('$error');
+    }
+  }
 }
