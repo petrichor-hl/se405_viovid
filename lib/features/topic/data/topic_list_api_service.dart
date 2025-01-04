@@ -10,7 +10,7 @@ class TopicListApiService {
   Future<List<Topic>> getTopicList() async {
     try {
       return await ApiClient(dio).request<void, List<Topic>>(
-        url: '/Topic',
+        url: '/Topic/browse',
         method: ApiMethod.get,
         fromJson: (resultJson) {
           return (resultJson as List)

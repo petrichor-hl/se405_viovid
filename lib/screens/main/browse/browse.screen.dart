@@ -33,11 +33,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (mounted) {
-        context.read<TopicListCubit>().getTopicList();
-      }
-    });
+    context.read<TopicListCubit>().getTopicList();
   }
 
   @override
