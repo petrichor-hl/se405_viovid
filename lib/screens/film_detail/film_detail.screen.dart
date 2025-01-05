@@ -394,35 +394,28 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        // final genreId = film.genres[0].id;
-                        // TODO: Navigate to Genre Screen
-                      },
-                      child: Text(
-                        film.genres[0].name,
+                SizedBox(
+                  width: double.infinity,
+                  height: 30,
+                  child: ListView(
+                    // mainAxisSize: MainAxisSize.min,
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      Text(
+                        film.genres.isEmpty ? '-' : film.genres[0].name,
                         style: const TextStyle(
                           color: Colors.white,
                         ),
                       ),
-                    ),
-                    for (int i = 1; i < film.genres.length; ++i)
-                      GestureDetector(
-                        onTap: () {
-                          // final genreId = film.genres[i].id;
-                          // TODO: Navigate to Genre Screen
-                        },
-                        child: Text(
+                      for (int i = 1; i < film.genres.length; ++i)
+                        Text(
                           ', ${film.genres[i].name}',
                           style: const TextStyle(
                             color: Colors.white,
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
