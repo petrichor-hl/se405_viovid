@@ -43,8 +43,6 @@ class _FilmsByGenreScreennState extends State<FilmsByGenreScreen> {
         backgroundColor: Colors.transparent,
       ),
       body: GridView(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           childAspectRatio: 2 / 3,

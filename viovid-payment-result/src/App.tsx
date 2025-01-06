@@ -7,8 +7,6 @@ import StripeSuccessResultScreen from "./pages/StripeSuccessResult";
 import StripeCancelledResultScreen from "./pages/StripeCancelledResult";
 import ConfirmEmailScreen from "./pages/ConfirmEmail";
 
-// vite --host 192.168.1.7 --port 5416
-
 function App() {
   return (
     <Router>

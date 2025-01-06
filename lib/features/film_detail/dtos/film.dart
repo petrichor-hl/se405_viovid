@@ -7,6 +7,7 @@ class Film extends SimpleFilm {
   String backdropPath;
   String contentRating;
   DateTime releaseDate;
+  String tmdbId;
   List<Season> seasons;
   List<Genre> genres;
 
@@ -18,6 +19,7 @@ class Film extends SimpleFilm {
     required this.backdropPath,
     required this.contentRating,
     required this.releaseDate,
+    required this.tmdbId,
     required this.seasons,
     required this.genres,
   });
@@ -31,6 +33,7 @@ class Film extends SimpleFilm {
       backdropPath: json['backdropPath'],
       contentRating: json['contentRating'],
       releaseDate: DateTime.parse(json['releaseDate']),
+      tmdbId: json['tmdbId'],
       seasons: (json['seasons'] as List)
           .map((season) => Season.fromJson(season))
           .toList(),

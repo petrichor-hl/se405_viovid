@@ -4,6 +4,7 @@ import 'package:viovid_app/features/film_detail/dtos/crew.dart';
 import 'package:viovid_app/features/film_detail/dtos/film.dart';
 import 'package:viovid_app/features/film_detail/dtos/season.dart';
 import 'package:viovid_app/features/result_type.dart';
+import 'package:viovid_app/features/topic/dtos/simple_film.dart';
 
 class FilmDetailRepository {
   final FilmDetailApiService filmDetailApiService;
@@ -40,6 +41,18 @@ class FilmDetailRepository {
   Future<Result<List<Crew>>> getCrews(String filmId) async {
     try {
       return Success(await filmDetailApiService.getCrews(filmId));
+    } catch (error) {
+      return Failure('$error');
+    }
+  }
+
+  Future<Result<List<SimpleFilm>>> getRecommendations(
+    String type,
+    String filmId,
+  ) async {
+    try {
+      return Success(
+          await filmDetailApiService.getRecommendations(type, filmId));
     } catch (error) {
       return Failure('$error');
     }

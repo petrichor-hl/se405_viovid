@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/screens/film_detail/components/cast_tab.dart';
 import 'package:viovid_app/screens/film_detail/components/crew_tab.dart';
+import 'package:viovid_app/screens/film_detail/components/recommendation_tab.dart';
 import 'package:viovid_app/screens/film_detail/components/season_tab.dart';
 
 class BottomTabs extends StatefulWidget {
@@ -37,11 +38,13 @@ class _BottomInfoState extends State<BottomTabs> {
                 ? {
                     1: _buildSegment('Diễn viên'),
                     2: _buildSegment('Đội ngũ'),
+                    3: _buildSegment('Đề xuất'),
                   }
                 : {
                     0: _buildSegment('Tập phim'),
                     1: _buildSegment('Diễn viên'),
                     2: _buildSegment('Đội ngũ'),
+                    3: _buildSegment('Đề xuất'),
                   },
             onValueChanged: (index) {
               setState(() {
@@ -54,13 +57,14 @@ class _BottomInfoState extends State<BottomTabs> {
         if (_segmentIndex == 0) const SeasonTab(),
         if (_segmentIndex == 1) const CastTab(),
         if (_segmentIndex == 2) const CrewTab(),
+        if (_segmentIndex == 3) const RecommendationTab(),
       ],
     );
   }
 
   Widget _buildSegment(String text) {
     return Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
       child: SizedBox(
         child: Text(
           text,
