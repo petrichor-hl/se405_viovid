@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -8,8 +7,6 @@ import 'package:viovid_app/features/film_detail/dtos/crew.dart';
 import 'package:viovid_app/features/film_detail/dtos/film.dart';
 import 'package:viovid_app/features/film_detail/dtos/season.dart';
 import 'package:viovid_app/features/topic/dtos/simple_film.dart';
-
-import 'package:http/http.dart' as http;
 
 class FilmDetailApiService {
   FilmDetailApiService(this.dio);

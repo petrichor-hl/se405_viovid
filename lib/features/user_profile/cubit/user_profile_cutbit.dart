@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:viovid_app/features/result_type.dart';
 import 'package:viovid_app/features/user_profile/cubit/user_profile_state.dart';
@@ -85,7 +87,9 @@ class UserProfileCubit extends Cubit<UserProfileState> {
   }
 
   Future<void> changePassword(
-      String currentPassword, String newPassword) async {
+    String currentPassword,
+    String newPassword,
+  ) async {
     emit(
       state.copyWith(
         isLoadingChangePassword: true,
@@ -107,5 +111,30 @@ class UserProfileCubit extends Cubit<UserProfileState> {
           ),
         ),
     });
+  }
+
+  Future<void> updateThreadId(String? threadId) async {
+    emit(
+      state.copyWith(
+        errorMessage: null,
+      ),
+    );
+    if (state.userProfile != null) {
+      final result = await userProfileRepository.updateThreadId(threadId);
+      switch (result) {
+        case Success():
+          final userProfile = state.userProfile;
+          userProfile?.threadId = threadId;
+          emit(state.copyWith(userProfile: userProfile));
+          log('updated UserProfile.threadId = $threadId');
+          break;
+        case Failure():
+          emit(
+            state.copyWith(
+              errorMessage: result.message,
+            ),
+          );
+      }
+    }
   }
 }

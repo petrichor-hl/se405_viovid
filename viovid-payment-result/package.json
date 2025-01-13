@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 192.168.1.41 --port 5416",
+    "dev": "vite --host 192.168.1.48 --port 5416",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

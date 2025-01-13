@@ -5,6 +5,7 @@ import 'package:viovid_app/features/user_profile/data/user_profile_api_service.d
 import 'package:viovid_app/features/user_profile/dtos/change_password_dto.dart';
 import 'package:viovid_app/features/user_profile/dtos/tracking_progress.dart';
 import 'package:viovid_app/features/user_profile/dtos/update_fcm_token_dto.dart';
+import 'package:viovid_app/features/user_profile/dtos/update_thread_id.dart';
 import 'package:viovid_app/features/user_profile/dtos/user_profile.dart';
 
 class UserProfileRepository {
@@ -73,6 +74,19 @@ class UserProfileRepository {
       return Success(
         await userProfileApiService.updateFcmToken(
           UpdateFcmTokenDto(fcmToken: fcmToken),
+        ),
+      );
+    } catch (error) {
+      log('$error');
+      return Failure('$error');
+    }
+  }
+
+  Future<Result<bool>> updateThreadId(String? threadId) async {
+    try {
+      return Success(
+        await userProfileApiService.updateThreadId(
+          UpdateThreadIdDto(threadId: threadId),
         ),
       );
     } catch (error) {

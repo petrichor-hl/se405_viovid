@@ -40,8 +40,7 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  OpenAI.apiKey =
-      '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';
+  OpenAI.apiKey = openAIApiKey;
 
   // Ctrl + F5
   // flutter run --dart-define-from-file=lib/config/.env
@@ -58,6 +57,9 @@ void main() async {
     ),
   );
 }
+
+const openAIApiKey =
+    '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';
 
 class MyApp extends StatefulWidget {
   // This widget is the root of your application.

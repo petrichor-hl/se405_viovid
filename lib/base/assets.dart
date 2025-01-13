@@ -47,4 +47,8 @@ class Assets {
   static const String vnPayLogo = '${_images}vnpay-logo.webp';
   static const String stripeLogo = '${_images}stripe_logo.webp';
   static const String momoLogo = '${_images}momo_logo.png';
+
+  //
+  static const String viovidAssistantBot =
+      '${_images}viovid_assistant_robot.png';
 }

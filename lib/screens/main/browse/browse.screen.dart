@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:viovid_app/base/components/skeleton_loading.dart';
 import 'package:viovid_app/cubits/app_bar_cubit.dart';
 import 'package:viovid_app/features/topic/cubit/topic_list_cubit.dart';
@@ -73,6 +74,13 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
           return browseWidget;
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFFFFA000),
+        onPressed: () => context.go('/bottom-nav/chat-bot'),
+        child: const Icon(
+          Icons.smart_toy_rounded,
+        ),
       ),
     );
   }

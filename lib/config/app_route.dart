@@ -2,6 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viovid_app/config/api.config.dart';
 import 'package:viovid_app/features/auth/bloc/auth_bloc.dart';
+import 'package:viovid_app/features/chat_bot/cubit/chat_bot_cubit.dart';
+import 'package:viovid_app/features/chat_bot/data/chat_bot_api_service.dart';
+import 'package:viovid_app/features/chat_bot/data/chat_bot_repository.dart';
 import 'package:viovid_app/features/film_detail/cubit/film_detail/film_detail_cubit.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_api_service.dart';
 import 'package:viovid_app/features/film_detail/data/film_detail_repository.dart';
@@ -26,6 +29,7 @@ import 'package:viovid_app/features/user_profile/data/user_profile_repository.da
 import 'package:viovid_app/features/video_player/cubit/video_player_cubit.dart';
 import 'package:viovid_app/screens/auth/auth.screen.dart';
 import 'package:viovid_app/screens/change_password/change_password.screen.dart';
+import 'package:viovid_app/screens/chat_bot/chat_bot.screen.dart';
 import 'package:viovid_app/screens/film_detail/film_detail.screen.dart';
 import 'package:viovid_app/screens/films_by_genre/films_by_genre.screen.dart';
 import 'package:viovid_app/screens/main/bottom_nav.dart';
@@ -52,6 +56,7 @@ class RouteName {
   static const String registerPlan = '/register-plan';
   static const String paymentHistory = '/payment-history';
   static const String searchFilm = '/search-film';
+  static const String chatBot = '/chat-bot';
 
   static const publicRoutes = [
     onboarding,
@@ -88,6 +93,19 @@ GoRouter appRouter = GoRouter(
     GoRoute(
       path: RouteName.bottomNav,
       builder: (ctx, state) => const BottomNavScreen(),
+      routes: [
+        GoRoute(
+          path: RouteName.chatBot,
+          builder: (ctx, state) => BlocProvider(
+            create: (context) => ChatBotCubit(
+              ChatBotRepository(
+                chatBotApiService: ChatBotApiService(),
+              ),
+            ),
+            child: const ChatBotScreen(),
+          ),
+        ),
+      ],
     ),
     GoRoute(
       path: RouteName.filmDetail,
